@@ -48,7 +48,7 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
 <body>
 
 <a class="back" href="tools.html">‹ رجوع للأدوات</a>
-<h1>Reels Maker 🎬 <span style="font-size:12px;font-weight:600;color:#8a7f76;vertical-align:middle">v4</span></h1>
+<h1>Reels Maker 🎬 <span style="font-size:12px;font-weight:600;color:#8a7f76;vertical-align:middle">v5</span></h1>
 <div class="sub">تصاور + نص = فيديو عمودي جاهز للنشر. كلشي كيتدار فالهاتف ديالك، بلا سيرفر وبلا تسجيل.</div>
 
 <div id="err"></div>
@@ -368,7 +368,10 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
     }
   }
 
-  function drawStill(img) {
+  function drawStill(imgOrSlide) {
+    // callers pass either an Image or a slide object {img, url, name}
+    var img = (imgOrSlide && imgOrSlide.img) ? imgOrSlide.img : imgOrSlide;
+    if (!img) return;
     drawSlide(img, 0.35, document.getElementById('caption').value.trim());
     mirror();
   }
