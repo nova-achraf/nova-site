@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>AZANOVA ULTIMATE</title>
 <link rel="manifest" href="azanova-manifest.json">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/jsm/"}}</script>
 <link rel="icon" type="image/png" sizes="64x64" href="azanova-favicon-64.png">
 <link rel="icon" type="image/png" sizes="192x192" href="azanova-icon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="azanova-apple-icon.png">
@@ -109,7 +110,9 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 <script type="module">
-import * as THREE from './vendor/three.module.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { clone as cloneSkinned } from 'three/addons/utils/SkeletonUtils.js';
 
 /* ---------------- audio (synthesized, no files) ---------------- */
 const Sfx = (() => {
@@ -356,6 +359,58 @@ flash.visible = false;
 player.add(flash);
 
 player.position.set(0, 0, 6);
+
+/* ---------------- realistic hero model (rigged, animated) ---------------- */
+const hero = { model: null, mixer: null, actions: {}, current: '', ready: false };
+
+function setupHero(gltf) {
+  const model = gltf.scene;
+  model.traverse(o => {
+    if (o.isMesh) {
+      o.castShadow = true;
+      o.receiveShadow = false;
+      o.frustumCulled = false;
+      if (o.material) {
+        o.material.roughness = Math.min(1, (o.material.roughness ?? 0.8) + 0.1);
+        o.material.envMapIntensity = 0.6;
+      }
+    }
+  });
+  // the source rig is ~1.8m tall; match our arena scale
+  model.scale.setScalar(1.18);
+  model.rotation.y = Math.PI;           // face -Z (forward)
+  body.visible = false;                  // hide the placeholder body
+  player.add(model);
+
+  hero.model = model;
+  hero.mixer = new THREE.AnimationMixer(model);
+  const pick = n => gltf.animations.find(c => c.name === n);
+  [['idle', 'Idle'], ['walk', 'Walk'], ['run', 'Run']].forEach(([key, name]) => {
+    const clip = pick(name);
+    if (!clip) return;
+    const a = hero.mixer.clipAction(clip);
+    a.enabled = true;
+    a.setEffectiveWeight(key === 'idle' ? 1 : 0);
+    a.play();
+    hero.actions[key] = a;
+  });
+  hero.current = 'idle';
+  hero.ready = true;
+}
+
+function setHeroState(name) {
+  if (!hero.ready || hero.current === name) return;
+  const from = hero.actions[hero.current], to = hero.actions[name];
+  if (to) {
+    to.reset().setEffectiveWeight(1).play();
+    if (from) from.crossFadeTo(to, 0.22, false);
+    hero.current = name;
+  }
+}
+
+new GLTFLoader().load('./models/Soldier.glb', setupHero, undefined, err => {
+  console.warn('hero model failed, using placeholder', err);
+});
 
 /* ---------------- bots ---------------- */
 const bots = [];
@@ -711,6 +766,9 @@ function updateMovement(dt) {
   const speed = vel.length();
   const norm = Math.min(1, speed / SPEED);
   player.rotation.y = yaw;
+  setHeroState(norm > 0.55 ? 'run' : norm > 0.06 ? 'walk' : 'idle');
+  if (hero.actions.walk) hero.actions.walk.timeScale = 0.9 + norm * 0.9;
+  if (hero.actions.run) hero.actions.run.timeScale = 0.85 + norm * 0.6;
   if (norm > 0.05 && onGround) {
     walkPhase += dt * (7 + norm * 7);
     const swing = Math.sin(walkPhase) * 0.62 * norm;
@@ -821,6 +879,7 @@ function animate() {
     hurtTimer = Math.max(0, hurtTimer - dt);
   }
   updateParticles(dt);
+  if (hero.mixer) hero.mixer.update(dt);
   updateCamera(dt);
 
   if (tracerLife > 0) {
