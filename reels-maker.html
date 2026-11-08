@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Reels Maker — NOVA</title>
+<link rel="icon" href="azanova-favicon-64.png">
+<style>
+:root{--cream:#FFFBF6;--orange:#FF6B4A;--gold:#D4AF37;--ink:#3B2A20;--muted:#8A7566;--line:#F0E4D8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:'Segoe UI',Tahoma,Arial,sans-serif;padding:16px 14px 32px;max-width:760px;margin-inline:auto}
+h1{font-size:20px;margin:0 0 2px;letter-spacing:.02em}
+.sub{font-size:12.5px;color:var(--muted);margin-bottom:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+label.f{font-size:12px;font-weight:700;color:var(--ink);display:block;margin-bottom:6px}
+input[type=text],input[type=number],select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink)}
+input[type=text]:focus,select:focus{outline:2px solid rgba(255,107,74,.35);border-color:var(--orange)}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:11px;font-weight:700;font-size:13px;padding:10px 14px;transition:transform .08s,opacity .15s}
+button:active{transform:scale(.97)}
+.btn-main{background:var(--orange);color:#fff}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-ghost{background:#F7EFE6;color:var(--ink)}
+.btn-danger{background:#FDECEA;color:#C0392B}
+button[disabled]{opacity:.45;cursor:default}
+.drop{border:2px dashed #EADFD2;border-radius:14px;padding:22px;text-align:center;color:var(--muted);font-size:13px;background:#FFFDFA}
+.drop.over{border-color:var(--orange);background:#FFF6F1}
+.slides{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.slide{display:flex;gap:10px;align-items:center;background:#FFFDFA;border:1px solid var(--line);border-radius:12px;padding:8px}
+.slide img{width:54px;height:96px;object-fit:cover;border-radius:8px;flex:none;background:#eee}
+.slide .grow{flex:1;min-width:0}
+.slide .cap{font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slide .meta{font-size:11px;color:var(--muted);margin-top:3px}
+.slide .acts{display:flex;gap:5px;flex:none}
+.slide .acts button{padding:7px 9px;font-size:12px;background:#F3E9DF;color:var(--ink);border-radius:8px}
+canvas{width:100%;max-width:340px;border-radius:14px;background:#000;display:block;margin-inline:auto;box-shadow:0 10px 30px rgba(59,42,32,.16)}
+#status{font-size:12.5px;color:var(--muted);min-height:18px;text-align:center;margin-top:8px}
+.progress{height:8px;background:#F3E9DF;border-radius:6px;overflow:hidden;margin-top:10px}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--gold));transition:width .18s}
+.hint{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:8px}
+.chips{display:flex;gap:8px}
+.chip{flex:1;padding:9px 0;text-align:center;border:1px solid var(--line);border-radius:10px;font-size:12.5px;font-weight:700;color:var(--muted);background:#fff;cursor:pointer}
+.chip.on{border-color:var(--orange);color:var(--orange);background:#FFF6F1}
+#err{display:none;background:#FDECEA;color:#C0392B;font-size:12.5px;padding:10px 12px;border-radius:10px;margin-bottom:12px;line-height:1.6}
+a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+
+<a class="back" href="tools.html">‹ رجوع للأدوات</a>
+<h1>Reels Maker 🎬</h1>
+<div class="sub">تصاور + نص = فيديو عمودي جاهز للنشر. كلشي كيتدار فالهاتف ديالك، بلا سيرفر وبلا تسجيل.</div>
+
+<div id="err"></div>
+
+<div class="card">
+  <div id="drop" class="drop">دوس هنا باش تزيد تصاور<br><span style="font-size:11.5px">PNG / JPG · تقدر تختار بزاف مرة وحدة</span></div>
+  <input id="file" type="file" accept="image/*" multiple hidden>
+  <div id="list" class="slides"></div>
+</div>
+
+<div class="card">
+  <label class="f">مقاس الفيديو</label>
+  <div class="chips" id="ratios">
+    <div class="chip on" data-ratio="9:16">9:16 ريلز</div>
+    <div class="chip" data-ratio="1:1">1:1 مربع</div>
+    <div class="chip" data-ratio="16:9">16:9 يوتيوب</div>
+  </div>
+
+  <div style="margin-top:14px">
+    <label class="f">النص فوق التصاور (اختياري)</label>
+    <input id="caption" type="text" placeholder="مثال: حزمة تاتو جديدة 🔥" maxlength="90">
+  </div>
+
+  <div class="row" style="margin-top:12px">
+    <div style="flex:1;min-width:120px">
+      <label class="f">مدة كل تصويرة (ثانية)</label>
+      <input id="dur" type="number" value="3" min="1" max="8" step="0.5">
+    </div>
+    <div style="flex:1;min-width:120px">
+      <label class="f">الحركة</label>
+      <select id="motion">
+        <option value="zoom">تقريب بطيء</option>
+        <option value="pan">تحريك جانبي</option>
+        <option value="none">بلا حركة</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <canvas id="cv" width="720" height="1280"></canvas>
+  <div class="progress"><i id="bar"></i></div>
+  <div id="status">زيد على الأقل تصويرة وحدة.</div>
+  <div class="row" style="margin-top:12px;justify-content:center">
+    <button class="btn-main" id="make" disabled>سجّل الفيديو</button>
+    <button class="btn-ghost" id="stop" disabled>وقف</button>
+  </div>
+  <div id="dlwrap" style="display:none;margin-top:12px;text-align:center">
+    <button class="btn-gold" id="dl">تحميل الفيديو ⬇</button>
+  </div>
+  <div class="hint">
+    ملاحظة: الفيديو كيتسجل بالصوت مطفّي وبصيغة WebM — كتخدم مباشرة فـChrome وAndroid وEtsy وTikTok.
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var slides = [];
+  var ratio = '9:16';
+  var SIZES = { '9:16': [720, 1280], '1:1': [1080, 1080], '16:9': [1280, 720] };
+
+  var drop = document.getElementById('drop');
+  var file = document.getElementById('file');
+  var list = document.getElementById('list');
+  var cv = document.getElementById('cv');
+  var ctx = cv.getContext('2d');
+  var statusEl = document.getElementById('status');
+  var bar = document.getElementById('bar');
+  var makeBtn = document.getElementById('make');
+  var stopBtn = document.getElementById('stop');
+  var dlWrap = document.getElementById('dlwrap');
+  var dlBtn = document.getElementById('dl');
+  var errBox = document.getElementById('err');
+
+  function showError(msg) {
+    errBox.textContent = msg;
+    errBox.style.display = 'block';
+  }
+
+  var support = typeof MediaRecorder !== 'undefined' && !!cv.captureStream;
+  if (!support) {
+    showError('الهاتف ديالك ما كيدعمش تسجيل الفيديو من المتصفح. جرب Chrome على أندرويد.');
+  }
+
+  /* ---------- loading images ---------- */
+  drop.addEventListener('click', function () { file.click(); });
+  drop.addEventListener('dragover', function (e) { e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', function () { drop.classList.remove('over'); });
+  drop.addEventListener('drop', function (e) {
+    e.preventDefault(); drop.classList.remove('over');
+    addFiles(e.dataTransfer.files);
+  });
+  file.addEventListener('change', function () {
+    addFiles(file.files);
+    file.value = '';
+  });
+
+  function addFiles(files) {
+    if (!files || !files.length) return;
+    Array.prototype.forEach.call(files, function (f) {
+      if (!/^image\//.test(f.type)) return;
+      var url = URL.createObjectURL(f);
+      var img = new Image();
+      img.onload = function () {
+        slides.push({ img: img, url: url, name: f.name });
+        renderList();
+        drawStill(slides[0]);
+        statusEl.textContent = slides.length + ' تصويرة واجدة.';
+        syncButtons();
+      };
+      img.src = url;
+    });
+  }
+
+  function renderList() {
+    list.innerHTML = '';
+    slides.forEach(function (s, i) {
+      var row = document.createElement('div');
+      row.className = 'slide';
+
+      var im = document.createElement('img');
+      im.src = s.url;
+
+      var grow = document.createElement('div');
+      grow.className = 'grow';
+      var cap = document.createElement('div');
+      cap.className = 'cap';
+      cap.textContent = 'تصويرة ' + (i + 1);
+      var meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = s.img.width + '×' + s.img.height;
+      grow.appendChild(cap);
+      grow.appendChild(meta);
+
+      var acts = document.createElement('div');
+      acts.className = 'acts';
+      var up = document.createElement('button');
+      up.textContent = '↑';
+      up.onclick = function () { move(i, -1); };
+      var down = document.createElement('button');
+      down.textContent = '↓';
+      down.onclick = function () { move(i, 1); };
+      var del = document.createElement('button');
+      del.textContent = '✕';
+      del.onclick = function () { remove(i); };
+      acts.appendChild(up); acts.appendChild(down); acts.appendChild(del);
+
+      row.appendChild(im); row.appendChild(grow); row.appendChild(acts);
+      list.appendChild(row);
+    });
+  }
+
+  function move(i, d) {
+    var j = i + d;
+    if (j < 0 || j >= slides.length) return;
+    var t = slides[i]; slides[i] = slides[j]; slides[j] = t;
+    renderList(); syncButtons();
+  }
+
+  function remove(i) {
+    URL.revokeObjectURL(slides[i].url);
+    slides.splice(i, 1);
+    renderList(); syncButtons();
+    if (slides.length) drawStill(slides[0]);
+    else { ctx.clearRect(0, 0, cv.width, cv.height); statusEl.textContent = 'زيد على الأقل تصويرة وحدة.'; }
+  }
+
+  /* ---------- ratio ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('#ratios .chip'), function (chip) {
+    chip.onclick = function () {
+      Array.prototype.forEach.call(document.querySelectorAll('#ratios .chip'), function (c) { c.classList.remove('on'); });
+      chip.classList.add('on');
+      ratio = chip.getAttribute('data-ratio');
+      var sz = SIZES[ratio];
+      cv.width = sz[0]; cv.height = sz[1];
+      if (slides.length) drawStill(slides[0]);
+      else { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cv.width, cv.height); }
+    };
+  });
+
+  function syncButtons() {
+    makeBtn.disabled = !slides.length || !support;
+  }
+
+  /* ---------- drawing ---------- */
+  function drawSlide(img, p, caption) {
+    var W = cv.width, H = cv.height;
+    ctx.fillStyle = '#0b0b0d';
+    ctx.fillRect(0, 0, W, H);
+
+    var motion = document.getElementById('motion').value;
+    var base = Math.max(W / img.width, H / img.height);
+    var zoom = 1, dx = 0;
+
+    if (motion === 'zoom') zoom = 1 + 0.12 * p;
+    else if (motion === 'pan') { zoom = 1.12; dx = (p - 0.5) * 0.1 * W; }
+
+    var w = img.width * base * zoom;
+    var h = img.height * base * zoom;
+    var x = (W - w) / 2 + dx;
+    var y = (H - h) / 2;
+
+    ctx.drawImage(img, x, y, w, h);
+
+    // bottom gradient for readability
+    var g = ctx.createLinearGradient(0, H * 0.45, 0, H);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(1, 'rgba(0,0,0,.72)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, H * 0.45, W, H * 0.55);
+
+    if (caption) {
+      var fs = Math.round(W * 0.062);
+      ctx.font = '700 ' + fs + 'px "Segoe UI", Tahoma, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.direction = 'rtl';
+      ctx.fillStyle = '#fff';
+      ctx.shadowColor = 'rgba(0,0,0,.55)';
+      ctx.shadowBlur = 12;
+
+      var maxW = W * 0.86;
+      var words = caption.split(/\s+/);
+      var lines = [], line = '';
+      words.forEach(function (word) {
+        var test = line ? line + ' ' + word : word;
+        if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = word; }
+        else line = test;
+      });
+      if (line) lines.push(line);
+      lines = lines.slice(-3);
+
+      var baseY = H * 0.9;
+      for (var i = lines.length - 1; i >= 0; i--) {
+        ctx.fillText(lines[i], W / 2, baseY);
+        baseY -= fs * 1.25;
+      }
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  function drawStill(img) {
+    drawSlide(img, 0.35, document.getElementById('caption').value.trim());
+  }
+
+  document.getElementById('caption').addEventListener('input', function () {
+    if (slides.length) drawStill(slides[0]);
+  });
+
+  /* ---------- recording ---------- */
+  var recording = false, recorder = null, chunks = [], stopped = false, rafId = 0;
+
+  function pickMime() {
+    var options = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+    for (var i = 0; i < options.length; i++) {
+      if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(options[i])) return options[i];
+    }
+    return '';
+  }
+
+  makeBtn.addEventListener('click', function () {
+    if (!slides.length || !support) return;
+
+    var dur = Math.max(1, parseFloat(document.getElementById('dur').value) || 3) * 1000;
+    var caption = document.getElementById('caption').value.trim();
+    var total = dur * slides.length;
+
+    chunks = [];
+    stopped = false;
+    recording = true;
+    makeBtn.disabled = true;
+    stopBtn.disabled = false;
+    dlWrap.style.display = 'none';
+    statusEl.textContent = 'كنسجل… خلي الشاشة مفتوحة.';
+
+    var stream = cv.captureStream(30);
+    var mime = pickMime();
+    try {
+      recorder = mime ? new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 4000000 })
+                      : new MediaRecorder(stream);
+    } catch (e) {
+      recording = false; makeBtn.disabled = false; stopBtn.disabled = true;
+      showError('ما قدرتش نبدا التسجيل: ' + e.message);
+      return;
+    }
+
+    recorder.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+    recorder.onstop = function () {
+      recording = false;
+      cancelAnimationFrame(rafId);
+      var blob = new Blob(chunks, { type: 'video/webm' });
+      chunks = [];
+      if (!blob.size) { statusEl.textContent = 'ما تسجل حتى شي حاجة، عاود.'; makeBtn.disabled = false; stopBtn.disabled = true; return; }
+      var url = URL.createObjectURL(blob);
+      dlBtn.onclick = function () {
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'nova-reel-' + Date.now() + '.webm';
+        document.body.appendChild(a); a.click(); a.remove();
+      };
+      dlWrap.style.display = 'block';
+      statusEl.textContent = 'صافي! الفيديو واجد (' + (blob.size / 1048576).toFixed(1) + ' MB).';
+      makeBtn.disabled = false;
+      stopBtn.disabled = true;
+      bar.style.width = '100%';
+    };
+
+    recorder.start(200);
+    var t0 = performance.now();
+
+    function frame(now) {
+      if (!recording) return;
+      var elapsed = now - t0;
+      if (elapsed >= total || stopped) {
+        try { recorder.stop(); } catch (e) {}
+        return;
+      }
+      var idx = Math.min(slides.length - 1, Math.floor(elapsed / dur));
+      var p = (elapsed - idx * dur) / dur;
+      drawSlide(slides[idx].img, p, caption);
+      bar.style.width = ((elapsed / total) * 100).toFixed(1) + '%';
+      rafId = requestAnimationFrame(frame);
+    }
+    rafId = requestAnimationFrame(frame);
+  });
+
+  stopBtn.addEventListener('click', function () {
+    if (!recording) return;
+    stopped = true;
+    try { recorder.stop(); } catch (e) {}
+  });
+
+  // initial canvas
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, cv.width, cv.height);
+  syncButtons();
+})();
+</script>
+</body>
+</html>
