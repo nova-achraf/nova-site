@@ -146,6 +146,25 @@ const Sfx = (() => {
     o.connect(g); g.connect(master);
     o.start(t0); o.stop(t0 + dur + 0.05);
   }
+  function human(pitch, dur, peak, formant, vib, growl) {
+    if (!ctx || muted) return;
+    const t0 = ctx.currentTime;
+    const o = ctx.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(pitch * 1.22, t0);
+    o.frequency.exponentialRampToValueAtTime(pitch * 0.92, t0 + dur);
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = formant; bp.Q.value = 5.5;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2600;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(peak, t0 + 0.035);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    const lfo = ctx.createOscillator(); lfo.frequency.value = vib || 16;
+    const lg = ctx.createGain(); lg.gain.value = pitch * (growl ? 0.16 : 0.07);
+    lfo.connect(lg); lg.connect(o.frequency);
+    o.connect(bp); bp.connect(lp); lp.connect(g); g.connect(master);
+    o.start(t0); lfo.start(t0); o.stop(t0 + dur + 0.05); lfo.stop(t0 + dur + 0.05);
+  }
+
   function noise(dur, peak, filterType, f0, f1, q = 1) {
     if (!ctx || muted || !noiseBuf) return;
     const t0 = ctx.currentTime;
@@ -171,7 +190,11 @@ const Sfx = (() => {
     hurt() { tone('sawtooth', 240, 110, 0.16, 0.12); },
     wave() { [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => tone('triangle', f, f, 0.16, 0.10), i * 95)); },
     over() { [440, 349, 262, 196].forEach((f, i) => setTimeout(() => tone('triangle', f, f * 0.98, 0.34, 0.13), i * 150)); },
-    ui() { tone('triangle', 700, 900, 0.05, 0.07); }
+    ui() { tone('triangle', 700, 900, 0.05, 0.07); },
+    shout() { human(132 + Math.random() * 26, 0.14, 0.16, 780, 20, false); },
+    effort() { human(118 + Math.random() * 20, 0.18, 0.15, 560, 14, false); },
+    hurtVoice() { human(150 + Math.random() * 30, 0.22, 0.17, 900, 24, true); },
+    botScreech() { tone('square', 1400, 220, 0.22, 0.10); noise(0.26, 0.13, 'highpass', 2400, 600, 0.9); }
   };
 })();
 
@@ -501,6 +524,7 @@ function doJump() {
   if (onGround || coyote > 0) {
     vy = 7.4; onGround = false; coyote = 0;
     Sfx.jump();
+    Sfx.effort();
     burst(new THREE.Vector3(player.position.x, 0.08, player.position.z), 0xd8d2b0, 5, 2.2);
   }
 }
@@ -511,6 +535,7 @@ function doFire() {
   if (!started || over || fireCooldown > 0) return;
   fireCooldown = 0.28;
   Sfx.shoot();
+  if (Math.random() < 0.5) Sfx.shout();
   flash.visible = true;
   setTimeout(() => { flash.visible = false; }, 55);
   shake = Math.min(shake + 0.12, 0.5);
@@ -549,6 +574,7 @@ function doFire() {
       kills++;
       document.getElementById('kills').textContent = kills;
       Sfx.kill();
+      Sfx.botScreech();
       shake = Math.min(shake + 0.3, 0.7);
       showMessage('TARGET DOWN');
       if (bots.every(b => !b.alive)) nextWave();
@@ -585,7 +611,7 @@ function damage(amount) {
     health > 55 ? 'linear-gradient(90deg,#55ff9b,#1bd6a6)' :
     health > 25 ? 'linear-gradient(90deg,#ffd166,#ff9f43)' :
     'linear-gradient(90deg,#ff6b6b,#c92a2a)';
-  if (hurtTimer <= 0) { Sfx.hurt(); shake = Math.min(shake + 0.18, 0.6); }
+  if (hurtTimer <= 0) { Sfx.hurt(); Sfx.hurtVoice(); shake = Math.min(shake + 0.18, 0.6); }
   hurtTimer = 0.35;
   if (health <= 0) gameOver();
 }

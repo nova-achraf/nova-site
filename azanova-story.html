@@ -56,6 +56,9 @@ button.press{transform:scale(.93);background:rgba(0,168,189,.85)}
 .dlg-body{flex:1;min-width:0}
 .dlg-name{font-size:12px;font-weight:800;letter-spacing:.06em;color:#48f5ff;margin-bottom:5px}
 .dlg-text{font-size:13.5px;line-height:1.6;color:#e4f4fb;margin:0}
+#dlg-voice{position:absolute;left:8px;top:8px;width:34px;height:30px;min-width:34px;font-size:14px;border-radius:9px;background:rgba(6,20,28,.8)}
+#dlg-voice.off{opacity:.42}
+.dl-card{position:relative}
 #dlg-next{margin-top:10px;height:36px;min-width:96px;font-size:12px;letter-spacing:.05em;background:linear-gradient(135deg,#00a8bd,#0a6c8c);border-radius:10px;padding:0 14px}
 .badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.12em;color:#0a1a24;background:#48f5ff;border-radius:6px;padding:2px 7px;margin-bottom:6px}
 
@@ -131,6 +134,7 @@ button.press{transform:scale(.93);background:rgba(0,168,189,.85)}
       <div class="dlg-name" id="dlg-name"></div>
       <p class="dlg-text" id="dlg-text"></p>
       <button id="dlg-next">التالي ▶</button>
+      <button id="dlg-voice" title="صوت الشخصيات">🗣</button>
     </div>
   </div>
 </div>
@@ -180,6 +184,27 @@ const Sfx = (() => {
     o.connect(g); g.connect(master);
     o.start(t0); o.stop(t0 + dur + 0.05);
   }
+  function human(pitch, dur, peak, formant, vib, growl) {
+    if (!ctx || muted) return;
+    const t0 = ctx.currentTime;
+    const o = ctx.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(pitch * 1.22, t0);
+    o.frequency.exponentialRampToValueAtTime(pitch * 0.92, t0 + dur);
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = formant; bp.Q.value = 5.5;
+    const bp2 = ctx.createBiquadFilter(); bp2.type = 'bandpass'; bp2.frequency.value = formant * 2.4; bp2.Q.value = 7;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2600;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(peak, t0 + 0.035);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    const lfo = ctx.createOscillator(); lfo.frequency.value = vib || 16;
+    const lg = ctx.createGain(); lg.gain.value = pitch * (growl ? 0.16 : 0.07);
+    lfo.connect(lg); lg.connect(o.frequency);
+    o.connect(bp); bp.connect(lp); bp2.connect(lp); o.connect(bp2); lp.connect(g); g.connect(master);
+    o.start(t0); lfo.start(t0);
+    o.stop(t0 + dur + 0.05); lfo.stop(t0 + dur + 0.05);
+  }
+
   function noise(dur, peak, filterType, f0, f1, q = 1) {
     if (!ctx || muted || !noiseBuf) return;
     const t0 = ctx.currentTime;
@@ -205,7 +230,54 @@ const Sfx = (() => {
     hurt() { tone('sawtooth', 240, 110, 0.16, 0.12); },
     wave() { [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => tone('triangle', f, f, 0.16, 0.10), i * 95)); },
     over() { [440, 349, 262, 196].forEach((f, i) => setTimeout(() => tone('triangle', f, f * 0.98, 0.34, 0.13), i * 150)); },
-    ui() { tone('triangle', 700, 900, 0.05, 0.07); }
+    ui() { tone('triangle', 700, 900, 0.05, 0.07); },
+    shout() { human(132 + Math.random() * 26, 0.14, 0.16, 780, 20, false); },
+    effort() { human(118 + Math.random() * 20, 0.18, 0.15, 560, 14, false); },
+    hurtVoice() { human(150 + Math.random() * 30, 0.22, 0.17, 900, 24, true); },
+    botScreech() { tone('square', 1400, 220, 0.22, 0.10); noise(0.26, 0.13, 'highpass', 2400, 600, 0.9); },
+    bossRoar() { human(72, 0.75, 0.28, 320, 9, true); noise(0.8, 0.16, 'lowpass', 900, 90, 0.7); }
+  };
+})();
+
+/* ---------------- character voices (speech synthesis) ---------------- */
+const Voice = (() => {
+  const synth = window.speechSynthesis || null;
+  let enabled = !!synth;
+  let arVoice = null;
+
+  function pickVoice() {
+    if (!synth) return null;
+    const list = synth.getVoices ? synth.getVoices() : [];
+    return list.find(v => /^ar[-_]ma/i.test(v.lang)) ||
+           list.find(v => /^ar/i.test(v.lang)) ||
+           list.find(v => /arabic/i.test(v.name)) || null;
+  }
+  if (synth && typeof synth.onvoiceschanged !== 'undefined') {
+    synth.onvoiceschanged = () => { arVoice = pickVoice(); };
+  }
+  arVoice = pickVoice();
+
+  return {
+    get enabled() { return enabled; },
+    get hasVoice() { return !!arVoice; },
+    toggle() {
+      enabled = !enabled;
+      if (!enabled && synth) { try { synth.cancel(); } catch (e) {} }
+      return enabled;
+    },
+    stop() { if (synth) { try { synth.cancel(); } catch (e) {} } },
+    speak(text, who) {
+      if (!synth || !enabled || !text) return;
+      try { synth.cancel(); } catch (e) {}
+      const u = new SpeechSynthesisUtterance(text);
+      if (!arVoice) arVoice = pickVoice();
+      if (arVoice) u.voice = arVoice;
+      u.lang = arVoice ? arVoice.lang : 'ar';
+      u.rate = who === 'salma' ? 1.02 : who === 'karim' ? 0.86 : 0.95;
+      u.pitch = who === 'salma' ? 1.25 : who === 'karim' ? 0.7 : 1.0;
+      u.volume = 1;
+      try { synth.speak(u); } catch (e) {}
+    }
   };
 })();
 
@@ -557,6 +629,7 @@ document.getElementById('sound').addEventListener('click', e => {
   e.stopPropagation();
   const m = Sfx.toggle();
   e.currentTarget.textContent = m ? '🔇' : '🔊';
+  if (m) Voice.stop();
 });
 
 function doJump() {
@@ -564,6 +637,7 @@ function doJump() {
   if (onGround || coyote > 0) {
     vy = 7.4; onGround = false; coyote = 0;
     Sfx.jump();
+    Sfx.effort();
     burst(new THREE.Vector3(player.position.x, 0.08, player.position.z), 0xd8d2b0, 5, 2.2);
   }
 }
@@ -574,6 +648,7 @@ function doFire() {
   if (!started || over || fireCooldown > 0) return;
   fireCooldown = 0.28;
   Sfx.shoot();
+  if (Math.random() < 0.55) Sfx.shout();
   flash.visible = true;
   setTimeout(() => { flash.visible = false; }, 55);
   shake = Math.min(shake + 0.12, 0.5);
@@ -612,7 +687,8 @@ function doFire() {
       kills++;
       document.getElementById('kills').textContent = kills;
       Sfx.kill();
-      shake = Math.min(shake + 0.3, 0.7);
+      if (target.boss) { Sfx.bossRoar(); shake = Math.min(shake + 0.55, 1); }
+      else { Sfx.botScreech(); shake = Math.min(shake + 0.3, 0.7); }
       showMessage('TARGET DOWN');
       if (bots.every(b => !b.alive)) setTimeout(() => levelClear(), 700);
     }
@@ -642,13 +718,14 @@ function damage(amount) {
     health > 55 ? 'linear-gradient(90deg,#55ff9b,#1bd6a6)' :
     health > 25 ? 'linear-gradient(90deg,#ffd166,#ff9f43)' :
     'linear-gradient(90deg,#ff6b6b,#c92a2a)';
-  if (hurtTimer <= 0) { Sfx.hurt(); shake = Math.min(shake + 0.18, 0.6); }
+  if (hurtTimer <= 0) { Sfx.hurt(); Sfx.hurtVoice(); shake = Math.min(shake + 0.18, 0.6); }
   hurtTimer = 0.35;
   if (health <= 0) gameOver();
 }
 
 function gameOver() {
   over = true;
+  Voice.stop();
   started = false;
   paused = true;
   Sfx.over();
@@ -750,6 +827,7 @@ function nextLine() {
   const line = dlgQueue.shift();
   if (!line) {
     dlgEl.classList.remove('show');
+    Voice.stop();
     const cb = dlgDone; dlgDone = null;
     paused = false;
     if (cb) cb();
@@ -761,9 +839,19 @@ function nextLine() {
   nameEl.textContent = who.name;
   textEl.textContent = line.text;
   Sfx.ui();
+  Voice.speak(line.text, line.who);
 }
 
 document.getElementById('dlg-next').addEventListener('click', nextLine);
+
+const voiceBtn = document.getElementById('dlg-voice');
+voiceBtn.classList.toggle('off', !Voice.enabled);
+voiceBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  const on = Voice.toggle();
+  voiceBtn.classList.toggle('off', !on);
+  if (!on) Voice.stop();
+});
 
 /* ---------- level flow ---------- */
 function setObjective(text) {
