@@ -225,6 +225,8 @@ for (let i = 0; i < 58; i++) {
 /* ---------------- player ---------------- */
 const player = new THREE.Group();
 scene.add(player);
+const body = new THREE.Group();
+player.add(body);
 
 const suit = new THREE.MeshStandardMaterial({ color: 0x1b2f44, metalness: 0.55, roughness: 0.34 });
 const armor = new THREE.MeshStandardMaterial({ color: 0x18d5e9, metalness: 0.65, roughness: 0.22, emissive: 0x0a4854, emissiveIntensity: 0.35 });
@@ -239,27 +241,27 @@ function part(parent, geo, mat, x, y, z) {
   return m;
 }
 
-const torso = part(player, new THREE.CapsuleGeometry(0.42, 0.85, 6, 12), suit, 0, 1.22, 0);
-part(player, new THREE.BoxGeometry(0.95, 0.52, 0.5), armor, 0, 1.45, -0.02);
-part(player, new THREE.SphereGeometry(0.31, 18, 14), skin, 0, 2.05, 0);
-part(player, new THREE.SphereGeometry(0.34, 18, 14), dark, 0, 2.2, 0);
-part(player, new THREE.BoxGeometry(0.54, 0.12, 0.46), armor, 0, 2.17, -0.05);
+const torso = part(body, new THREE.CapsuleGeometry(0.42, 0.85, 6, 12), suit, 0, 1.22, 0);
+part(body, new THREE.BoxGeometry(0.95, 0.52, 0.5), armor, 0, 1.45, -0.02);
+part(body, new THREE.SphereGeometry(0.31, 18, 14), skin, 0, 2.05, 0);
+part(body, new THREE.SphereGeometry(0.34, 18, 14), dark, 0, 2.2, 0);
+part(body, new THREE.BoxGeometry(0.54, 0.12, 0.46), armor, 0, 2.17, -0.05);
 
-const legL = part(player, new THREE.BoxGeometry(0.26, 0.72, 0.3), dark, -0.22, 0.5, 0);
-const legR = part(player, new THREE.BoxGeometry(0.26, 0.72, 0.3), dark, 0.22, 0.5, 0);
+const legL = part(body, new THREE.BoxGeometry(0.26, 0.72, 0.3), dark, -0.22, 0.5, 0);
+const legR = part(body, new THREE.BoxGeometry(0.26, 0.72, 0.3), dark, 0.22, 0.5, 0);
 legL.geometry.translate(0, -0.36, 0); legL.position.y = 0.86;
 legR.geometry.translate(0, -0.36, 0); legR.position.y = 0.86;
 
-const armL = part(player, new THREE.BoxGeometry(0.2, 0.7, 0.22), suit, -0.58, 1.42, 0);
+const armL = part(body, new THREE.BoxGeometry(0.2, 0.7, 0.22), suit, -0.58, 1.42, 0);
 armL.geometry.translate(0, -0.3, 0);
-const armR = part(player, new THREE.BoxGeometry(0.2, 0.7, 0.22), suit, 0.58, 1.42, 0);
+const armR = part(body, new THREE.BoxGeometry(0.2, 0.7, 0.22), suit, 0.58, 1.42, 0);
 armR.geometry.translate(0, -0.3, 0);
 
 const muzzle = new THREE.Object3D();
 muzzle.position.set(0.42, 1.55, -1.25);
 player.add(muzzle);
-part(player, new THREE.BoxGeometry(0.17, 0.17, 1.1), dark, 0.42, 1.55, -0.68);
-part(player, new THREE.BoxGeometry(0.22, 0.22, 0.26), armor, 0.42, 1.55, -1.22);
+part(body, new THREE.BoxGeometry(0.17, 0.17, 1.1), dark, 0.42, 1.55, -0.68);
+part(body, new THREE.BoxGeometry(0.22, 0.22, 0.26), armor, 0.42, 1.55, -1.22);
 
 const flash = new THREE.Mesh(
   new THREE.SphereGeometry(0.22, 8, 8),
@@ -602,7 +604,7 @@ function updateMovement(dt) {
     legR.rotation.x = -swing;
     armL.rotation.x = -swing * 0.75;
     armR.rotation.x = swing * 0.4;
-    player.position.y += Math.abs(Math.sin(walkPhase)) * 0.035;
+    body.position.y = Math.abs(Math.sin(walkPhase)) * 0.045;
     torso.rotation.z = Math.sin(walkPhase) * 0.045 * norm;
     stepTimer -= dt;
     if (stepTimer <= 0) { Sfx.step(); stepTimer = 0.34 - norm * 0.1; }
@@ -613,6 +615,7 @@ function updateMovement(dt) {
     armL.rotation.x = THREE.MathUtils.lerp(armL.rotation.x, 0, dt * 8);
     armR.rotation.x = THREE.MathUtils.lerp(armR.rotation.x, -0.5, dt * 8);
     torso.rotation.z = THREE.MathUtils.lerp(torso.rotation.z, 0, dt * 8);
+    body.position.y = THREE.MathUtils.lerp(body.position.y, 0, dt * 8);
   }
   // lean into turns
   const strafe = vel.dot(new THREE.Vector2(Math.cos(yaw), -Math.sin(yaw)));
