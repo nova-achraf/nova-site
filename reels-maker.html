@@ -435,8 +435,20 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
   });
 
   // initial canvas
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, cv.width, cv.height);
+  // empty-state placeholder so the black box is never confusing
+  (function placeholder() {
+    ctx.fillStyle = '#0b0b0d';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.textAlign = 'center';
+    ctx.direction = 'rtl';
+    ctx.fillStyle = 'rgba(255,255,255,.88)';
+    ctx.font = '700 ' + Math.round(cv.width * 0.075) + 'px "Segoe UI", Tahoma, Arial, sans-serif';
+    ctx.fillText('① زيد تصاور', cv.width / 2, cv.height * 0.46);
+    ctx.font = '600 ' + Math.round(cv.width * 0.055) + 'px "Segoe UI", Tahoma, Arial, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,.6)';
+    ctx.fillText('② من بعد سجّل الفيديو', cv.width / 2, cv.height * 0.55);
+    mirror();
+  })();
   syncButtons();
 })();
 </script>
