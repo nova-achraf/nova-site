@@ -249,7 +249,8 @@ const LANG_KEY = 'azanova-lang';
 const LANGS = [
   { code: 'ar', label: 'ع', name: 'الدارجة' },
   { code: 'fr', label: 'FR', name: 'Français' },
-  { code: 'en', label: 'EN', name: 'English' }
+  { code: 'en', label: 'EN', name: 'English' },
+  { code: 'es', label: 'ES', name: 'Español' }
 ];
 let uiLang = localStorage.getItem(LANG_KEY) || 'ar';
 if (!LANGS.some(l => l.code === uiLang)) uiLang = 'ar';
@@ -301,7 +302,7 @@ const Voice = (() => {
       const v = findVoice(langCode);
       const u = new SpeechSynthesisUtterance(text);
       if (v) { u.voice = v; u.lang = v.lang; }
-      else { u.lang = langCode === 'ar' ? 'ar' : (langCode === 'fr' ? 'fr-FR' : 'en-US'); }
+      else { u.lang = langCode === 'ar' ? 'ar' : langCode === 'fr' ? 'fr-FR' : langCode === 'es' ? 'es-ES' : 'en-US'; }
       u.rate = who === 'salma' ? 1.02 : who === 'karim' ? 0.86 : 0.95;
       u.pitch = who === 'salma' ? 1.25 : who === 'karim' ? 0.7 : 1.0;
       u.volume = 1;
@@ -825,13 +826,13 @@ const LEVELS = [
     goal: 'اقضِ على 4 حراس',
     bots: 4, minD: 20, maxD: 34, boss: false, hp: 100,
     intro: [
-      { who: 'salma', text: 'ياسين، سمعتني؟ الحصن ديال الناظور مقطوع علينا من ساعتين. الدفاعات كلها انقلبت علينا.', fr: 'Yassine, tu m\'entends ? Le bastion de Nador est coupé depuis deux heures. Toutes les défenses se sont retournées contre nous.', en: 'Yassine, can you hear me? The Nador outpost has been cut off for two hours. Every defense system turned against us.' },
-      { who: 'yassine', text: 'سمعتك، سلمى. غادي ندخل من الجهة الغربية ونجيب معايا البيانات.', fr: 'Je te reçois, Salma. J\'entre par l\'ouest et je récupère les données.', en: 'I read you, Salma. I\'ll come in from the west and bring the data back.' },
-      { who: 'salma', text: 'عندك غير أربعة حراس فالمدخل. خليهم يجيو ليك، متجريش عليهم.', fr: 'Tu n\'as que quatre gardes à l\'entrée. Laisse-les venir, ne fonce pas sur eux.', en: 'Only four guards at the gate. Let them come to you, don\'t rush them.' }
+      { who: 'salma', text: 'ياسين، سمعتني؟ الحصن ديال الناظور مقطوع علينا من ساعتين. الدفاعات كلها انقلبت علينا.', fr: 'Yassine, tu m\'entends ? Le bastion de Nador est coupé depuis deux heures. Toutes les défenses se sont retournées contre nous.', en: 'Yassine, can you hear me? The Nador outpost has been cut off for two hours. Every defense system turned against us.', es: 'Yassine, ¿me oyes? El bastión de Nador está aislado desde hace dos horas. Todas las defensas se han vuelto contra nosotros.' },
+      { who: 'yassine', text: 'سمعتك، سلمى. غادي ندخل من الجهة الغربية ونجيب معايا البيانات.', fr: 'Je te reçois, Salma. J\'entre par l\'ouest et je récupère les données.', en: 'I read you, Salma. I\'ll come in from the west and bring the data back.', es: 'Te escucho, Salma. Entro por el oeste y me llevo los datos.' },
+      { who: 'salma', text: 'عندك غير أربعة حراس فالمدخل. خليهم يجيو ليك، متجريش عليهم.', fr: 'Tu n\'as que quatre gardes à l\'entrée. Laisse-les venir, ne fonce pas sur eux.', en: 'Only four guards at the gate. Let them come to you, don\'t rush them.', es: 'Solo hay cuatro guardias en la entrada. Déjalos venir, no te lances sobre ellos.' }
     ],
     outro: [
-      { who: 'yassine', text: 'الحصن آمن. البيانا كتقول إن شي حد كبير هو اللي أعطى الأمر.', fr: 'Le bastion est sécurisé. Les données disent que quelqu\'un de haut placé a donné l\'ordre.', en: 'The outpost is secure. The data says someone high up gave the order.' },
-      { who: 'salma', text: 'اسمه كريم. كان قائدنا. الليلة صيفط رسالة: فيديو ديالو فكل شاشة.', fr: 'Il s\'appelle Karim. C\'était notre commandant. Cette nuit il a envoyé un message : sa vidéo sur tous les écrans.', en: 'His name is Karim. He was our commander. Tonight he sent a message: his video on every screen.' }
+      { who: 'yassine', text: 'الحصن آمن. البيانا كتقول إن شي حد كبير هو اللي أعطى الأمر.', fr: 'Le bastion est sécurisé. Les données disent que quelqu\'un de haut placé a donné l\'ordre.', en: 'The outpost is secure. The data says someone high up gave the order.', es: 'El bastión está asegurado. Los datos dicen que alguien de arriba dio la orden.' },
+      { who: 'salma', text: 'اسمه كريم. كان قائدنا. الليلة صيفط رسالة: فيديو ديالو فكل شاشة.', fr: 'Il s\'appelle Karim. C\'était notre commandant. Cette nuit il a envoyé un message : sa vidéo sur tous les écrans.', en: 'His name is Karim. He was our commander. Tonight he sent a message: his video on every screen.', es: 'Se llama Karim. Era nuestro comandante. Esta noche envió un mensaje: su vídeo en todas las pantallas.' }
     ]
   },
   {
@@ -840,13 +841,13 @@ const LEVELS = [
     goal: 'اقضِ على 6 حراس',
     bots: 6, minD: 18, maxD: 32, boss: false, hp: 100,
     intro: [
-      { who: 'salma', text: 'المرسى كامل تحت سيطرتهم. الحراس كيدورو فمجموعات وكل ما تقتل واحد كيسمعو الخبر.', fr: 'Le port est sous leur contrôle. Les gardes patrouillent en groupes, et dès que tu en tues un, ils le savent.', en: 'The docks are under their control. Guards patrol in groups, and the moment you drop one, they all know.' },
-      { who: 'yassine', text: 'إذن نوصل بسرعة، ونضرب قبل ما يتجمعو.', fr: 'Alors j\'arrive vite, et je frappe avant qu\'ils se regroupent.', en: 'Then I move fast and hit them before they regroup.' },
-      { who: 'salma', text: 'هيا. وماتنساش: أنا كنشوفك من الكاميرا، أي حاجة غادي نقول ليك.', fr: 'Vas-y. Et n\'oublie pas : je te vois par la caméra, je te préviendrai de tout.', en: 'Go. And don\'t forget: I\'ve got you on camera, I\'ll warn you about anything.' }
+      { who: 'salma', text: 'المرسى كامل تحت سيطرتهم. الحراس كيدورو فمجموعات وكل ما تقتل واحد كيسمعو الخبر.', fr: 'Le port est sous leur contrôle. Les gardes patrouillent en groupes, et dès que tu en tues un, ils le savent.', en: 'The docks are under their control. Guards patrol in groups, and the moment you drop one, they all know.', es: 'El puerto está bajo su control. Los guardias patrullan en grupos y en cuanto eliminas a uno, todos lo saben.' },
+      { who: 'yassine', text: 'إذن نوصل بسرعة، ونضرب قبل ما يتجمعو.', fr: 'Alors j\'arrive vite, et je frappe avant qu\'ils se regroupent.', en: 'Then I move fast and hit them before they regroup.', es: 'Entonces llego rápido y golpeo antes de que se reagrupen.' },
+      { who: 'salma', text: 'هيا. وماتنساش: أنا كنشوفك من الكاميرا، أي حاجة غادي نقول ليك.', fr: 'Vas-y. Et n\'oublie pas : je te vois par la caméra, je te préviendrai de tout.', en: 'Go. And don\'t forget: I\'ve got you on camera, I\'ll warn you about anything.', es: 'Vamos. Y no lo olvides: te veo por la cámara, te aviso de cualquier cosa.' }
     ],
     outro: [
-      { who: 'salma', text: 'نجحتي! هاد المرة ضربو فيك من القرب… عندك جرح فالكف الأيسر؟', fr: 'Tu as réussi ! Ils t\'ont touché de près cette fois… tu as une blessure à la main gauche ?', en: 'You made it! They got close this time… is your left hand cut?' },
-      { who: 'yassine', text: 'خدش صغير. المهم: لقيت خريطة، فيها إحداثيات فالصحرا.', fr: 'Une petite égratignure. Le plus important : j\'ai trouvé une carte avec des coordonnées dans le désert.', en: 'A small scratch. The point is: I found a map with coordinates out in the desert.' }
+      { who: 'salma', text: 'نجحتي! هاد المرة ضربو فيك من القرب… عندك جرح فالكف الأيسر؟', fr: 'Tu as réussi ! Ils t\'ont touché de près cette fois… tu as une blessure à la main gauche ?', en: 'You made it! They got close this time… is your left hand cut?', es: '¡Lo lograste! Esta vez te dieron de cerca… ¿tienes un corte en la mano izquierda?' },
+      { who: 'yassine', text: 'خدش صغير. المهم: لقيت خريطة، فيها إحداثيات فالصحرا.', fr: 'Une petite égratignure. Le plus important : j\'ai trouvé une carte avec des coordonnées dans le désert.', en: 'A small scratch. The point is: I found a map with coordinates out in the desert.', es: 'Un rasguño pequeño. Lo importante: encontré un mapa con coordenadas en el desierto.' }
     ]
   },
   {
@@ -855,13 +856,13 @@ const LEVELS = [
     goal: 'اقضِ على 8 حراس',
     bots: 8, minD: 16, maxD: 30, boss: false, hp: 100,
     intro: [
-      { who: 'yassine', text: 'الريح كتضرب فالوجه، والشمس مازال ما طلعتش. كنحس بالبرد فالعضام.', fr: 'Le vent fouette le visage et le soleil n\'est pas encore levé. J\'ai froid jusqu\'aux os.', en: 'Wind in my face and the sun isn\'t up yet. I\'m cold to the bone.' },
-      { who: 'salma', text: 'ثبات. الحراس هنا أقوى — سلاحهم كيضر أكثر. خليك ورا الحجر.', fr: 'Tiens bon. Les gardes ici sont plus forts — leurs armes frappent plus dur. Reste derrière les rochers.', en: 'Hold steady. The guards here hit harder — stay behind cover.' },
-      { who: 'yassine', text: 'واخا. هاد المرة ما غاديش نسيب حتى واحد واقف.', fr: 'D\'accord. Cette fois je ne laisse personne debout.', en: 'Fine. This time I leave no one standing.' }
+      { who: 'yassine', text: 'الريح كتضرب فالوجه، والشمس مازال ما طلعتش. كنحس بالبرد فالعضام.', fr: 'Le vent fouette le visage et le soleil n\'est pas encore levé. J\'ai froid jusqu\'aux os.', en: 'Wind in my face and the sun isn\'t up yet. I\'m cold to the bone.', es: 'El viento golpea la cara y el sol aún no ha salido. Tengo frío hasta los huesos.' },
+      { who: 'salma', text: 'ثبات. الحراس هنا أقوى — سلاحهم كيضر أكثر. خليك ورا الحجر.', fr: 'Tiens bon. Les gardes ici sont plus forts — leurs armes frappent plus dur. Reste derrière les rochers.', en: 'Hold steady. The guards here hit harder — stay behind cover.', es: 'Aguanta. Los guardias de aquí son más fuertes: sus armas hacen más daño. Quédate detrás de las rocas.' },
+      { who: 'yassine', text: 'واخا. هاد المرة ما غاديش نسيب حتى واحد واقف.', fr: 'D\'accord. Cette fois je ne laisse personne debout.', en: 'Fine. This time I leave no one standing.', es: 'Vale. Esta vez no dejo a nadie en pie.' }
     ],
     outro: [
-      { who: 'salma', text: 'كلشي صافي… ولكن كاين إشارة كبيرة جاية من القلب ديال المحطة.', fr: 'Tout est clair… mais un gros signal arrive du cœur de la station.', en: 'All clear… but there\'s a huge signal coming from the core of the station.' },
-      { who: 'yassine', text: 'كريم. جا هو بنفسو.', fr: 'Karim. Il est venu lui-même.', en: 'Karim. He came himself.' }
+      { who: 'salma', text: 'كلشي صافي… ولكن كاين إشارة كبيرة جاية من القلب ديال المحطة.', fr: 'Tout est clair… mais un gros signal arrive du cœur de la station.', en: 'All clear… but there\'s a huge signal coming from the core of the station.', es: 'Todo despejado… pero llega una señal enorme del núcleo de la estación.' },
+      { who: 'yassine', text: 'كريم. جا هو بنفسو.', fr: 'Karim. Il est venu lui-même.', en: 'Karim. He came himself.', es: 'Karim. Ha venido él mismo.' }
     ]
   },
   {
@@ -870,14 +871,14 @@ const LEVELS = [
     goal: 'اقضِ على كريم',
     bots: 4, minD: 18, maxD: 28, boss: true, hp: 100,
     intro: [
-      { who: 'karim', text: 'ياسين. كنتي أحسن واحد دربتو. علاش خنتي الفريق؟', fr: 'Yassine. Tu étais le meilleur que j\'ai formé. Pourquoi as-tu trahi l\'équipe ?', en: 'Yassine. You were the best I ever trained. Why did you betray the team?' },
-      { who: 'yassine', text: 'أنا ما خنتش حد. نتا اللي بعت البلاد مقابل السلطة.', fr: 'Je n\'ai trahi personne. C\'est toi qui as vendu le pays pour le pouvoir.', en: 'I never betrayed anyone. You\'re the one who sold the country for power.' },
-      { who: 'salma', text: 'ياسين، درعه كيتشحن! تحرك، ماتبقاش واقف قدامو!', fr: 'Yassine, son armure se charge ! Bouge, ne reste pas planté devant lui !', en: 'Yassine, his armor is charging! Move, don\'t stand in front of him!' }
+      { who: 'karim', text: 'ياسين. كنتي أحسن واحد دربتو. علاش خنتي الفريق؟', fr: 'Yassine. Tu étais le meilleur que j\'ai formé. Pourquoi as-tu trahi l\'équipe ?', en: 'Yassine. You were the best I ever trained. Why did you betray the team?', es: 'Yassine. Fuiste el mejor que entrené. ¿Por qué traicionaste al equipo?' },
+      { who: 'yassine', text: 'أنا ما خنتش حد. نتا اللي بعت البلاد مقابل السلطة.', fr: 'Je n\'ai trahi personne. C\'est toi qui as vendu le pays pour le pouvoir.', en: 'I never betrayed anyone. You\'re the one who sold the country for power.', es: 'Yo no traicioné a nadie. Tú vendiste el país por el poder.' },
+      { who: 'salma', text: 'ياسين، درعه كيتشحن! تحرك، ماتبقاش واقف قدامو!', fr: 'Yassine, son armure se charge ! Bouge, ne reste pas planté devant lui !', en: 'Yassine, his armor is charging! Move, don\'t stand in front of him!', es: '¡Yassine, su armadura se está cargando! ¡Muévete, no te quedes delante de él!' }
     ],
     outro: [
-      { who: 'karim', text: 'ما كملتش… ولكن هادشي بداية، ماشي نهاية.', fr: 'Je n\'ai pas fini… mais ce n\'est qu\'un début, pas une fin.', en: 'I\'m not done… but this is a beginning, not an end.' },
-      { who: 'salma', text: 'ياسين؟ ياسين، جاوبني! … رجع الصوت. رجع الصوت!', fr: 'Yassine ? Yassine, réponds-moi ! … Le son revient. Le son revient !', en: 'Yassine? Yassine, answer me! … Sound is back. Sound is back!' },
-      { who: 'yassine', text: 'أنا هنا. الحمد لله. … سلمى، خلصنا؟', fr: 'Je suis là. Dieu merci. … Salma, c\'est fini ?', en: 'I\'m here. Thank God. … Salma, are we done?' }
+      { who: 'karim', text: 'ما كملتش… ولكن هادشي بداية، ماشي نهاية.', fr: 'Je n\'ai pas fini… mais ce n\'est qu\'un début, pas une fin.', en: 'I\'m not done… but this is a beginning, not an end.', es: 'No he terminado… pero esto es un principio, no un final.' },
+      { who: 'salma', text: 'ياسين؟ ياسين، جاوبني! … رجع الصوت. رجع الصوت!', fr: 'Yassine ? Yassine, réponds-moi ! … Le son revient. Le son revient !', en: 'Yassine? Yassine, answer me! … Sound is back. Sound is back!', es: '¿Yassine? ¡Yassine, respóndeme! … Volvió el sonido. ¡Volvió el sonido!' },
+      { who: 'yassine', text: 'أنا هنا. الحمد لله. … سلمى، خلصنا؟', fr: 'Je suis là. Dieu merci. … Salma, c\'est fini ?', en: 'I\'m here. Thank God. … Salma, are we done?', es: 'Estoy aquí. Gracias a Dios. … Salma, ¿hemos terminado?' }
     ]
   }
 ];
