@@ -53,6 +53,11 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
 
 <div id="err"></div>
 
+<div class="row" style="margin:0 0 12px">
+  <button class="btn-main" id="pick">📷 زيد تصاور</button>
+  <button class="btn-ghost" id="demo">جرّب بلا تصاور</button>
+</div>
+
 <div class="card">
   <div id="drop" class="drop">دوس هنا باش تزيد تصاور<br><span style="font-size:11.5px">PNG / JPG · تقدر تختار بزاف مرة وحدة</span></div>
   <input id="file" type="file" accept="image/*" multiple hidden>
@@ -163,6 +168,33 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
     file.value = '';
   });
 
+  document.getElementById('pick').addEventListener('click', function () { file.click(); });
+  cv.addEventListener('click', function () { file.click(); });
+
+  document.getElementById('demo').addEventListener('click', function () {
+    [['#FF6B4A', '#D4AF37', 'تجربة ①'],
+     ['#7C4DFF', '#FF4D8D', 'تجربة ②']].forEach(function (spec) {
+      var t = document.createElement('canvas');
+      t.width = 720; t.height = 1280;
+      var c = t.getContext('2d');
+      var g = c.createLinearGradient(0, 0, 720, 1280);
+      g.addColorStop(0, spec[0]); g.addColorStop(1, spec[1]);
+      c.fillStyle = g; c.fillRect(0, 0, 720, 1280);
+      c.fillStyle = 'rgba(255,255,255,.95)';
+      c.textAlign = 'center'; c.direction = 'rtl';
+      c.font = '700 84px "Segoe UI", Tahoma, Arial, sans-serif';
+      c.fillText(spec[2], 360, 670);
+      var url = t.toDataURL('image/png');
+      var img = new Image();
+      img.onload = function () {
+        slides.push({ img: img, url: url, name: 'demo' });
+        renderList(); drawStill(slides[0]); syncButtons();
+        statusEl.textContent = slides.length + ' تصويرة واجدة. دوس «سجّل الفيديو».';
+      };
+      img.src = url;
+    });
+  });
+
   function addFiles(files) {
     if (!files || !files.length) return;
     Array.prototype.forEach.call(files, function (f) {
@@ -229,7 +261,7 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
   }
 
   function remove(i) {
-    URL.revokeObjectURL(slides[i].url);
+    if (slides[i].url && slides[i].url.indexOf('blob:') === 0) URL.revokeObjectURL(slides[i].url);
     slides.splice(i, 1);
     renderList(); syncButtons();
     if (slides.length) drawStill(slides[0]);
@@ -265,6 +297,14 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
     // keep the button clickable so a tap always explains what is missing
     makeBtn.disabled = false;
     makeBtn.style.opacity = (!slides.length || !support) ? '.55' : '1';
+    var diag = document.getElementById('diag');
+    if (!diag) {
+      diag = document.createElement('div');
+      diag.id = 'diag';
+      diag.style.cssText = 'font-size:11px;color:#8a7f76;margin-top:6px;text-align:center';
+      statusEl.parentNode.insertBefore(diag, statusEl.nextSibling);
+    }
+    diag.textContent = 'التصاور: ' + slides.length + ' · التسجيل: ' + (support ? 'مدعوم ✅' : 'غير مدعوم ❌');
     paintTotal();
   }
 
