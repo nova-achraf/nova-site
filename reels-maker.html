@@ -91,6 +91,7 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
 
 <div class="card">
   <canvas id="cv" width="720" height="1280"></canvas>
+  <canvas id="cap" width="720" height="1280" style="position:fixed;top:0;left:0;width:4px;height:4px;opacity:0.02;pointer-events:none;z-index:0"></canvas>
   <div class="progress"><i id="bar"></i></div>
   <div id="status">زيد على الأقل تصويرة وحدة.</div>
   <div class="row" style="margin-top:12px;justify-content:center">
@@ -118,6 +119,8 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
   var list = document.getElementById('list');
   var cv = document.getElementById('cv');
   var ctx = cv.getContext('2d');
+  var cap = document.getElementById('cap');
+  var capCtx = cap.getContext('2d');
   var statusEl = document.getElementById('status');
   var bar = document.getElementById('bar');
   var makeBtn = document.getElementById('make');
@@ -131,9 +134,20 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
     errBox.style.display = 'block';
   }
 
-  var support = typeof MediaRecorder !== 'undefined' && !!cv.captureStream;
+  var support = typeof MediaRecorder !== 'undefined' && !!cap.captureStream;
   if (!support) {
-    showError('الهاتف ديالك ما كيدعمش تسجيل الفيديو من المتصفح. جرب Chrome على أندرويد.');
+    showError('هاد المتصفح ما كيدعمش تسجيل الفيديو. حلّ الرابط وسط Chrome (ماشي وسط إنستغرام/فيسبوك).');
+  }
+
+  function syncCapSize() {
+    cap.width = cv.width;
+    cap.height = cv.height;
+  }
+
+  // copy preview canvas to the capture canvas (always composited, so frames never stall)
+  function mirror() {
+    if (cap.width !== cv.width || cap.height !== cv.height) syncCapSize();
+    try { capCtx.drawImage(cv, 0, 0, cap.width, cap.height); } catch (e) {}
   }
 
   /* ---------- loading images ---------- */
@@ -161,6 +175,9 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
         drawStill(slides[0]);
         statusEl.textContent = slides.length + ' تصويرة واجدة.';
         syncButtons();
+      };
+      img.onerror = function () {
+        statusEl.textContent = 'ما قدرتش نحل التصويرة: ' + f.name + ' — جرّب JPG أو PNG.';
       };
       img.src = url;
     });
@@ -227,8 +244,9 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
       ratio = chip.getAttribute('data-ratio');
       var sz = SIZES[ratio];
       cv.width = sz[0]; cv.height = sz[1];
+      syncCapSize();
       if (slides.length) drawStill(slides[0]);
-      else { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cv.width, cv.height); }
+      else { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cv.width, cv.height); mirror(); }
     };
   });
 
@@ -244,7 +262,9 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
   }
 
   function syncButtons() {
-    makeBtn.disabled = !slides.length || !support;
+    // keep the button clickable so a tap always explains what is missing
+    makeBtn.disabled = false;
+    makeBtn.style.opacity = (!slides.length || !support) ? '.55' : '1';
     paintTotal();
   }
 
@@ -309,6 +329,7 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
 
   function drawStill(img) {
     drawSlide(img, 0.35, document.getElementById('caption').value.trim());
+    mirror();
   }
 
   document.getElementById('caption').addEventListener('input', function () {
@@ -319,7 +340,8 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
   var recording = false, recorder = null, chunks = [], stopped = false, rafId = 0;
 
   function pickMime() {
-    var options = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+    var options = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm',
+                   'video/mp4;codecs=h264', 'video/mp4'];
     for (var i = 0; i < options.length; i++) {
       if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(options[i])) return options[i];
     }
@@ -327,7 +349,15 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
   }
 
   makeBtn.addEventListener('click', function () {
-    if (!slides.length || !support) return;
+    if (!support) {
+      statusEl.textContent = 'هاد المتصفح ما كيدعمش التسجيل — حلّ الرابط فـChrome.';
+      return;
+    }
+    if (!slides.length) {
+      statusEl.textContent = 'زيد على الأقل تصويرة وحدة قبل التسجيل.';
+      return;
+    }
+    if (recording) return;
 
     var dur = Math.min(30, Math.max(1, parseFloat(document.getElementById('dur').value) || 3)) * 1000;
     var caption = document.getElementById('caption').value.trim();
@@ -341,7 +371,11 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
     dlWrap.style.display = 'none';
     statusEl.textContent = 'كنسجل… خلي الشاشة مفتوحة.';
 
-    var stream = cv.captureStream(30);
+    // draw the first frame on the capture canvas before the stream starts
+    drawSlide(slides[0].img, 0, caption);
+    mirror();
+
+    var stream = cap.captureStream(30);
     var mime = pickMime();
     try {
       recorder = mime ? new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 4000000 })
@@ -363,7 +397,7 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
       dlBtn.onclick = function () {
         var a = document.createElement('a');
         a.href = url;
-        a.download = 'nova-reel-' + Date.now() + '.webm';
+        a.download = 'nova-reel-' + Date.now() + (mime && mime.indexOf('mp4') >= 0 ? '.mp4' : '.webm');
         document.body.appendChild(a); a.click(); a.remove();
       };
       dlWrap.style.display = 'block';
@@ -386,7 +420,9 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
       var idx = Math.min(slides.length - 1, Math.floor(elapsed / dur));
       var p = (elapsed - idx * dur) / dur;
       drawSlide(slides[idx].img, p, caption);
+      mirror();
       bar.style.width = ((elapsed / total) * 100).toFixed(1) + '%';
+      statusEl.textContent = 'كنسجل… باقي ' + Math.ceil((total - elapsed) / 1000) + ' ثانية';
       rafId = requestAnimationFrame(frame);
     }
     rafId = requestAnimationFrame(frame);
