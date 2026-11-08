@@ -4,9 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>AZANOVA ULTIMATE</title>
-<link rel="icon" href="azanova-icon.webp">
-<link rel="apple-touch-icon" href="azanova-icon.webp">
-<meta name="theme-color" content="#07101b">
+<link rel="manifest" href="azanova-manifest.json">
+<link rel="icon" type="image/png" sizes="64x64" href="azanova-favicon-64.png">
+<link rel="icon" type="image/png" sizes="192x192" href="azanova-icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="azanova-apple-icon.png">
+<meta name="theme-color" content="#0a2233">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AZANOVA">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:#07101b;color:#fff;font-family:'Segoe UI',Arial,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
@@ -30,7 +35,9 @@ button.press{transform:scale(.93);background:rgba(0,168,189,.85)}
 #sound{position:absolute;top:14px;right:158px;min-width:44px;width:44px;height:44px;font-size:16px;border-radius:13px;pointer-events:auto}
 #start,#over{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;text-align:center;padding:24px;background:radial-gradient(ellipse at 50% 30%,#123a4e,#050a12 75%)}
 #over{display:none}
-.panel{max-width:390px}
+.panel{max-width:390px;display:flex;flex-direction:column;align-items:center}
+.hero{width:136px;height:136px;border-radius:30px;margin-bottom:14px;display:block;box-shadow:0 12px 40px rgba(0,217,255,.35),0 0 0 1px rgba(72,245,255,.5);animation:heroFloat 4.5s ease-in-out infinite}
+@keyframes heroFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.015)}}
 .panel h1{margin:0 0 4px;font-size:40px;letter-spacing:.1em;color:#48f5ff;text-shadow:0 0 26px #00d9ff}
 .panel h3{margin:0 0 18px;font-size:11px;letter-spacing:5px;color:#8fd6e8;font-weight:600}
 .panel p{line-height:1.65;color:#cfe4ef;font-size:14px;margin:8px 0}
@@ -44,7 +51,7 @@ button.press{transform:scale(.93);background:rgba(0,168,189,.85)}
 
 <div id="start">
  <div class="panel">
-  <img src="azanova-icon.webp" alt="AZANOVA" style="width:112px;height:112px;border-radius:26px;display:block;margin:0 auto 14px;box-shadow:0 10px 34px rgba(0,217,255,.35);border:1px solid rgba(90,230,255,.4)">
+  <img class="hero" src="azanova-icon-512.png" alt="AZANOVA" width="136" height="136">
   <h1>AZANOVA</h1>
   <h3>ULTIMATE · BATTLE</h3>
   <p>FROM MOROCCO 🇲🇦 TO THE WORLD 🌍</p>
@@ -91,6 +98,13 @@ button.press{transform:scale(.93);background:rgba(0,168,189,.85)}
  </div>
 </div>
 
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('azanova-sw.js', { scope: './' }).catch(function () {});
+  });
+}
+</script>
 <script type="module">
 import * as THREE from './vendor/three.module.js';
 
