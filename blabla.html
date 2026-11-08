@@ -282,8 +282,8 @@ function giftReel(key,btn){
 function shareReel(i){
   var ALL=allReels();
   var r=ALL[i];if(!r)return;
-  if(navigator.share){navigator.share({title:'BLABLA',text:'BLABLA 🚀 NOVA',url:(r.img&&r.img.indexOf('data:')!==0)?r.img:'https://nova-achraf.github.io/nova/'}).catch(function(){});}
-  else{try{navigator.clipboard.writeText('https://nova-achraf.github.io/nova/')}catch(e){}alert('Copied ✓');}
+  if(navigator.share){navigator.share({title:'BLABLA',text:'BLABLA 🚀 NOVA',url:(r.img&&r.img.indexOf('data:')!==0)?r.img:'https://nova-achraf.github.io/nova-site/'}).catch(function(){});}
+  else{try{navigator.clipboard.writeText('https://nova-achraf.github.io/nova-site/')}catch(e){}alert('Copied ✓');}
 }
 // ---------- شات محلي فالريلز ----------
 function chatAdd(boxId,name,text){
