@@ -1,0 +1,19 @@
+{
+  "name": "PixShrink — Free Image & PDF Tools",
+  "short_name": "PixShrink",
+  "description": "أدوات صور و PDF مجانية كتخدم فالمتصفح بلا رفع وبلا حساب.",
+  "start_url": "tools.html?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFBF6",
+  "theme_color": "#FF6B4A",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["photo", "productivity", "utilities"],
+  "icons": [
+    { "src": "pixshrink-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "pixshrink-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "pixshrink-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

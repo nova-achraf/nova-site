@@ -1,0 +1,17 @@
+{
+  "name": "BLABLA - Reels & Live",
+  "short_name": "BLABLA",
+  "description": "BLABLA by NOVA - reels, live et musique",
+  "start_url": "./blabla.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "ar",
+  "icons": [
+    { "src": "1791236857698.webp", "sizes": "192x192", "type": "image/webp", "purpose": "any" },
+    { "src": "1791236857698.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any" },
+    { "src": "1791236857698.webp", "sizes": "512x512", "type": "image/webp", "purpose": "maskable" }
+  ]
+}

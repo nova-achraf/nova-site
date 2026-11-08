@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0A0A0F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="AZAMI AI">
+<link rel="manifest" href="azami-manifest.json">
+<link rel="apple-touch-icon" href="azami-apple-icon.png">
+<script src="https://js.puter.com/v2/"></script>
+<title>AZAMI AI — Moroccan Roots. Global Intelligence.</title>
+<meta name="description" content="AZAMI AI — Moroccan AI Assistant. From Morocco to the World.">
+<style>
+  :root{
+    --gold:#D4AF37; --gold2:#E8C66B; --green:#0E5C4A; --green2:#1B7A5A;
+    --bg:#06120E; --bg2:#0A1F18; --card:#0E2520; --line:#1A3A30;
+    --txt:#F0F5F0; --muted:#6B9990; --red:#C4342B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,'Noto Sans Arabic',sans-serif;
+    background:radial-gradient(ellipse at 50% 0%,#0E2520 0%,#06120E 70%);
+    color:var(--txt);display:flex;flex-direction:column;height:100dvh;overflow:hidden;
+  }
+  header{
+    display:flex;align-items:center;gap:12px;padding:12px 14px;
+    background:linear-gradient(135deg,rgba(27,122,90,.35),rgba(212,175,55,.15));
+    border-bottom:1px solid var(--green2);flex-shrink:0;
+  }
+  .logo{
+    width:46px;height:46px;flex-shrink:0;border-radius:10px;object-fit:cover;
+    border:2px solid var(--gold);
+    box-shadow:0 0 14px rgba(212,175,55,.25);
+  }
+  .brand{display:flex;flex-direction:column;line-height:1.15}
+  .brand b{font-size:18px;letter-spacing:.5px;color:var(--gold2)}
+  .brand small{font-size:10.5px;color:var(--muted)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green2);box-shadow:0 0 8px var(--green2);margin-right:auto;align-self:center}
+  .key-btn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap;font-family:inherit}
+  .key-btn:active{border-color:var(--gold);color:var(--gold2)}
+  .lang-btn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap;font-family:inherit}
+  .lang-btn:active{border-color:var(--gold);color:var(--gold2)}
+  .lang-menu{position:absolute;top:52px;right:12px;background:var(--bg2);border:1px solid var(--gold);border-radius:12px;padding:6px;z-index:30;display:none;min-width:150px}
+  .lang-menu.show{display:block}
+  .lang-menu button{display:block;width:100%;background:transparent;border:none;color:var(--txt);padding:10px 12px;font-size:14px;cursor:pointer;border-radius:8px;text-align:left;font-family:inherit}
+  .lang-menu button:hover{background:var(--card)}
+  .lang-menu button.active{color:var(--gold2);font-weight:700}
+  .visitors{font-size:9px;color:var(--gold2);border:1px solid var(--line);padding:2px 6px;border-radius:6px;margin-left:4px;display:flex;align-items:center;gap:3px}
+  .visitors b{color:var(--gold);font-size:10px}
+  .free-badge{font-size:9px;color:var(--green2);border:1px solid var(--green2);padding:2px 6px;border-radius:6px;margin-left:4px}
+  main{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
+  .msg{max-width:88%;padding:11px 14px;border-radius:14px;font-size:15px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word}
+  .ai{background:var(--card);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+  .me{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+  .who{font-size:11px;color:var(--gold2);margin-bottom:3px;font-weight:700}
+  .me .who{color:rgba(255,255,255,.7)}
+  .msg img{max-width:100%;border-radius:10px;margin:6px 0}
+  .imw{min-height:40px}
+  .iml{font-size:12px;color:var(--dim);padding:14px;text-align:center;background:rgba(255,255,255,.03);border-radius:10px}
+  .iml.err{color:#F87171;line-height:1.6}
+  .copy-b{background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:8px;font-size:11px;padding:5px 10px;cursor:pointer;margin-left:6px}
+  .msg-bar{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+  .msg-bar button{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:3px 6px;border-radius:6px}
+  .msg-bar button:active{background:var(--card);color:var(--gold2)}
+  .msg-bar a{font-size:13px;color:var(--gold2);text-decoration:none;padding:3px 6px}
+  .typing{display:inline-flex;gap:4px;align-items:center;color:var(--muted);font-size:14px}
+  .typing i{width:7px;height:7px;border-radius:50%;background:var(--gold);opacity:.4;animation:bnc 1s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes bnc{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-5px);opacity:1}}
+  .welcome{text-align:center;padding:20px 16px;color:var(--muted);font-size:14px;line-height:1.8}
+  .welcome h2{color:var(--gold2);font-size:20px;margin-bottom:8px;font-family:Georgia,serif}
+  .chip{display:inline-block;background:var(--card);border:1px solid var(--line);color:var(--txt);padding:8px 12px;border-radius:20px;font-size:13px;margin:4px;cursor:pointer}
+  .chip:active{border-color:var(--gold);color:var(--gold2)}
+  footer{flex-shrink:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--bg2);border-top:1px solid var(--line)}
+  #imgPrev{display:none;margin-bottom:6px;position:relative}
+  #prevThumb{max-height:70px;border-radius:8px;border:1px solid var(--line)}
+  .clear-img{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer}
+  .inp{display:flex;gap:6px;align-items:flex-end}
+  textarea{flex:1;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:14px;padding:11px 14px;font-size:15px;font-family:inherit;resize:none;max-height:120px;min-height:46px;outline:none;line-height:1.5}
+  textarea:focus{border-color:var(--gold)}
+  .inp-btn{width:42px;height:42px;flex-shrink:0;border:none;border-radius:50%;background:transparent;color:var(--muted);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .inp-btn:active{color:var(--gold)}
+  .inp-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg)}
+  .inp-btn.stop{background:var(--red);color:#fff;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}
+  .modal.show{display:flex}
+  .sheet{background:var(--bg2);border:1px solid var(--gold);border-radius:16px;padding:22px 18px;max-width:380px;width:100%}
+  .sheet h3{color:var(--gold2);font-size:18px;margin-bottom:6px;font-family:Georgia,serif}
+  .sheet p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:14px}
+  .sheet input{width:100%;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:12px;font-size:14px;font-family:monospace;outline:none;margin-bottom:12px}
+  .sheet input:focus{border-color:var(--gold)}
+  .sheet button{width:100%;padding:12px;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit}
+  .sheet .go{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;margin-bottom:8px}
+  .lang-btn{background:var(--card);color:var(--gold2);border:1px solid var(--gold);border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:700;flex-shrink:0}
+  .lang-menu{position:absolute;top:50px;right:14px;background:var(--bg2);border:1px solid var(--gold);border-radius:10px;padding:6px;z-index:60;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  .lang-menu.show{display:block}
+  .lang-menu button{display:block;width:100%;background:transparent;border:none;color:var(--txt);padding:8px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px;text-align:left}
+  .lang-menu button:hover{background:var(--card)}
+  .lang-menu button.active{color:var(--gold2);font-weight:700}
+  .sheet .skip{background:transparent;color:var(--muted);border:1px solid var(--line)}
+  .sheet .szrow{display:flex;gap:8px;margin-bottom:10px}
+  .sheet .szrow .sz{flex:1;width:auto;padding:10px 6px;background:var(--card);color:var(--muted);border:1.5px solid var(--line);border-radius:10px;font-size:13px;font-weight:700}
+  .sheet .szrow .sz.on{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:#1b130b}
+  .sheet a.dl{display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,#1B7A5A,#0E5C4A);color:#fff;padding:14px;border-radius:12px;font-weight:800;font-size:16px;margin-bottom:8px;box-shadow:0 6px 18px rgba(27,122,90,.35)}
+  .sheet a.alt{display:block;text-align:center;text-decoration:none;background:var(--card);color:var(--gold2);border:1.5px solid var(--line);padding:12px;border-radius:12px;font-weight:700;font-size:14px;margin-bottom:8px}
+  .sheet .opt{display:flex;align-items:center;gap:8px;padding:10px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--muted);font-size:13px;font-weight:600;margin-bottom:8px;cursor:pointer;text-align:left}
+  .sheet .opt .tick{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px}
+  .sheet .opt.on{color:#1b130b;border-color:transparent;background:linear-gradient(135deg,var(--gold),var(--gold2))}
+  .sheet .opt.on .tick{background:#1b130b;border-color:#1b130b}
+  .sheet .opt.on .tick:after{content:'✓';color:var(--gold);font-size:11px}
+  .err{color:var(--red);font-size:12px;margin-top:6px;display:none}
+  .install-banner{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,var(--green),var(--green2));padding:12px 16px;display:none;align-items:center;gap:12px;z-index:40;box-shadow:0 -4px 20px rgba(0,0,0,.5)}
+  .install-banner.show{display:flex}
+  .install-banner .txt{flex:1;color:#fff;font-size:13px;line-height:1.4}
+  .install-banner .txt b{display:block;font-size:15px;margin-bottom:2px}
+  .install-banner button{background:var(--gold);color:var(--bg);border:none;border-radius:10px;padding:10px 18px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .install-banner .close{background:transparent;color:rgba(255,255,255,.7);border:none;font-size:22px;cursor:pointer;padding:0 4px}
+</style>
+</head>
+<body>
+
+<div class="install-banner" id="installBanner">
+  <div class="txt"><b>📥 Install App</b>Get AZAMI AI on your phone</div>
+  <button id="installBtn">Install</button>
+  <button class="close" id="installClose">×</button>
+</div>
+
+<header>
+  <img src="azami-logo.webp" class="logo" alt="AZAMI AI">
+  <div class="brand">
+    <b>AZAMI AI</b>
+    <small>Moroccan Roots · Global Intelligence</small>
+  </div>
+  <div class="dot" title="online"></div>
+  <span class="free-badge" id="freeBadge">Free</span>
+  <span class="visitors" id="visitors">👥 <b>…</b></span>
+  <button class="lang-btn" onclick="toggleLang()">🌐</button>
+  <button class="key-btn" onclick="pickPdf()" title="Photos to PDF">📄 PDF</button>
+  <button class="key-btn" onclick="openBook()" title="Coloring book (KDP)">🎨 KDP</button>
+  <button class="key-btn" onclick="openKey()">🔑 Key</button>
+</header>
+
+<div class="lang-menu" id="langMenu">
+  <button onclick="setLang('en')">🇬🇧 English</button>
+  <button onclick="setLang('ar')">🇲🇦 العربية</button>
+  <button onclick="setLang('fr')">🇫🇷 Français</button>
+  <button onclick="setLang('es')">🇪🇸 Español</button>
+  <button onclick="setLang('de')">🇩🇪 Deutsch</button>
+</div>
+
+<main id="chat">
+  <div class="welcome">
+    <h2>Welcome to AZAMI AI 🇲🇦</h2>
+    <p>Your smart assistant from Morocco to the world.<br>Ask me anything in any language — Arabic, French, English, and more.</p>
+    <div style="margin-top:12px">
+      <div class="chip" onclick="quick('What is AZAMI AI?')">What is AZAMI AI?</div>
+      <div class="chip" onclick="quick('Write a product poster for me')">Write a poster</div>
+      <div class="chip" onclick="quick('Translate: Hello World')">Translate</div>
+      <div class="chip" onclick="quick('Give me a small business idea in Morocco')">Business idea</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div id="imgPrev"><img id="prevThumb"><button class="clear-img" onclick="clearImg()">✕</button></div>
+  <div class="inp">
+    <textarea id="in" rows="1" placeholder="Type your message to AZAMI AI..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"></textarea>
+    <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="onImgPick(this)">
+    <button class="inp-btn" onclick="document.getElementById('camInput').click()" title="Camera">📷</button>
+    <button class="inp-btn" id="imgBtn" onclick="toggleImg()" title="Image mode">🎨</button>
+    <button class="inp-btn" id="pdfBtn" onclick="pickPdf()" title="Photos to PDF">📄</button>
+    <button class="inp-btn" id="vidBtn" onclick="toggleVid()" title="Video">🎬</button>
+    <button class="inp-btn" id="micBtn" onclick="toggleMic()" title="Microphone">🎤</button>
+    <button class="inp-btn" id="send" onclick="handleSend()" title="Send">➤</button>
+  </div>
+</footer>
+
+<div class="modal" id="keyModal">
+  <div class="sheet">
+    <h3>🔑 AZAMI AI Key</h3>
+    <p>AZAMI AI works <b style="color:var(--green2)">free without a key</b>! Add a Gemini key (from Google AI Studio) for higher quality + streaming.<br><small style="color:var(--muted);display:block;margin-top:6px">Get a free key: aistudio.google.com → Sign in → Get API Key</small></p>
+    <input id="keyIn" placeholder="AIza..." autocomplete="off" spellcheck="false">
+    <div class="err" id="keyErr">Please enter the key.</div>
+    <button class="go" onclick="saveKey()">Save ✅</button>
+    <button class="skip" onclick="closeKey()">Use free without key 🚀</button>
+  </div>
+</div>
+
+
+<!-- IMAGES -> PDF -->
+<div class="modal" id="pdfModal">
+  <div class="sheet">
+    <h3>🖼️ Images → PDF</h3>
+    <p id="pdfMsg">Pick photos from your gallery and get one PDF file. Everything happens inside your browser — nothing is uploaded.</p>
+    <div class="szrow">
+      <button class="sz" data-size="a4" onclick="setPdfSize('a4')">A4 · 21×29.7 cm</button>
+      <button class="sz" data-size="a5" onclick="setPdfSize('a5')">A5 · 14.8×21 cm</button>
+    </div>
+    <button class="go" id="pdfPick" onclick="document.getElementById('pdfInput').click()">📂 Choose images</button>
+    <a class="dl" id="pdfDl" href="#" download onclick="return pdfDownload(event)" style="display:none">⬇️ Save the PDF</a>
+    <a class="alt" id="pdfOpen" href="#" target="_blank" rel="noopener" style="display:none">👁️ Open / share it</a>
+    <button class="skip" onclick="closePdf()">Close</button>
+  </div>
+</div>
+<input type="file" id="pdfInput" accept="image/*" multiple hidden onchange="pdfFromImages(this)">
+
+<!-- COLORING BOOK -> KDP -->
+<div class="modal" id="bookModal">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <img src="coloring-icon.webp" alt="" style="width:44px;height:44px;border-radius:12px;object-fit:cover">
+      <div style="text-align:left">
+        <h3 style="margin:0">🎨 Coloring Book → KDP</h3>
+        <div style="font-size:11px;color:var(--muted)">8.5×11 in + bleed · 300 DPI B&amp;W</div>
+      </div>
+    </div>
+    <p id="bookMsg">Drop your coloring pages and get a print-ready KDP interior. Everything stays on your phone.</p>
+    <input id="bookTitle" placeholder="Book title" value="My Coloring Book" style="width:100%;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px;font-size:13px;font-family:inherit;margin-bottom:6px;outline:none">
+    <input id="bookAuthor" placeholder="Author name" value="" style="width:100%;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px;font-size:13px;font-family:inherit;margin-bottom:8px;outline:none">
+    <div class="opt" id="opt-blank" onclick="bookToggle()"><span class="tick"></span>Blank page after each drawing</div>
+    <div id="bookCount" style="font-size:11.5px;color:var(--muted);margin:2px 0 8px;line-height:1.5">Pick your drawings to see the page count.</div>
+    <button class="go" id="bookPick" onclick="document.getElementById('bookInput').click()">📂 Choose drawings</button>
+    <a class="dl" id="bookDl" href="#" download onclick="return bookSave(event)" style="display:none">⬇️ Save the PDF</a>
+    <a class="alt" id="bookOpen" href="#" target="_blank" rel="noopener" style="display:none">👁️ Open / share it</a>
+    <button class="skip" onclick="closeBook()">Close</button>
+  </div>
+</div>
+<input type="file" id="bookInput" accept="image/*" multiple hidden onchange="bookFromImages(this)">
+<script>
+const KEY='azami_ai_gemini_key';
+let APIKEY='';
+try{APIKEY=localStorage.getItem(KEY)||''}catch(e){}
+let LANG='en';try{LANG=localStorage.getItem('azami_lang')||'en'}catch(e){}
+const SYS='You are AZAMI AI, a helpful multilingual AI assistant created in Morocco (From Morocco to the World). Answer in the EXACT language and dialect the user writes in — Arabic, Moroccan Darija, Egyptian, French, English, Spanish, German, Chinese, Japanese, Hindi, or any language. Be clear, friendly and honest. Keep answers concise for mobile. Use simple Markdown when helpful.';
+const LNG={
+  en:{wel:'Welcome to AZAMI AI 🇲🇦',sub:'Your smart assistant from Morocco to the world.<br>Ask me anything in any language.',ph:'Type your message to AZAMI AI...',c1:'What is AZAMI AI?',c2:'Write a poster',c3:'Translate',c4:'Business idea',free:'Free',key:'🔑 Key'},
+  ar:{wel:'أهلاً بك في AZAMI AI 🇲🇦',sub:'مساعدك الذكي من المغرب إلى العالم.<br>سؤلني بأي لغة.',ph:'اكتب رسالتك لـ AZAMI AI...',c1:'شنو هو AZAMI AI؟',c2:'كتب ليا بوستر',c3:'ترجم ليا',c4:'فكرة مشروع',free:'مجاني',key:'🔑 المفتاح'},
+  fr:{wel:'Bienvenue sur AZAMI AI 🇲🇦',sub:'Votre assistant intelligent du Maroc au monde.<br>Demandez dans n\'importe quelle langue.',ph:'Écrivez votre message à AZAMI AI...',c1:'Qu\'est-ce que AZAMI AI ?',c2:'Écrire une affiche',c3:'Traduire',c4:'Idée d\'affaire',free:'Gratuit',key:'🔑 Clé'},
+  es:{wel:'Bienvenido a AZAMI AI 🇲🇦',sub:'Tu asistente inteligente de Marruecos al mundo.<br>Pregunta en cualquier idioma.',ph:'Escribe tu mensaje a AZAMI AI...',c1:'¿Qué es AZAMI AI?',c2:'Escribir un póster',c3:'Traducir',c4:'Idea de negocio',free:'Gratis',key:'🔑 Clave'},
+  de:{wel:'Willkommen bei AZAMI AI 🇲🇦',sub:'Dein smarter Assistent von Marokko in die Welt.<br>Frag in jeder Sprache.',ph:'Schreibe deine Nachricht an AZAMI AI...',c1:'Was ist AZAMI AI?',c2:'Poster schreiben',c3:'Übersetzen',c4:'Geschäftsidee',free:'Kostenlos',key:'🔑 Schlüssel'}
+};
+const chat=document.getElementById('chat');
+let generating=false,abortCtrl=null,imgMode=false,pickedImg=null,pickedType=null,lastUserText='';
+function toggleLang(){document.getElementById('langMenu').classList.toggle('show')}
+function setLang(l){LANG=l;try{localStorage.setItem('azami_lang',l)}catch(e){}document.getElementById('langMenu').classList.remove('show');applyLang()}
+function applyLang(){var t=LNG[LANG]||LNG.en;var w=document.querySelector('.welcome h2');if(w)w.innerHTML=t.wel;var p=document.querySelector('.welcome p');if(p)p.innerHTML=t.sub;document.getElementById('in').placeholder=t.ph;document.getElementById('freeBadge').textContent=t.free;var chips=document.querySelectorAll('.chip');if(chips[0])chips[0].textContent=t.c1;if(chips[1])chips[1].textContent=t.c2;if(chips[2])chips[2].textContent=t.c3;if(chips[3])chips[3].textContent=t.c4;document.querySelector('.key-btn').textContent=t.key}
+
+function openKey(){document.getElementById('keyModal').classList.add('show');document.getElementById('keyIn').value=APIKEY||'';document.getElementById('keyIn').focus()}
+function closeKey(){document.getElementById('keyModal').classList.remove('show')}
+function saveKey(){var v=document.getElementById('keyIn').value.trim();if(!v){document.getElementById('keyErr').style.display='block';return}APIKEY=v;try{localStorage.setItem(KEY,v)}catch(e){}closeKey();document.getElementById('freeBadge').style.display='none';addAi('Great! Key saved. Ask me anything 🚀')}
+if(APIKEY)document.getElementById('freeBadge').style.display='none';
+
+function quick(t){document.getElementById('in').value=t;send()}
+function scrollDown(){chat.scrollTop=chat.scrollHeight}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function addMe(t){var d=document.createElement('div');d.className='msg me';d.innerHTML='<div class="who">You</div>'+esc(t);chat.appendChild(d);scrollDown()}
+function addAi(t){var d=document.createElement('div');d.className='msg ai';d.innerHTML='<div class="who">AZAMI AI</div>'+esc(t);chat.appendChild(d);scrollDown();return d}
+function addTyping(){var d=document.createElement('div');d.className='msg ai';d.innerHTML='<div class="who">AZAMI AI</div><span class="typing"><i></i><i></i><i></i></span>';chat.appendChild(d);scrollDown();return d}
+function mkBtn(t,fn){var b=document.createElement('button');b.textContent=t;b.onclick=fn;return b}
+
+function onImgPick(input){var f=input.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){pickedImg=e.target.result;pickedType=f.type||'image/jpeg';document.getElementById('prevThumb').src=pickedImg;document.getElementById('imgPrev').style.display='block'};r.readAsDataURL(f);input.value=''}
+function clearImg(){pickedImg=null;pickedType=null;document.getElementById('imgPrev').style.display='none'}
+function toggleImg(){imgMode=!imgMode;var b=document.getElementById('imgBtn');if(imgMode){b.classList.add('active');b.textContent='🎨✓';document.getElementById('in').placeholder='Describe the image...'}else{b.classList.remove('active');b.textContent='🎨';document.getElementById('in').placeholder='Type your message to AZAMI AI...'}}
+let vidMode=false;
+function toggleVid(){vidMode=!vidMode;var b=document.getElementById('vidBtn');if(vidMode){b.classList.add('active');b.textContent='🎬✓';document.getElementById('in').placeholder='Describe the video...'}else{b.classList.remove('active');b.textContent='🎬';document.getElementById('in').placeholder='Type your message to AZAMI AI...'}}
+
+function handleSend(){if(generating){if(abortCtrl){try{abortCtrl.abort()}catch(e){}}return}send()}
+async function send(){
+  var ta=document.getElementById('in');var txt=ta.value.trim();
+  if(!txt&&!pickedImg)return;
+  ta.value='';ta.style.height='auto';
+  addMe(txt);
+  if(txt) lastUserText=txt;
+  document.getElementById('send').disabled=true;
+  if(vidMode||/(فيديو|video|vidéo|film me|صور فيديو|أنشئ فيديو|اعمل فيديو)/i.test(txt)){await genVideo(txt);return}
+  if(imgMode||/(ارسم|رسم|صوّر|صور|صورة|أنشئ|ولّد|صمم|generate image|create image|draw |paint )/i.test(txt)){await genImage(txt);return}
+  if(pickedImg){if(APIKEY){await visionReq(txt)}else{addAi('⚠️ Image analysis needs a Gemini key. Tap 🔑 Key.')}clearImg();document.getElementById('send').disabled=false;return}
+  if(APIKEY){await geminiChat(txt)}else{await pollinationsChat(txt)}
+}
+
+async function pollinationsChat(txt){
+  var typing=addTyping();generating=true;abortCtrl=new AbortController();
+  try{
+    var msgs=[{role:'system',content:SYS},{role:'user',content:txt}];
+    var res=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,model:'openai'}),signal:abortCtrl.signal});
+    var data=await res.json();
+    if(data.error)throw data.error;
+    var full=(data.choices&&data.choices[0])?data.choices[0].message.content:'';
+    if(!full){var r2=await fetch('https://text.pollinations.ai/'+encodeURIComponent(SYS+'\n\n'+txt),{signal:abortCtrl.signal});full=await r2.text();if(full.startsWith('{'))throw new Error('error')}
+    typing.remove();var d=addAi(full);addBar(d,full);
+  }catch(e){typing.remove();if(e.name!=='AbortError')addAi('⚠️ Free AI is not responding right now. Check your internet or add a Gemini key (🔑) for higher quality.')}
+  generating=false;document.getElementById('send').disabled=false;scrollDown();
+}
+
+async function geminiChat(txt){
+  var typing=addTyping();generating=true;abortCtrl=new AbortController();var full='';
+  try{
+    var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:streamGenerateContent?alt=sse&key='+encodeURIComponent(APIKEY),{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({systemInstruction:{parts:[{text:SYS}]},contents:[{role:'user',parts:[{text:txt}]}],generationConfig:{maxOutputTokens:1200}}),
+      signal:abortCtrl.signal
+    });
+    if(!res.ok){var ed=await res.json().catch(function(){return{}});typing.remove();var m='An error occurred.';if(ed.error&&ed.error.message)m='Error: '+ed.error.message;addAi('⚠️ '+m+(ed.error&&ed.error.code===400?'\n\nCheck your key (tap 🔑).':''));generating=false;document.getElementById('send').disabled=false;return}
+    typing.querySelector('.typing').remove();
+    var d=document.createElement('div');d.className='msg ai';d.innerHTML='<div class="who">AZAMI AI</div>';var span=document.createElement('span');d.appendChild(span);chat.appendChild(d);scrollDown();
+    var reader=res.body.getReader(),dec=new TextDecoder(),buf='';
+    while(true){var ch=await reader.read();if(ch.done)break;buf+=dec.decode(ch.value,{stream:true});var lines=buf.split('\n');buf=lines.pop();
+      for(var i=0;i<lines.length;i++){var t=lines[i].trim();if(!t.startsWith('data:'))continue;var j=t.slice(5).trim();if(!j||j==='[DONE]')continue;
+        try{var o=JSON.parse(j);if(o.candidates&&o.candidates[0]&&o.candidates[0].content){full+=o.candidates[0].content.parts.map(function(p){return p.text}).join('');span.textContent=full;scrollDown()}}catch(e){}
+      }
+    }
+    span.textContent=full||'Could not generate a response.';if(full)addBar(d,full);
+  }catch(e){if(e.name==='AbortError'){if(full){addAi(full)}else{typing.remove()}}else{typing.remove();addAi('⚠️ Could not reach the AI. Check your internet.')}}
+  generating=false;document.getElementById('send').disabled=false;scrollDown();
+}
+
+async function visionReq(txt){
+  var b64=pickedImg.split(',')[1];var typing=addTyping();generating=true;abortCtrl=new AbortController();
+  try{
+    var parts=[];if(txt)parts.push({text:txt});parts.push({inlineData:{mimeType:pickedType,data:b64}});
+    var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key='+encodeURIComponent(APIKEY),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemInstruction:{parts:[{text:SYS}]},contents:[{role:'user',parts:parts}]}),signal:abortCtrl.signal});
+    var data=await res.json();typing.remove();
+    if(data.candidates&&data.candidates[0]&&data.candidates[0].content){var out=data.candidates[0].content.parts.map(function(p){return p.text}).join('\n')||'Could not generate a response.';var d=addAi(out);addBar(d,out)}
+    else{var m='An error occurred.';if(data.error&&data.error.message)m='Error: '+data.error.message;addAi('⚠️ '+m)}
+  }catch(e){if(e.name!=='AbortError'){typing.remove();addAi('⚠️ Could not reach the AI.')}}
+  generating=false;clearImg();document.getElementById('send').disabled=false;scrollDown();
+}
+
+async function genImage(prompt){
+  var typing=addTyping();generating=true;
+  var clean=prompt.replace(/^(اعطني|أعطني|عطيني|ارسم|صوّر|صور|أنشئ صورة|ولّد صورة|صمم صورة|صورة|صور|draw|paint|generate image|create image|show me|give me)\s*/gi,'').trim();
+  if(clean.split(/\s+/).filter(Boolean).length<3&&lastUserText&&lastUserText!==prompt){clean=lastUserText.replace(/^.*?(?=[A-Za-z\u0600-\u06FF])/,'')+' — '+clean}
+  if(!clean)clean=prompt;
+  var hd=/hd|2048|4k|جودة عالية/i.test(prompt);
+  var size=hd?1536:1024;
+  try{
+    var eng=clean;
+    try{var tRes=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q='+encodeURIComponent(clean));var tData=await tRes.json();if(tData&&tData[0])eng=tData[0].map(function(i){return i[0]||''}).join('').trim()||clean}catch(e){}
+    eng=eng+', high quality, sharp focus, detailed, clean composition, professional';
+    var url='https://image.pollinations.ai/prompt/'+encodeURIComponent(eng)+'?width='+size+'&height='+size+'&nologo=true&model=flux&seed='+Math.floor(Math.random()*999999)+'&safe=false&private=true&referrer=azami-ai';
+    typing.remove();
+    var d=document.createElement('div');d.className='msg ai';
+    d.innerHTML='<div class="who">AZAMI AI</div><div class="imw"><div class="iml">🎨 Generating… 0s</div></div>';
+    chat.appendChild(d);scrollDown();
+    var ph=d.querySelector('.imw');
+    var t0=Date.now();
+    var timer=setInterval(function(){var l=d.querySelector('.iml');if(l)l.textContent='🎨 Generating… '+Math.round((Date.now()-t0)/1000)+'s'},1000);
+    var ok=false;
+    for(var attempt=0;attempt<2&&!ok;attempt++){
+      try{
+        if(attempt===1){url=url.replace('model=flux','model=turbo').replace('width='+size,'width=1024').replace('height='+size,'height=1024')}
+        var ctrl=new AbortController();var to=setTimeout(function(){try{ctrl.abort()}catch(e){}},95000);
+        var res=await fetch(url,{signal:ctrl.signal});clearTimeout(to);
+        if(!res.ok)throw new Error('http '+res.status);
+        var blob=await res.blob();if(!blob.size)throw new Error('empty');
+        var obj=URL.createObjectURL(blob);
+        ph.innerHTML='';
+        var im=document.createElement('img');im.src=obj;im.style.maxWidth='100%';im.style.borderRadius='10px';im.style.display='block';
+        ph.appendChild(im);
+        var bar=document.createElement('div');bar.className='msg-bar';
+        var a=document.createElement('a');a.href=obj;a.download='azami-ai.png';a.textContent='⬇️ Download';
+        var b2=document.createElement('button');b2.className='copy-b';b2.textContent='🔁 Again';
+        b2.onclick=function(){genImage(clean)};
+        bar.appendChild(a);bar.appendChild(b2);ph.appendChild(bar);
+        ok=true;scrollDown();
+      }catch(e){if(attempt===1){ph.innerHTML='<div class="iml err">⚠️ Could not generate the image.<br>Try again or describe it differently.</div>'}}
+    }
+    clearInterval(timer);
+  }catch(e){typing.remove();addAi('⚠️ Could not generate the image.')}
+  generating=false;document.getElementById('send').disabled=false;scrollDown();
+}
+
+function addBar(d,text){
+  var bar=document.createElement('div');bar.className='msg-bar';
+  bar.appendChild(mkBtn('🔊',function(){speak(text)}));
+  bar.appendChild(mkBtn('📋',function(){navigator.clipboard&&navigator.clipboard.writeText(text);this.textContent='✅';var b=this;setTimeout(function(){b.textContent='📋'},1500)}));
+  d.appendChild(bar);
+}
+
+function speak(text){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang=/[\u0600-\u06FF]/.test(text)?'ar-SA':'en-US';u.rate=0.9;speechSynthesis.speak(u)}
+
+/* === VIDEO GEN (Puter.js + Google Veo, free, no key) === */
+async function genVideo(prompt){
+  var clean=prompt.replace(/^(فيديو|video|vidéo|صور فيديو|أنشئ فيديو|اعمل فيديو)\s*/i,'').trim()||prompt;
+  var typing=addTyping();generating=true;document.getElementById('send').disabled=true;
+  try{
+    var eng=clean;
+    try{var tRes=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q='+encodeURIComponent(clean));var tData=await tRes.json();if(tData&&tData[0])eng=tData[0].map(function(i){return i[0]||''}).join('').trim()||clean}catch(e){}
+    var videoEl=await puter.ai.txt2vid(eng,{model:'google/veo-3.1-lite'});
+    typing.remove();
+    var d=document.createElement('div');d.className='msg ai';
+    d.innerHTML='<div class="who">AZAMI AI</div>';
+    if(videoEl.tagName==='VIDEO'){videoEl.controls=true;videoEl.style.maxWidth='100%';videoEl.style.borderRadius='10px';d.appendChild(videoEl)}
+    else if(videoEl.src){var v=document.createElement('video');v.src=videoEl.src;v.controls=true;v.style.maxWidth='100%';v.style.borderRadius='10px';d.appendChild(v)}
+    else{var span=document.createElement('span');span.textContent='🎬 Video generated!';d.appendChild(span);if(videoEl.appendTo)d.appendChild(videoEl)}
+    chat.appendChild(d);scrollDown();
+  }catch(e){
+    typing.remove();
+    addAi('⚠️ Could not generate the video. '+e.message+'. Please try again.');
+  }
+  generating=false;document.getElementById('send').disabled=false;scrollDown();
+}
+
+let rec,listening=false;
+function toggleMic(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){addAi('⚠️ Microphone not supported.');return}
+  if(listening){rec.stop();return}
+  rec=new SR();rec.lang='ar-MA';rec.interimResults=true;var ta=document.getElementById('in');
+  rec.onstart=function(){listening=true;document.getElementById('micBtn').classList.add('active');document.getElementById('micBtn').textContent='⏹'};
+  rec.onresult=function(e){var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;ta.value=t;ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,120)+'px'};
+  rec.onerror=function(e){addAi('⚠️ Microphone error: '+e.error)};
+  rec.onend=function(){listening=false;document.getElementById('micBtn').classList.remove('active');document.getElementById('micBtn').textContent='🎤'};
+  rec.start();
+}
+
+var ta=document.getElementById('in');
+ta.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'});
+// Apply saved language on load
+applyLang();
+// Visitor counter — Abacus. Count each browser only once (unique visitors).
+(function(){
+  var seen=false;
+  try{seen=localStorage.getItem('azami_visited')==='1';}catch(e){}
+  var url='https://abacus.jasoncameron.dev/'+(seen?'get':'hit')+'/azami-ai/visits';
+  fetch(url).then(function(r){return r.json()}).then(function(d){
+    if(d&&typeof d.value==='number'){
+      var v=document.getElementById('visitors');
+      if(v)v.innerHTML='👥 <b>'+d.value+'</b>';
+      try{localStorage.setItem('azami_visited','1');localStorage.setItem('azami_visits_last',d.value);}catch(e){}
+    }
+  }).catch(function(){
+    // offline / blocked → show last known number
+    try{
+      var last=localStorage.getItem('azami_visits_last');
+      if(last){var v2=document.getElementById('visitors');if(v2)v2.innerHTML='👥 <b>'+last+'</b>';}
+    }catch(e){}
+  });
+})();
+// PWA: register service worker for offline + app install
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+// PWA: install button — show banner after 2s, fallback to manual instructions
+var deferredPrompt=null;
+var banner=document.getElementById('installBanner');
+var btn=document.getElementById('installBtn');
+var bannerText=banner.querySelector('.txt');
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;banner.classList.add('show');bannerText.innerHTML='<b>📥 Install App</b>Install AZAMI AI on your phone';});
+btn.addEventListener('click',function(){
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;banner.classList.remove('show');});}
+  else{bannerText.innerHTML='<b>📋 How to install?</b>Tap ⋮ (bottom right) ← Add to Home screen';btn.style.display='none';}
+});
+document.getElementById('installClose').addEventListener('click',function(){banner.classList.remove('show');});
+window.addEventListener('appinstalled',function(){banner.classList.remove('show');});
+// Fallback: show banner after 3s if beforeinstallprompt didn't fire
+setTimeout(function(){if(!deferredPrompt){banner.classList.add('show');bannerText.innerHTML='<b>📱 Install AZAMI AI</b>Tap here or ⋮ ← Add to Home screen';}},3000);
+
+/* ================= Images → PDF ================= */
+var PDF_INTRO='Pick photos from your gallery and get one PDF file. Everything happens inside your browser — nothing is uploaded.';
+var PDF_SIZES={a4:{w:210,h:297,label:'A4'},a5:{w:148,h:210,label:'A5'}};
+var pdfSize='a4';
+try{var _ps=localStorage.getItem('azami_pdf_size'); if(_ps&&PDF_SIZES[_ps]) pdfSize=_ps;}catch(e){}
+function paintPdfSize(){
+  var bs=document.querySelectorAll('#pdfModal .sz');
+  for(var i=0;i<bs.length;i++){ bs[i].classList.toggle('on', bs[i].getAttribute('data-size')===pdfSize); }
+}
+function setPdfSize(s){
+  if(!PDF_SIZES[s]) return;
+  pdfSize=s;
+  try{localStorage.setItem('azami_pdf_size',s);}catch(e){}
+  paintPdfSize();
+}
+function openPdf(){
+  document.getElementById('pdfMsg').textContent=PDF_INTRO;
+  paintPdfSize();
+  document.getElementById('pdfModal').classList.add('show');
+}
+function closePdf(){ document.getElementById('pdfModal').classList.remove('show'); }
+function pickPdf(){
+  var inp=document.getElementById('pdfInput');
+  inp.value='';
+  inp.click();
+}
+
+/* --- saving the PDF: share sheet first, then blob link, then new tab --- */
+var __pdfDoc=null, __pdfName='azami.pdf', __pdfUrl='';
+function pdfClear(){
+  __pdfDoc=null; __pdfName='azami.pdf'; __pdfUrl='';
+  var a=document.getElementById('pdfDl'), b=document.getElementById('pdfOpen');
+  if(a) a.style.display='none';
+  if(b) b.style.display='none';
+}
+function pdfPrepare(doc,name){
+  __pdfDoc=doc; __pdfName=name; __pdfUrl='';
+  try{ __pdfUrl=doc.output('bloburl'); }catch(e){}
+  var a=document.getElementById('pdfDl'), b=document.getElementById('pdfOpen');
+  if(a){ if(__pdfUrl){ a.href=__pdfUrl; a.setAttribute('download',name); } a.style.display='block'; a.textContent='⬇️ Save the PDF'; }
+  if(b){ if(__pdfUrl){ b.href=__pdfUrl; b.setAttribute('target','_blank'); } b.style.display='block'; }
+}
+function pdfDownload(e){
+  if(!__pdfDoc){ if(e) e.preventDefault(); return false; }
+  var blob=null, file=null;
+  try{ blob=__pdfDoc.output('blob'); }catch(err){}
+  try{ if(blob) file=new File([blob],__pdfName,{type:'application/pdf'}); }catch(err){}
+  if(file && navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
+    if(e) e.preventDefault();
+    document.getElementById('pdfMsg').textContent='Choose “Save to Files” or Drive in the menu that opens.';
+    try{
+      navigator.share({files:[file],title:__pdfName}).then(function(){
+        document.getElementById('pdfMsg').textContent='✅ Saved. Look in Files → Downloads.';
+      },function(err){
+        if(err && err.name!=='AbortError') pdfOpenTab(null);
+      });
+      return false;
+    }catch(err){}
+  }
+  /* no share sheet available: let the plain link download natively */
+  document.getElementById('pdfMsg').textContent='Saving… if nothing happens, use “Open / share it”.';
+  return true;
+}
+function pdfOpenTab(e){
+  if(!__pdfUrl){ if(e) e.preventDefault(); return false; }
+  return true; /* the link itself opens the blob in a new tab */
+}
+
+/* ================= Coloring Book -> KDP ================= */
+var BW=8.625, BH=11.25, BTW=8.5, BTH=11, BDPI=300, BMARGIN=0.375;
+var BPX_W=Math.round(BW*BDPI), BPX_H=Math.round(BH*BDPI);
+var BOOK={files:[], blank:true, doc:null, name:'coloring-book-kdp.pdf', url:'', busy:false};
+
+function openBook(){
+  document.getElementById('bookMsg').textContent='Drop your coloring pages and get a print-ready KDP interior. Everything stays on your phone.';
+  paintBook();
+  document.getElementById('bookModal').classList.add('show');
+}
+function closeBook(){ document.getElementById('bookModal').classList.remove('show'); }
+function bookToggle(){
+  BOOK.blank=!BOOK.blank;
+  paintBook();
+}
+function paintBook(){
+  var el=document.getElementById('opt-blank');
+  if(el) el.classList.toggle('on',BOOK.blank);
+  var n=BOOK.files.length, box=document.getElementById('bookCount');
+  if(!box) return;
+  if(!n){ box.textContent='Pick your drawings to see the page count.'; return; }
+  var total=3+n+(BOOK.blank?n:0)+2;
+  box.innerHTML='<b style="color:#1b130b;font-size:14px">'+total+' pages</b> · 1 title + 1 copyright + 1 blank + '+n+' drawings'
+    +(BOOK.blank?' + '+n+' blanks':'')+' + 1 thank you + 1 blank'
+    +(total<24?'<br><span style="color:#e0a33a">⚠️ KDP needs at least 24 pages</span>':'');
+}
+function bookPage(img){
+  var cv=document.createElement('canvas');
+  cv.width=BPX_W; cv.height=BPX_H;
+  var ctx=cv.getContext('2d');
+  ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,0,BPX_W,BPX_H);
+  var iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
+  var inset=Math.round(BMARGIN*BDPI+0.125*BDPI);
+  var bx=Math.round(BMARGIN*BDPI), by=inset;
+  var bw=BPX_W-bx*2, bh=BPX_H-by*2;
+  var r=Math.min(bw/iw,bh/ih), w=iw*r, h=ih*r;
+  var filterOk=true;
+  try{ ctx.filter='grayscale(1) contrast(1.08)'; filterOk=(ctx.filter&&ctx.filter!=='none'); }catch(e){ filterOk=false; }
+  ctx.imageSmoothingQuality='high';
+  ctx.drawImage(img,bx+(bw-w)/2,by+(bh-h)/2,w,h);
+  if(!filterOk){
+    var d=ctx.getImageData(0,0,BPX_W,BPX_H), a=d.data;
+    for(var i=0;i<a.length;i+=4){
+      var g=0.299*a[i]+0.587*a[i+1]+0.114*a[i+2];
+      g=g<128?g*0.92:Math.min(255,255-(255-g)*0.92);
+      a[i]=a[i+1]=a[i+2]=g;
+    }
+    ctx.putImageData(d,0,0);
+  }
+  var out=cv.toDataURL('image/jpeg',0.86);
+  cv.width=cv.height=0;
+  return out;
+}
+function bookTextPage(doc,paint){
+  doc.addPage([BW,BH],'portrait');
+  doc.setTextColor(0,0,0);
+  paint(doc);
+}
+function bookFront(doc){
+  var title=(document.getElementById('bookTitle').value||'My Coloring Book').trim();
+  var author=(document.getElementById('bookAuthor').value||'').trim();
+  bookTextPage(doc,function(d){
+    d.setFont('helvetica','bold'); d.setFontSize(34);
+    var lines=d.splitTextToSize(title,BTW-1.6);
+    var y=BH/2-(lines.length-1)*0.28;
+    lines.forEach(function(line,i){ d.text(line,BW/2,y+i*0.56,{align:'center'}); });
+    d.setFont('helvetica','normal'); d.setFontSize(12);
+    d.text('Coloring Book',BW/2,y+lines.length*0.56+0.15,{align:'center'});
+  });
+  bookTextPage(doc,function(d){
+    var yr=new Date().getFullYear();
+    d.setFont('helvetica','normal'); d.setFontSize(10);
+    var lines=['Copyright © '+yr+' '+(author||'the author'),'All rights reserved.','',
+      'No part of this book may be reproduced or distributed in any form',
+      'without written permission from the author, except for brief quotations',
+      'in a review.','','Title: '+title,'Interior: black & white, 8.5 × 11 in'];
+    var y=BH/2-lines.length*0.12;
+    lines.forEach(function(line,i){ d.text(line,BW/2,y+i*0.24,{align:'center'}); });
+  });
+  doc.addPage([BW,BH],'portrait');
+}
+function bookBack(doc){
+  bookTextPage(doc,function(d){
+    d.setFont('helvetica','bold'); d.setFontSize(22);
+    d.text('Thank you!',BW/2,BH/2-0.4,{align:'center'});
+    d.setFont('helvetica','normal'); d.setFontSize(12);
+    d.text('We hope you enjoy coloring every page.',BW/2,BH/2+0.1,{align:'center'});
+    d.setFontSize(10);
+    d.text('If you liked this book, a short review helps a lot.',BW/2,BH/2+0.5,{align:'center'});
+  });
+  doc.addPage([BW,BH],'portrait');
+}
+async function bookFromImages(input){
+  var files=Array.prototype.slice.call(input.files||[]);
+  input.value='';
+  if(!files.length) return;
+  BOOK.files=files.slice(0,120);
+  BOOK.doc=null; BOOK.url='';
+  document.getElementById('bookDl').style.display='none';
+  document.getElementById('bookOpen').style.display='none';
+  paintBook();
+  document.getElementById('bookModal').classList.add('show');
+  await bookBuild();
+}
+async function bookBuild(){
+  var files=BOOK.files;
+  var msg=document.getElementById('bookMsg'), btn=document.getElementById('bookPick');
+  if(BOOK.busy) return;
+  if(!files.length){ msg.textContent='Choose your drawings first.'; return; }
+  var lib;
+  try{ lib=await loadJsPDF(); }
+  catch(e){ msg.textContent='⚠️ The PDF engine did not load. Reload the page.'; return; }
+
+  BOOK.busy=true; btn.disabled=true;
+  document.getElementById('bookDl').style.display='none';
+  document.getElementById('bookOpen').style.display='none';
+  var blank=BOOK.blank;
+  try{
+    var doc=new lib.jsPDF({orientation:'portrait',unit:'in',format:[BW,BH],compress:true});
+    doc.deletePage(1);
+    bookFront(doc);
+    var ok=0, skip=0, lastErr='';
+    for(var i=0;i<files.length;i++){
+      msg.textContent='⏳ Drawing '+(i+1)+' of '+files.length+' …';
+      try{
+        var durl=await readFile(files[i]);
+        var im=await loadImgEl(durl);
+        var data=bookPage(im);
+        if(!data || data.length<200) throw new Error('page could not be rendered');
+        doc.addPage([BW,BH],'portrait');
+        doc.addImage(data,'JPEG',0,0,BW,BH,undefined,'FAST');
+        if(blank) doc.addPage([BW,BH],'portrait');
+        ok++;
+      }catch(err){ skip++; lastErr=(err&&err.message)||'unreadable image'; }
+    }
+    if(!ok){
+      msg.textContent='⚠️ None of the drawings could be read'+(lastErr?' ('+lastErr+')':'')+'. Use JPG or PNG.';
+      return;
+    }
+    bookBack(doc);
+    if(doc.getNumberOfPages()%2) doc.addPage([BW,BH],'portrait');
+    var total=doc.getNumberOfPages();
+    BOOK.doc=doc;
+    BOOK.name=(document.getElementById('bookTitle').value||'coloring-book').trim()
+      .replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').toLowerCase()+'-kdp-8.5x11.pdf';
+    BOOK.url='';
+    try{ BOOK.url=doc.output('bloburl'); }catch(e){}
+    var a=document.getElementById('bookDl'), b=document.getElementById('bookOpen');
+    if(BOOK.url){ a.href=BOOK.url; a.setAttribute('download',BOOK.name); b.href=BOOK.url; }
+    a.style.display='block'; b.style.display='block';
+    msg.textContent='✅ '+total+' pages · 8.75 × 11.25 in with bleed · 300 DPI B&W · tap the green button to save.'
+      +(skip?' ('+skip+' skipped)':'');
+  }catch(e){
+    msg.textContent='⚠️ '+((e&&e.message)||'Something failed. Try fewer drawings.');
+  }
+  btn.disabled=false; BOOK.busy=false;
+}
+function bookSave(e){
+  if(!BOOK.doc){ if(e) e.preventDefault(); return false; }
+  var blob=null, file=null;
+  try{ blob=BOOK.doc.output('blob'); }catch(err){}
+  try{ if(blob) file=new File([blob],BOOK.name,{type:'application/pdf'}); }catch(err){}
+  if(file && navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
+    if(e) e.preventDefault();
+    document.getElementById('bookMsg').textContent='Choose “Save to Files” or Drive in the menu that opens.';
+    try{
+      navigator.share({files:[file],title:BOOK.name}).then(function(){
+        document.getElementById('bookMsg').textContent='✅ Saved. Look in Files → Downloads.';
+      },function(err){ if(err && err.name!=='AbortError') closeBook(); });
+      return false;
+    }catch(err){}
+  }
+  document.getElementById('bookMsg').textContent='Saving… if nothing happens, use “Open / share it”.';
+  return true;
+}
+
+function loadJsPDF(){
+  return new Promise(function(res,rej){
+    if(window.jspdf && window.jspdf.jsPDF) return res(window.jspdf);
+    var sc=document.createElement('script');
+    sc.src='vendor/jspdf.umd.min.js';
+    sc.onerror=function(){ sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; };
+    sc.onload=function(){ window.jspdf && window.jspdf.jsPDF ? res(window.jspdf) : rej(new Error('lib')); };
+    sc.onerror=function(){ rej(new Error('cdn')); };
+    document.head.appendChild(sc);
+  });
+}
+function readFile(file){
+  return new Promise(function(res,rej){
+    var r=new FileReader();
+    r.onload=function(e){ res(e.target.result); };
+    r.onerror=function(){ rej(new Error('read')); };
+    r.readAsDataURL(file);
+  });
+}
+function loadImgEl(src){
+  return new Promise(function(res,rej){
+    var i=new Image();
+    i.onload=function(){ res(i); };
+    i.onerror=function(){ rej(new Error('decode')); };
+    i.src=src;
+  });
+}
+function shrinkJpeg(img,maxSide,q){
+  var w=img.naturalWidth||img.width, h=img.naturalHeight||img.height;
+  var sc=Math.min(1,maxSide/Math.max(w,h));
+  var cv=document.createElement('canvas');
+  cv.width=Math.round(w*sc); cv.height=Math.round(h*sc);
+  var c2=cv.getContext('2d');
+  c2.fillStyle='#FFFFFF'; c2.fillRect(0,0,cv.width,cv.height);
+  c2.drawImage(img,0,0,cv.width,cv.height);
+  return cv.toDataURL('image/jpeg',q);
+}
+async function pdfFromImages(input){
+  var files=Array.prototype.slice.call(input.files||[]);
+  input.value='';
+  if(!files.length) return;
+  var msg=document.getElementById('pdfMsg'), btn=document.getElementById('pdfPick');
+  paintPdfSize();
+  pdfClear();
+  document.getElementById('pdfModal').classList.add('show');
+  btn.disabled=true;
+  var okCount=0, skipped=0;
+  try{
+    var lib=await loadJsPDF();
+    var SZ=PDF_SIZES[pdfSize]||PDF_SIZES.a4;
+    var doc=new lib.jsPDF({orientation:'p',unit:'mm',format:pdfSize});
+    var PW=SZ.w,PH=SZ.h,M=8;
+    var maxSide=pdfSize==='a5'?1200:1600;
+    for(var i=0;i<files.length;i++){
+      msg.textContent='⏳ Processing image '+(i+1)+' of '+files.length+'…';
+      try{
+        var durl=await readFile(files[i]);
+        var im=await loadImgEl(durl);
+        var jp=shrinkJpeg(im,maxSide,0.82);
+        var iw=im.naturalWidth||im.width, ih=im.naturalHeight||im.height;
+        var sc=Math.min((PW-2*M)/iw,(PH-2*M)/ih);
+        var w=iw*sc, h=ih*sc;
+        if(okCount) doc.addPage([PW,PH],'p');
+        doc.addImage(jp,'JPEG',(PW-w)/2,(PH-h)/2,w,h);
+        okCount++;
+      }catch(err){ skipped++; }
+    }
+    if(!okCount){ msg.textContent='⚠️ Could not read those images. Try JPG or PNG (iPhone HEIC files are not decodable in the browser).'; }
+    else{
+      var name='azami-'+okCount+'-images-'+SZ.label+'.pdf';
+      pdfPrepare(doc,name);
+      msg.textContent='✅ PDF ready — '+okCount+' page(s) on '+SZ.label+'. Tap the green “Save the PDF” button.';
+    }
+  }catch(e){
+    msg.textContent='⚠️ Could not load the PDF engine. Check your connection and try again.';
+  }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>AZANOVA ULTIMATE</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#07101b;color:white;font-family:Arial,sans-serif;overflow:hidden}
+canvas{display:block}
+#hud{position:fixed;inset:0;pointer-events:none}
+.brand{position:absolute;top:15px;left:15px;font-size:20px;font-weight:900;
+color:#49f5ff;text-shadow:0 0 15px #00cfff}
+.subtitle{font-size:10px;color:#fff;letter-spacing:3px}
+.stats{position:absolute;top:15px;right:15px;text-align:right;
+background:#07101bcc;padding:12px;border:1px solid #36eaff;border-radius:12px}
+#health{color:#55ff9b}
+#message{position:absolute;top:40%;width:100%;text-align:center;
+font-size:24px;font-weight:bold;text-shadow:0 0 15px #00eaff}
+.controls{position:absolute;bottom:20px;left:15px;right:15px;
+display:flex;justify-content:space-between;align-items:end;pointer-events:auto}
+.group{display:flex;gap:8px;align-items:center}
+button{background:#102c40dd;color:white;border:1px solid #35dff7;
+border-radius:15px;min-width:55px;height:55px;font-weight:bold;font-size:17px;
+touch-action:none;box-shadow:0 0 12px #00bfff44}
+button:active{background:#00a8bd}
+#fire{width:75px;height:75px;border-radius:50%;background:#9c2439}
+#jump{background:#5540a9}
+#start{position:fixed;inset:0;background:#07101bf2;display:flex;
+align-items:center;justify-content:center;z-index:5;text-align:center;padding:25px}
+.panel{max-width:390px}
+.panel h1{font-size:38px;color:#48f5ff;text-shadow:0 0 22px #00d9ff}
+.panel p{line-height:1.6;color:#d0e4ef}
+#play{width:200px;background:#007c91;height:55px}
+.small{font-size:11px;color:#9fb8c8}
+</style>
+</head>
+<body>
+
+<div id="start">
+ <div class="panel">
+  <h1>AZANOVA</h1>
+  <h3>ULTIMATE · BATTLE PROTOTYPE</h3>
+  <p>FROM MOROCCO 🇲🇦 TO THE WORLD 🌍</p>
+  <p>Explore the battlefield, eliminate training bots and survive.</p>
+  <button id="play">START MISSION</button>
+  <p class="small">Prototype by Achraf Aza</p>
+ </div>
+</div>
+
+<div id="hud">
+ <div class="brand">AZANOVA<div class="subtitle">ULTIMATE PROTOTYPE</div></div>
+ <div class="stats">
+  <div>HEALTH: <span id="health">100</span></div>
+  <div>ELIMINATIONS: <span id="kills">0</span></div>
+  <div>WEAPON: PULSE RIFLE</div>
+ </div>
+ <div id="message">MISSION READY</div>
+ <div class="controls">
+  <div class="group">
+   <button id="left">◀</button>
+   <button id="forward">▲</button>
+   <button id="back">▼</button>
+   <button id="right">▶</button>
+  </div>
+  <div class="group">
+   <button id="jump">JUMP</button>
+   <button id="fire">FIRE</button>
+  </div>
+ </div>
+</div>
+
+<script type="module">
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x8bc5db);
+scene.fog = new THREE.Fog(0x8bc5db,35,125);
+
+const camera = new THREE.PerspectiveCamera(
+ 70,innerWidth/innerHeight,0.1,300
+);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xd8f5ff,0x41402a,2));
+
+const sun=new THREE.DirectionalLight(0xffffff,3);
+sun.position.set(-15,30,12);
+sun.castShadow=true;
+scene.add(sun);
+
+const ground=new THREE.Mesh(
+ new THREE.PlaneGeometry(250,250),
+ new THREE.MeshStandardMaterial({color:0x858b71,roughness:1})
+);
+ground.rotation.x=-Math.PI/2;
+ground.receiveShadow=true;
+scene.add(ground);
+
+const grid=new THREE.GridHelper(200,80,0x42616a,0x61716c);
+grid.position.y=.015;
+grid.material.transparent=true;
+grid.material.opacity=.22;
+scene.add(grid);
+
+function box(x,y,z,sx,sy,sz,color){
+ const m=new THREE.Mesh(
+  new THREE.BoxGeometry(sx,sy,sz),
+  new THREE.MeshStandardMaterial({color,roughness:.85})
+ );
+ m.position.set(x,y,z);
+ m.castShadow=true;
+ m.receiveShadow=true;
+ scene.add(m);
+ return m;
+}
+
+// Buildings and battlefield cover
+for(let i=0;i<65;i++){
+ const x=(Math.random()-.5)*115;
+ const z=(Math.random()-.5)*115;
+ if(Math.abs(x)<7&&Math.abs(z)<12)continue;
+ const h=2+Math.random()*8;
+ const b=box(x,h/2,z,3+Math.random()*5,h,3+Math.random()*5,
+  [0x606a70,0x777b75,0x565f68,0x9a927d][i%4]);
+ if(Math.random()>.55){
+  box(x,h+.08,z, b.geometry.parameters.width*.7,.15,
+   b.geometry.parameters.depth*.7,0x243c46);
+ }
+}
+
+// Player
+const player=new THREE.Group();
+scene.add(player);
+
+const suit=new THREE.MeshStandardMaterial({color:0x182b3e,metalness:.55,roughness:.35});
+const armor=new THREE.MeshStandardMaterial({color:0x18d5e9,metalness:.6,roughness:.25});
+const dark=new THREE.MeshStandardMaterial({color:0x111820,metalness:.4});
+const skin=new THREE.MeshStandardMaterial({color:0xc99870});
+
+function part(parent,geo,mat,x,y,z){
+ const m=new THREE.Mesh(geo,mat);
+ m.position.set(x,y,z);
+ m.castShadow=true;
+ parent.add(m);
+ return m;
+}
+
+part(player,new THREE.CapsuleGeometry(.42,.9,5,10),suit,0,1.2,0);
+part(player,new THREE.BoxGeometry(.95,.52,.5),armor,0,1.45,-.02);
+part(player,new THREE.SphereGeometry(.31,16,12),skin,0,2.05,0);
+part(player,new THREE.SphereGeometry(.34,16,12),dark,0,2.19,0);
+part(player,new THREE.BoxGeometry(.52,.13,.45),armor,0,2.14,-.04);
+part(player,new THREE.BoxGeometry(.2,.72,.22),suit,-.55,1.2,0);
+part(player,new THREE.BoxGeometry(.2,.72,.22),suit,.55,1.2,0);
+part(player,new THREE.BoxGeometry(.25,.7,.28),dark,-.22,.48,0);
+part(player,new THREE.BoxGeometry(.25,.7,.28),dark,.22,.48,0);
+
+// Futuristic rifle
+part(player,new THREE.BoxGeometry(.16,.16,1.1),dark,.48,1.55,-.65);
+part(player,new THREE.BoxGeometry(.2,.2,.25),armor,.48,1.55,-1.2);
+
+player.position.set(0,0,5);
+
+// Training bots
+const bots=[];
+function createBot(x,z){
+ const g=new THREE.Group();
+ scene.add(g);
+ const red=new THREE.MeshStandardMaterial({color:0xb52f42,metalness:.3});
+ const black=new THREE.MeshStandardMaterial({color:0x242c39});
+ part(g,new THREE.CapsuleGeometry(.4,.8,4,8),black,0,1.1,0);
+ part(g,new THREE.SphereGeometry(.3,12,10),red,0,1.9,0);
+ part(g,new THREE.BoxGeometry(.85,.35,.4),red,0,1.35,0);
+ g.position.set(x,0,z);
+ bots.push({g,hp:100,alive:true,phase:Math.random()*6});
+}
+for(let i=0;i<8;i++){
+ createBot((Math.random()-.5)*55,(Math.random()-.5)*55-12);
+}
+
+const keys={};
+let health=100,kills=0,started=false;
+let yaw=0,vy=0,onGround=true,fireCooldown=0;
+const clock=new THREE.Clock();
+
+function bind(id,key){
+ const el=document.getElementById(id);
+ el.addEventListener('pointerdown',e=>{
+  e.preventDefault();keys[key]=true;
+  if(el.setPointerCapture)el.setPointerCapture(e.pointerId);
+ });
+ for(const ev of ['pointerup','pointercancel','lostpointercapture'])
+ el.addEventListener(ev,e=>{keys[key]=false;});
+}
+bind('left','left');
+bind('right','right');
+bind('forward','forward');
+bind('back','back');
+
+document.getElementById('jump').addEventListener('pointerdown',()=>{
+ if(onGround&&started){vy=7;onGround=false;}
+});
+
+document.getElementById('fire').addEventListener('pointerdown',()=>{
+ if(!started||fireCooldown>0)return;
+ fireCooldown=.35;
+ // Hit the nearest training bot approximately in front of the player.
+ let target=null,best=14;
+ for(const b of bots){
+  if(!b.alive)continue;
+  const dx=b.g.position.x-player.position.x;
+  const dz=b.g.position.z-player.position.z;
+  const dist=Math.hypot(dx,dz);
+  const front=-(Math.sin(yaw)*dx+Math.cos(yaw)*dz);
+  const side=Math.abs(Math.cos(yaw)*dx-Math.sin(yaw)*dz);
+  if(front>0&&side<Math.max(1.5,front*.16)&&dist<best){
+   best=dist;target=b;
+  }
+ }
+ if(target){
+  target.hp-=50;
+  if(target.hp<=0){
+   target.alive=false;
+   scene.remove(target.g);
+   kills++;
+   document.getElementById('kills').textContent=kills;
+   document.getElementById('message').textContent='TARGET ELIMINATED!';
+   setTimeout(()=>document.getElementById('message').textContent='',900);
+  }
+ }
+});
+
+document.getElementById('play').addEventListener('click',()=>{
+ started=true;
+ document.getElementById('start').style.display='none';
+ document.getElementById('message').textContent='MISSION STARTED';
+ setTimeout(()=>document.getElementById('message').textContent='',1500);
+});
+
+function update(dt){
+ if(!started)return;
+ const speed=7;
+ if(keys.left)yaw+=2.2*dt;
+ if(keys.right)yaw-=2.2*dt;
+ const direction=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+ const move=new THREE.Vector3();
+ if(keys.forward)move.add(direction);
+ if(keys.back)move.sub(direction);
+ if(move.lengthSq()>0){
+  move.normalize().multiplyScalar(speed*dt);
+  player.position.add(move);
+ }
+ player.position.x=THREE.MathUtils.clamp(player.position.x,-110,110);
+ player.position.z=THREE.MathUtils.clamp(player.position.z,-110,110);
+
+ vy-=18*dt;
+ player.position.y+=vy*dt;
+ if(player.position.y<=0){player.position.y=0;vy=0;onGround=true;}
+
+ for(const b of bots){
+  if(!b.alive)continue;
+  b.phase+=dt;
+  const d=b.g.position.distanceTo(player.position);
+  if(d>5&&d<35){
+   const v=player.position.clone().sub(b.g.position);
+   v.y=0;v.normalize();
+   b.g.position.addScaledVector(v,dt*.65);
+   b.g.rotation.y=Math.atan2(v.x,v.z);
+  }
+ }
+
+ fireCooldown=Math.max(0,fireCooldown-dt);
+ camera.position.set(
+  player.position.x+Math.sin(yaw)*7,
+  player.position.y+4,
+  player.position.z+Math.cos(yaw)*7
+ );
+ camera.lookAt(player.position.x,player.position.y+1.3,player.position.z);
+}
+
+camera.position.set(0,5,13);
+camera.lookAt(0,1,0);
+
+function animate(){
+ requestAnimationFrame(animate);
+ const dt=Math.min(clock.getDelta(),.04);
+ update(dt);
+ renderer.render(scene,camera);
+}
+animate();
+
+addEventListener('resize',()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+});
+</script>
+</body>
+</html>

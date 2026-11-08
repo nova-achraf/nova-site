@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#FFFBF6">
+<title>WebP to JPG Converter — Free &amp; Private</title>
+<meta name="description" content="Convert WebP to JPG or PNG, and convert JPG or PNG to WebP online for free. Batch conversion, no upload, no watermarks.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://nova-achraf.github.io/nova/webp-converter.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#FFFBF6; --card:#FFFFFF; --card2:#FFF7EF; --line:#F0E4D8;
+  --txt:#2E2118; --dim:#8B7768; --accent:#FF6B4A; --accent2:#FF9F1C;
+  --green:#10B981; --red:#EF4444;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:linear-gradient(180deg,#FFF3E6,#FFFBF6 520px) fixed;color:var(--txt);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+.brand{display:flex;align-items:center;gap:9px}
+.brand .ic{width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,#FFE3D1,#FFD0B5);
+  border:1px solid #FFC4A3;display:flex;align-items:center;justify-content:center;font-size:16px}
+.brand b{font-size:15px;letter-spacing:-.2px}
+.brand span{font-size:10px;color:var(--dim);display:block;margin-top:1px;font-weight:500}
+.brand a{color:inherit;display:flex;align-items:center;gap:9px}
+.nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.nav a{font-size:10.5px;color:var(--dim);border:1px solid var(--line);border-radius:8px;padding:5px 9px}
+.nav a.on{color:var(--accent);border-color:var(--accent);background:rgba(255,107,74,.10)}
+.hero{text-align:center;padding:28px 0 20px}
+.hero h1{font-size:26px;line-height:1.22;margin:0 0 10px;letter-spacing:-.6px;font-weight:800}
+.hero p{margin:0 auto;color:var(--dim);font-size:13.5px;line-height:1.65;max-width:560px}
+.badges{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.badge{font-size:10.5px;color:var(--green);background:rgba(16,185,129,.12);
+  border:1px solid rgba(16,185,129,.30);border-radius:20px;padding:4px 11px;font-weight:600}
+.drop{margin-top:6px;border:2px dashed var(--line);border-radius:18px;background:var(--card);
+  padding:34px 20px;text-align:center;cursor:pointer;transition:.2s}
+.drop:hover,.drop.over{border-color:var(--accent);background:rgba(255,107,74,.05)}
+.drop .e{font-size:34px;margin-bottom:8px}
+.drop .t{font-size:14px;font-weight:700}
+.drop .s{font-size:11.5px;color:var(--dim);margin-top:5px}
+.opts{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+.opt{margin-bottom:16px}
+.opt:last-child{margin-bottom:0}
+.opt .lbl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);
+  font-weight:600;margin-bottom:7px}
+.opt .val{color:var(--accent);font-weight:700}
+input[type=range]{width:100%;accent-color:var(--accent);height:5px}
+input[type=number],input[type=text]{background:var(--card2);border:1px solid var(--line);
+  border-radius:10px;padding:10px 12px;color:var(--txt);font-size:13px;font-family:inherit;
+  outline:none;width:100%}
+input:focus{border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--card2);border:1px solid var(--line);color:var(--dim);border-radius:9px;
+  padding:7px 13px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit}
+.chip.on{background:rgba(255,107,74,.14);border-color:var(--accent);color:var(--accent)}
+.chip:active{transform:scale(.96)}
+.res{margin-top:14px;display:none}
+.res.show{display:block}
+.item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:11px;margin-bottom:9px}
+.item img{width:46px;height:46px;border-radius:9px;object-fit:cover;background:#FBF3EA;flex-shrink:0}
+.item .inf{flex:1;min-width:0}
+.item .nm{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .sz{font-size:10.5px;color:var(--dim);margin-top:3px}
+.item .sz b{color:var(--green);font-weight:700}
+.item .dl{background:rgba(255,107,74,.14);border:1px solid var(--accent);color:var(--accent);
+  border-radius:9px;padding:8px 13px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;
+  white-space:nowrap}
+.allbtn{width:100%;background:linear-gradient(145deg,var(--accent),var(--accent2));color:#FFFFFF;
+  border:0;border-radius:13px;padding:15px;font-size:14px;font-weight:800;cursor:pointer;
+  margin-top:6px;font-family:inherit}
+.allbtn:disabled{opacity:.5}
+.allbtn.ghost{background:#FFFFFF;border:1px solid var(--accent);color:var(--accent);margin-top:8px}
+.allbtn.ghost:disabled{opacity:.45}
+.total{font-size:11.5px;color:var(--dim);font-weight:600;margin:0 0 9px 2px}
+.total b{color:var(--green)}
+input[type=number]{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:10px;
+  padding:11px 13px;font-size:14px;font-weight:600;color:var(--txt);font-family:inherit;outline:none}
+input[type=number]:focus{border-color:var(--accent)}
+.preview{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;
+  margin-top:14px;text-align:center;display:none}
+.preview.show{display:block}
+.preview img{max-width:100%;max-height:340px;border-radius:10px;display:block;margin:0 auto}
+.preview .cap{font-size:10.5px;color:var(--dim);margin-top:8px}
+.content{margin:32px 0 0}
+.content h2{font-size:17px;margin:24px 0 9px;letter-spacing:-.3px}
+.content p{font-size:13px;line-height:1.75;color:#6B5647;margin:0 0 10px}
+.content ol,.content ul{padding-left:20px;margin:0 0 10px}
+.content li{font-size:13px;line-height:1.75;color:#6B5647;margin-bottom:6px}
+.adslot{border:1px dashed var(--line);border-radius:12px;padding:22px;text-align:center;
+  color:#C9B5A3;font-size:10.5px;margin:26px 0}
+footer{border-top:1px solid var(--line);margin-top:34px;padding:20px 0 30px;text-align:center;
+  font-size:11px;color:#A8917F}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,14px);opacity:0;transition:.25s;
+  background:#2E2118;border:1px solid #2E2118;color:#FFF8F0;border-radius:11px;padding:10px 16px;
+  font-size:12px;z-index:50;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap" style="display:flex;align-items:center;gap:10px">
+    <div class="brand">
+      <a href="tools.html">
+        <div class="ic">🗜</div>
+        <div>
+          <b>PixShrink</b>
+          <span>Free online image tools</span>
+        </div>
+      </a>
+    </div>
+    <div class="nav"><a href="compress.html">Compress</a><a href="resize-image.html">Resize Image</a><a href="webp-converter.html" class="on">WebP Converter</a><a href="crop-image.html">Crop Image</a><a href="rotate-image.html">Rotate Image</a><a href="image-to-pdf.html">Image to PDF</a></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>WebP Converter</h1>
+    <p>Convert WebP to JPG or PNG, and convert JPG or PNG to WebP online for free. Batch conversion, no upload, no watermarks.</p>
+    <div class="badges">
+      <span class="badge">✓ 100% private</span>
+      <span class="badge">✓ No sign-up</span>
+      <span class="badge">✓ No watermarks</span>
+    </div>
+  </div>
+
+
+  <div class="drop" id="drop">
+    <div class="e">📁</div>
+    <div class="t">Drop your images here</div>
+    <div class="s">or tap to choose · JPG, PNG, WebP</div>
+  </div>
+  <input type="file" id="file" accept="image/*" multiple hidden>
+
+  <div class="opts">
+    <div class="opt">
+      <div class="lbl"><span>Convert to</span><span class="val" id="fVal">JPG</span></div>
+      <div class="chips" id="formats">
+        <button class="chip on" data-f="image/jpeg">JPG</button>
+        <button class="chip" data-f="image/png">PNG</button>
+        <button class="chip" data-f="image/webp">WebP</button>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="lbl"><span>Target file size</span><span class="val" id="tVal">Off</span></div>
+      <div class="chips" id="targets">
+        <button class="chip on" data-t="0">Off</button>
+        <button class="chip" data-t="100">100 KB</button>
+        <button class="chip" data-t="200">200 KB</button>
+        <button class="chip" data-t="500">500 KB</button>
+        <button class="chip" data-t="1024">1 MB</button>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="lbl"><span>Quality</span><span class="val" id="qVal">90%</span></div>
+      <input type="range" id="quality" min="50" max="100" value="90" step="5">
+    </div>
+  </div>
+
+  <div class="res" id="res">
+    <div class="total" id="total"></div>
+    <div id="items"></div>
+    <button class="allbtn" id="all" disabled>⬇ Download all</button>
+    <button class="allbtn ghost" id="zip" disabled>🗜 Download all as ZIP</button>
+  </div>
+
+
+  <div class="adslot">Ad space</div>
+
+
+  <div class="content">
+    <h2>How to convert WebP to JPG</h2>
+    <ol>
+      <li>Drop one or many images.</li>
+      <li>Choose JPG, PNG, or WebP as the output.</li>
+      <li>Adjust the quality slider if you are producing JPG or WebP.</li>
+      <li>Download single files or everything at once.</li>
+    </ol>
+    <h2>What is WebP?</h2>
+    <p>WebP is an image format developed by Google. It typically produces files 25–35% smaller than JPG at the same visual quality, and it supports transparency like PNG. It is supported by every modern browser, but older desktop software and some upload forms still reject it — which is why converting to JPG is often necessary.</p>
+    <h2>When to keep WebP</h2>
+    <p>If your images are only used on a website you control, WebP is the better choice: faster pages, fewer bytes. Convert to JPG when you need to email the file, upload it to a form that only accepts JPG or PNG, or open it in an old photo editor.</p>
+    <h2>Why does WebP lose its transparency?</h2>
+    <p>JPG has no alpha channel. Transparent areas become white — this tool fills the background with white automatically so you never get black boxes. Choose PNG if you need to keep transparency.</p>
+  </div>
+
+
+  <footer>
+    PixShrink — free browser-based image tools. No uploads, no accounts, no tracking pixels.
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var toastEl = document.getElementById('toast');
+function toast(m){
+  toastEl.textContent = m;
+  toastEl.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ toastEl.classList.remove('show'); }, 2200);
+}
+function fmtSize(b){
+  if (b < 1024) return b + ' B';
+  if (b < 1024 * 1024) return Math.round(b / 1024) + ' KB';
+  return (b / 1024 / 1024).toFixed(2) + ' MB';
+}
+function esc(s){ return String(s).replace(/[<>&"]/g, ''); }
+function dlUrl(url, name){
+  var a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function loadImg(file){
+  return new Promise(function(res, rej){
+    var u = URL.createObjectURL(file);
+    var i = new Image();
+    i.onload = function(){ res({ img: i, url: u }); };
+    i.onerror = function(){ URL.revokeObjectURL(u); rej(new Error('decode')); };
+    i.src = u;
+  });
+}
+function canvasBlob(cv, mime, q){
+  return new Promise(function(res, rej){
+    cv.toBlob(function(b){ b ? res(b) : rej(new Error('blob')); }, mime, q);
+  });
+}
+
+var S = { files: [], out: [], mime: 'image/jpeg', q: 0.9, target: 0 };
+var drop = document.getElementById('drop'), fileIn = document.getElementById('file');
+var resBox = document.getElementById('res'), items = document.getElementById('items');
+var allBtn = document.getElementById('all'), zipBtn = document.getElementById('zip');
+var totalEl = document.getElementById('total');
+
+/* ---------- إعدادات محفوظة ---------- */
+var PREFS = 'pixshrink_webp_prefs_v1';
+function savePrefs(){
+  try { localStorage.setItem(PREFS, JSON.stringify({ m: S.mime, q: S.q, t: S.target })); } catch(e){}
+}
+function loadPrefs(){
+  try {
+    var p = JSON.parse(localStorage.getItem(PREFS) || 'null');
+    if (!p) return;
+    if (p.m) S.mime = p.m;
+    if (p.q) S.q = p.q;
+    if (p.t) S.target = p.t;
+    document.getElementById('quality').value = Math.round(S.q * 100);
+    document.getElementById('qVal').textContent = Math.round(S.q * 100) + '%';
+    document.getElementById('fVal').textContent = S.mime === 'image/png' ? 'PNG' : (S.mime === 'image/webp' ? 'WebP' : 'JPG');
+    document.getElementById('tVal').textContent = !S.target ? 'Off' : (S.target >= 1024 * 1024 ? '1 MB' : Math.round(S.target / 1024) + ' KB');
+    syncChips();
+  } catch(e){}
+}
+function syncChips(){
+  ['formats', 'targets'].forEach(function(id){
+    var box = document.getElementById(id);
+    if (!box) return;
+    Array.prototype.forEach.call(box.children, function(c){ c.classList.remove('on'); });
+  });
+  var f = document.querySelector('#formats .chip[data-f="' + S.mime + '"]');
+  if (f) f.classList.add('on');
+  var t = document.querySelector('#targets .chip[data-t="' + (S.target ? Math.round(S.target / 1024) : 0) + '"]');
+  if (t) t.classList.add('on');
+}
+
+/* ---------- الملفات ---------- */
+drop.onclick = function(){ fileIn.click(); };
+fileIn.onchange = function(e){ add(e.target.files); e.target.value = ''; };
+['dragover','dragenter'].forEach(function(t){ drop.addEventListener(t, function(e){ e.preventDefault(); drop.classList.add('over'); }); });
+['dragleave','drop'].forEach(function(t){ drop.addEventListener(t, function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
+drop.addEventListener('drop', function(e){ if (e.dataTransfer) add(e.dataTransfer.files); });
+
+function add(list){
+  var a = Array.prototype.slice.call(list).filter(function(f){ return f.type.indexOf('image/') === 0; });
+  if (!a.length){ toast('Please choose image files'); return; }
+  S.files = a.slice(0, 20); run();
+}
+
+/* ---------- المعالجة ---------- */
+function run(){
+  if (!S.files.length) return;
+  S.out = []; items.innerHTML = ''; resBox.classList.add('show');
+  allBtn.disabled = true; if (zipBtn) zipBtn.disabled = true;
+  if (totalEl) totalEl.textContent = 'Converting…';
+  var done = 0, totOrig = 0, totNew = 0;
+
+  S.files.forEach(function(f, i){
+    var box = document.createElement('div'); box.className = 'item';
+    box.innerHTML = '<div class="inf"><div class="nm">' + esc(f.name) + '</div><div class="sz">converting…</div></div>';
+    items.appendChild(box);
+
+    loadImg(f).then(function(o){
+      var cv = document.createElement('canvas');
+      cv.width = o.img.naturalWidth; cv.height = o.img.naturalHeight;
+      var ctx = cv.getContext('2d');
+      if (S.mime === 'image/jpeg'){ ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); }
+      ctx.drawImage(o.img, 0, 0);
+      URL.revokeObjectURL(o.url);
+      return searchSize(cv, S.mime, S.target, S.q);
+    }).then(function(r){
+      var ext = S.mime === 'image/png' ? 'png' : (S.mime === 'image/webp' ? 'webp' : 'jpg');
+      var name = f.name.replace(/\.[^.]+$/, '') + '.' + ext;
+      var url = URL.createObjectURL(r.blob);
+      S.out[i] = { url: url, name: name, blob: r.blob };
+      totOrig += f.size; totNew += r.blob.size;
+
+      box.innerHTML = '';
+      var im = document.createElement('img'); im.src = url;
+      var inf = document.createElement('div'); inf.className = 'inf';
+      var diff = Math.round((1 - r.blob.size / f.size) * 100);
+      var note = S.target && S.mime !== 'image/png'
+        ? (r.met ? ' <span style="color:#10B981">✓ under target</span>' : ' <span style="color:#EF4444">couldn\'t reach target</span>')
+        : (diff > 0 ? ' <span style="color:#10B981">−' + diff + '%</span>' : '');
+      inf.innerHTML = '<div class="nm">' + esc(f.name) + '</div><div class="sz">' + fmtSize(f.size) + ' → <b>' + fmtSize(r.blob.size) + '</b> · ' + ext.toUpperCase() + note + '</div>';
+      var btn = document.createElement('button'); btn.className = 'dl'; btn.textContent = '⬇ Save';
+      btn.onclick = function(){ dlUrl(url, name); };
+      box.appendChild(im); box.appendChild(inf); box.appendChild(btn);
+    }).catch(function(){
+      box.innerHTML = '<div class="inf"><div class="nm">' + esc(f.name) + '</div><div class="sz" style="color:#EF4444">failed (unsupported format?)</div></div>';
+    }).then(function(){
+      if (++done === S.files.length){
+        allBtn.disabled = false; if (zipBtn) zipBtn.disabled = false;
+        if (totalEl && totOrig > 0){
+          var save = Math.round((1 - totNew / totOrig) * 100);
+          totalEl.innerHTML = fmtSize(totOrig) + ' → <b>' + fmtSize(totNew) + '</b>' + (save > 0 ? ' · saved ' + save + '%' : '');
+        }
+      }
+    });
+  });
+}
+
+/* كتقلب على أعلى جودة كتخلي الملف تحت الهدف */
+function searchSize(cv, mime, target, startQ){
+  return canvasBlob(cv, mime, startQ).then(function(base){
+    if (!target || mime === 'image/png' || base.size <= target) return { blob: base, met: !target || base.size <= target };
+    var lo = 0.2, hi = startQ, best = null;
+    var chain = Promise.resolve();
+    for (var k = 0; k < 6; k++){
+      chain = chain.then(function(){
+        var mid = (lo + hi) / 2;
+        return canvasBlob(cv, mime, mid).then(function(b){
+          if (b.size <= target){ best = b; lo = mid; } else { hi = mid; }
+        });
+      });
+    }
+    return chain.then(function(){
+      if (!best) return canvasBlob(cv, mime, 0.2).then(function(b){ return { blob: b, met: b.size <= target }; });
+      return { blob: best, met: true };
+    });
+  });
+}
+
+/* ---------- ZIP ---------- */
+function loadJSZip(){
+  return new Promise(function(res, rej){
+    if (window.JSZip) return res(window.JSZip);
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
+    s.onload = function(){ res(window.JSZip); };
+    s.onerror = function(){ rej(new Error('cdn')); };
+    document.head.appendChild(s);
+  });
+}
+if (zipBtn) zipBtn.onclick = function(){
+  var ready = S.out.filter(Boolean);
+  if (!ready.length) return;
+  if (ready.length === 1){ dlUrl(ready[0].url, ready[0].name); return; }
+  zipBtn.disabled = true;
+  var old = zipBtn.textContent;
+  zipBtn.textContent = 'Zipping…';
+  loadJSZip().then(function(JSZip){
+    var z = new JSZip();
+    ready.forEach(function(r){ z.file(r.name, r.blob); });
+    return z.generateAsync({ type: 'blob' });
+  }).then(function(out){
+    var u = URL.createObjectURL(out);
+    var a = document.createElement('a');
+    a.href = u; a.download = 'pixshrink-' + ready.length + '-converted.zip';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(u); }, 4000);
+    toast('ZIP ready (' + fmtSize(out.size) + ')');
+  }).catch(function(){ toast('ZIP failed — use Download all'); }).then(function(){
+    zipBtn.textContent = old; zipBtn.disabled = false;
+  });
+};
+
+/* ---------- التحكم ---------- */
+document.getElementById('formats').onclick = function(e){
+  var b = e.target.closest('.chip'); if (!b) return;
+  S.mime = b.getAttribute('data-f');
+  document.getElementById('fVal').textContent = b.textContent;
+  syncChips(); savePrefs(); run();
+};
+document.getElementById('quality').oninput = function(){
+  S.q = parseInt(this.value, 10) / 100;
+  document.getElementById('qVal').textContent = this.value + '%';
+  savePrefs();
+};
+document.getElementById('quality').onchange = run;
+
+var tgt = document.getElementById('targets');
+if (tgt) tgt.onclick = function(e){
+  var b = e.target.closest('.chip'); if (!b) return;
+  var kb = parseInt(b.getAttribute('data-t'), 10);
+  S.target = kb ? kb * 1024 : 0;
+  document.getElementById('tVal').textContent = !kb ? 'Off' : (kb >= 1024 ? '1 MB' : kb + ' KB');
+  syncChips(); savePrefs(); run();
+};
+
+allBtn.onclick = function(){
+  var i = 0;
+  (function next(){
+    if (i >= S.out.length) return;
+    var r = S.out[i++]; if (r) dlUrl(r.url, r.name);
+    setTimeout(next, 320);
+  })();
+};
+
+loadPrefs();
+</script>
+</body>
+</html>

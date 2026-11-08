@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>AZANOVA — Neon Ghost Racer</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#05070b;
+  font-family:Arial,system-ui,sans-serif;
+  touch-action:none;
+}
+
+canvas{
+  display:block;
+}
+
+#hud{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:10;
+  color:white;
+}
+
+.top{
+  position:absolute;
+  top:12px;
+  left:12px;
+  right:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+
+.box{
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:12px;
+  padding:8px 12px;
+  text-shadow:0 2px 5px #000;
+}
+
+#speed{
+  position:absolute;
+  bottom:145px;
+  left:50%;
+  transform:translateX(-50%);
+  text-align:center;
+}
+
+#speedNumber{
+  font-size:52px;
+  font-weight:900;
+}
+
+#nitroBar{
+  width:160px;
+  height:8px;
+  background:#222;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:5px;
+}
+
+#nitro{
+  width:100%;
+  height:100%;
+  background:linear-gradient(90deg,#00d9ff,#ff00a8);
+}
+
+#mission{
+  position:absolute;
+  top:75px;
+  left:50%;
+  transform:translateX(-50%);
+  text-align:center;
+  background:rgba(0,0,0,.45);
+  padding:8px 16px;
+  border-radius:15px;
+}
+
+#message{
+  position:absolute;
+  top:35%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:28px;
+  font-weight:900;
+  opacity:0;
+  transition:.3s;
+  text-shadow:0 0 20px #00eaff;
+}
+
+.btn{
+  position:fixed;
+  z-index:30;
+  pointer-events:auto;
+  border:2px solid rgba(255,255,255,.25);
+  color:white;
+  background:rgba(10,15,25,.65);
+  backdrop-filter:blur(8px);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  touch-action:none;
+}
+
+#left{
+  left:18px;
+  bottom:30px;
+  width:70px;
+  height:70px;
+  font-size:30px;
+}
+
+#right{
+  left:100px;
+  bottom:30px;
+  width:70px;
+  height:70px;
+  font-size:30px;
+}
+
+#gas{
+  right:18px;
+  bottom:25px;
+  width:90px;
+  height:90px;
+  background:rgba(0,150,255,.35);
+}
+
+#brake{
+  right:120px;
+  bottom:30px;
+  width:65px;
+  height:65px;
+  background:rgba(255,40,70,.3);
+}
+
+#nitroBtn{
+  right:28px;
+  bottom:130px;
+  width:65px;
+  height:65px;
+  background:rgba(190,0,255,.3);
+}
+
+#cam{
+  right:25px;
+  top:80px;
+  width:45px;
+  height:45px;
+}
+
+#startScreen{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 50% 30%,#142448,#04050a 70%);
+  color:white;
+  overflow:auto;
+}
+
+.menu{
+  width:min(92%,430px);
+  text-align:center;
+  padding:25px;
+}
+
+.logo{
+  font-size:42px;
+  font-weight:1000;
+  letter-spacing:3px;
+  background:linear-gradient(90deg,#00eaff,#ff00aa);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.subtitle{
+  color:#9bdcff;
+  margin:8px 0 25px;
+}
+
+.carChoice{
+  margin:10px 0;
+  padding:14px;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:15px;
+  background:rgba(255,255,255,.06);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.carChoice.active{
+  border-color:#00eaff;
+  background:rgba(0,220,255,.15);
+}
+
+#start{
+  margin-top:20px;
+  width:100%;
+  padding:15px;
+  border:0;
+  border-radius:30px;
+  color:white;
+  font-size:20px;
+  font-weight:900;
+  background:linear-gradient(90deg,#00aaff,#ff0088);
+}
+
+#garage{
+  margin-top:18px;
+  color:#ffd21e;
+}
+</style>
+</head>
+
+<body>
+
+<div id="hud">
+
+  <div class="top">
+
+    <div class="box">
+      ⭐ <span id="score">0</span><br>
+      💰 <span id="coins">0</span>
+    </div>
+
+    <div class="box">
+      🚔 <span id="wanted">0</span><br>
+      🏆 BEST <span id="best">0</span>
+    </div>
+
+  </div>
+
+  <div id="mission">
+    MISSION 01<br>
+    <span id="missionText">Reach the checkpoint</span>
+  </div>
+
+  <div id="speed">
+    <div id="speedNumber">0</div>
+    <small>KM/H</small>
+    <div id="nitroBar">
+      <div id="nitro"></div>
+    </div>
+  </div>
+
+  <div id="message"></div>
+
+</div>
+
+<button class="btn" id="left">◀</button>
+<button class="btn" id="right">▶</button>
+<button class="btn" id="gas">GAS</button>
+<button class="btn" id="brake">BRAKE</button>
+<button class="btn" id="nitroBtn">NITRO</button>
+<button class="btn" id="cam">🎥</button>
+
+<div id="startScreen">
+
+  <div class="menu">
+
+    <div class="logo">AZANOVA</div>
+
+    <div class="subtitle">
+      NEON GHOST RACER<br>
+      From Morocco 🇲🇦 · Connecting the World 🌍
+    </div>
+
+    <div class="carChoice active" data-car="0">
+      🔥 FALCON GT<br>
+      Speed: ★★★★★
+    </div>
+
+    <div class="carChoice" data-car="1">
+      ⚡ TYPHOON X<br>
+      Acceleration: ★★★★★
+    </div>
+
+    <div class="carChoice" data-car="2">
+      💪 BISON R<br>
+      Armor: ★★★★★
+    </div>
+
+    <div class="carChoice" data-car="3">
+      👻 SPECTRE<br>
+      Handling: ★★★★★
+    </div>
+
+    <div id="garage">
+      GARAGE LEVEL 1
+    </div>
+
+    <button id="start">
+      START MISSION 🏁
+    </button>
+
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+
+"use strict";
+
+/* =========================
+   AZANOVA GAME ENGINE
+========================= */
+
+const scene = new THREE.Scene();
+
+scene.fog = new THREE.Fog(0x080b16,40,350);
+
+const camera = new THREE.PerspectiveCamera(
+  65,
+  innerWidth/innerHeight,
+  .1,
+  1000
+);
+
+const renderer = new THREE.WebGLRenderer({
+  antialias:true
+});
+
+renderer.setPixelRatio(
+  Math.min(devicePixelRatio,1.5)
+);
+
+renderer.setSize(innerWidth,innerHeight);
+
+document.body.appendChild(renderer.domElement);
+
+
+/* =========================
+   LIGHTING
+========================= */
+
+const ambient = new THREE.AmbientLight(
+  0x8899bb,
+  .7
+);
+
+scene.add(ambient);
+
+const moonLight = new THREE.DirectionalLight(
+  0xaac8ff,
+  1.1
+);
+
+moonLight.position.set(
+  -100,
+  150,
+  -100
+);
+
+scene.add(moonLight);
+
+
+/* =========================
+   WORLD
+========================= */
+
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(900,900),
+  new THREE.MeshLambertMaterial({
+    color:0x080b10
+  })
+);
+
+ground.rotation.x=-Math.PI/2;
+scene.add(ground);
+
+
+/* ROAD */
+
+function road(x,z,w,d){
+
+  const r = new THREE.Mesh(
+    new THREE.BoxGeometry(w,.08,d),
+    new THREE.MeshLambertMaterial({
+      color:0x11151c
+    })
+  );
+
+  r.position.set(x,0,z);
+
+  scene.add(r);
+
+}
+
+for(let i=-6;i<=6;i++){
+
+  road(i*50,0,14,700);
+
+  road(0,i*50,700,14);
+
+}
+
+
+/* ROAD MARKINGS */
+
+const lineMat = new THREE.MeshBasicMaterial({
+  color:0xffdd66
+});
+
+for(let i=-6;i<=6;i++){
+
+  const line = new THREE.Mesh(
+    new THREE.BoxGeometry(.35,.1,700),
+    lineMat
+  );
+
+  line.position.set(i*50,0.08,0);
+
+  scene.add(line);
+
+}
+
+
+/* =========================
+   BUILDINGS
+========================= */
+
+const buildingColors=[
+  0x10182a,
+  0x151027,
+  0x0d2028,
+  0x201426
+];
+
+for(let x=-6;x<6;x++){
+
+  for(let z=-6;z<6;z++){
+
+    if(Math.abs(x)<=0 || Math.abs(z)<=0)
+      continue;
+
+    const h =
+      12 +
+      Math.random()*55;
+
+    const w =
+      18+
+      Math.random()*12;
+
+    const d =
+      18+
+      Math.random()*12;
+
+    const building = new THREE.Mesh(
+
+      new THREE.BoxGeometry(w,h,d),
+
+      new THREE.MeshLambertMaterial({
+        color:
+        buildingColors[
+          Math.floor(
+            Math.random()*buildingColors.length
+          )
+        ]
+      })
+
+    );
+
+    building.position.set(
+      x*50+Math.random()*10-5,
+      h/2,
+      z*50+Math.random()*10-5
+    );
+
+    scene.add(building);
+
+
+    /* WINDOWS */
+
+    for(let y=8;y<h;y+=7){
+
+      for(let q=-4;q<=4;q+=2){
+
+        const windowMesh = new THREE.Mesh(
+
+          new THREE.BoxGeometry(
+            .8,
+            1.8,
+            .15
+          ),
+
+          new THREE.MeshBasicMaterial({
+            color:
+            Math.random()>.35
+            ?0x65dfff
+            :0x211b35
+          })
+
+        );
+
+        windowMesh.position.set(
+          building.position.x+q,
+          y,
+          building.position.z-d/2-.08
+        );
+
+        scene.add(windowMesh);
+
+      }
+
+    }
+
+  }
+
+}
+
+
+/* =========================
+   CAR SYSTEM
+========================= */
+
+const cars=[
+
+ {
+  name:"FALCON GT",
+  color:0xe52222,
+  max:43,
+  acc:27,
+  turn:2.2
+ },
+
+ {
+  name:"TYPHOON X",
+  color:0x00cfff,
+  max:46,
+  acc:31,
+  turn:2
+ },
+
+ {
+  name:"BISON R",
+  color:0xffc400,
+  max:39,
+  acc:25,
+  turn:1.7
+ },
+
+ {
+  name:"SPECTRE",
+  color:0x6e7c99,
+  max:41,
+  acc:28,
+  turn:2.7
+ }
+
+];
+
+let selectedCar=0;
+
+
+/* CAR BUILDER */
+
+function createCar(color,police=false){
+
+  const g=new THREE.Group();
+
+  const bodyMat=
+    new THREE.MeshLambertMaterial({
+      color
+    });
+
+  const body=new THREE.Mesh(
+    new THREE.BoxGeometry(
+      2.2,
+      .55,
+      4.6
+    ),
+    bodyMat
+  );
+
+  body.position.y=.55;
+
+  g.add(body);
+
+
+  const roof=new THREE.Mesh(
+    new THREE.BoxGeometry(
+      1.7,
+      .55,
+      2
+    ),
+    new THREE.MeshLambertMaterial({
+      color:0x172331
+    })
+  );
+
+  roof.position.set(
+    0,
+    1,
+    -.35
+  );
+
+  g.add(roof);
+
+
+  const wheelMat=
+    new THREE.MeshLambertMaterial({
+      color:0x050505
+    });
+
+
+  const wheelGeo=
+    new THREE.CylinderGeometry(
+      .38,
+      .38,
+      .35,
+      12
+    );
+
+
+  const wheelPos=[
+    [1.1,.4,1.45],
+    [-1.1,.4,1.45],
+    [1.1,.4,-1.45],
+    [-1.1,.4,-1.45]
+  ];
+
+
+  wheelPos.forEach(p=>{
+
+    const w=new THREE.Mesh(
+      wheelGeo,
+      wheelMat
+    );
+
+    w.rotation.z=Math.PI/2;
+
+    w.position.set(
+      p[0],
+      p[1],
+      p[2]
+    );
+
+    g.add(w);
+
+  });
+
+
+  const lightMat=
+    new THREE.MeshBasicMaterial({
+      color:0xffeeee
+    });
+
+  for(const x of [-.65,.65]){
+
+    const l=new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .35,.18,.08
+      ),
+      lightMat
+    );
+
+    l.position.set(
+      x,.62,2.34
+    );
+
+    g.add(l);
+
+  }
+
+
+  const rearMat=
+    new THREE.MeshBasicMaterial({
+      color:0xff1111
+    });
+
+  for(const x of [-.65,.65]){
+
+    const l=new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .4,.18,.08
+      ),
+      rearMat
+    );
+
+    l.position.set(
+      x,.65,-2.34
+    );
+
+    g.add(l);
+
+  }
+
+
+  if(police){
+
+    const red=new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .5,.15,.35
+      ),
+      new THREE.MeshBasicMaterial({
+        color:0xff0000
+      })
+    );
+
+    red.position.set(
+      .3,1.45,0
+    );
+
+    g.add(red);
+
+
+    const blue=red.clone();
+
+    blue.material=
+      new THREE.MeshBasicMaterial({
+        color:0x0066ff
+      });
+
+    blue.position.x=-.3;
+
+    g.add(blue);
+
+  }
+
+  return g;
+
+}
+
+
+/* PLAYER */
+
+let player=
+  createCar(cars[0].color);
+
+scene.add(player);
+
+player.position.set(0,0,100);
+
+
+/* =========================
+   TRAFFIC
+========================= */
+
+const traffic=[];
+
+const trafficColors=[
+  0x777777,
+  0x2277aa,
+  0xaa2222,
+  0xdddddd,
+  0x228844
+];
+
+
+for(let i=0;i<18;i++){
+
+  const c=
+    createCar(
+      trafficColors[
+        i%trafficColors.length
+      ]
+    );
+
+  scene.add(c);
+
+  traffic.push({
+
+    mesh:c,
+
+    axis:
+      Math.random()>.5
+      ?"x"
+      :"z",
+
+    pos:
+      Math.random()*600-300,
+
+    lane:
+      Math.floor(
+        Math.random()*12
+      )*50-275,
+
+    speed:
+      8+Math.random()*14,
+
+    dir:
+      Math.random()>.5?1:-1
+
+  });
+
+}
+
+
+/* =========================
+   POLICE
+========================= */
+
+const police=[];
+
+let wanted=0;
+
+
+/* =========================
+   GAME STATE
+========================= */
+
+let speed=0;
+
+let rotation=0;
+
+let nitro=100;
+
+let score=0;
+
+let coins=0;
+
+let cameraMode=0;
+
+let running=false;
+
+let missionDistance=0;
+
+let checkpoint=0;
+
+let best=
+  Number(
+    localStorage.getItem(
+      "azanovaBest"
+    )||0
+  );
+
+document.getElementById(
+  "best"
+).textContent=best;
+
+
+/* =========================
+   INPUT
+========================= */
+
+const keys={
+  left:false,
+  right:false,
+  gas:false,
+  brake:false,
+  nitro:false
+};
+
+
+function button(id,key){
+
+  const b=
+    document.getElementById(id);
+
+  b.addEventListener(
+    "pointerdown",
+    e=>{
+      e.preventDefault();
+      keys[key]=true;
+    }
+  );
+
+  b.addEventListener(
+    "pointerup",
+    e=>{
+      e.preventDefault();
+      keys[key]=false;
+    }
+  );
+
+  b.addEventListener(
+    "pointercancel",
+    ()=>{
+      keys[key]=false;
+    }
+  );
+
+}
+
+button("left","left");
+button("right","right");
+button("gas","gas");
+button("brake","brake");
+button("nitroBtn","nitro");
+
+
+document.addEventListener(
+ "keydown",
+ e=>{
+
+  if(e.key==="ArrowLeft")
+    keys.left=true;
+
+  if(e.key==="ArrowRight")
+    keys.right=true;
+
+  if(e.key==="ArrowUp")
+    keys.gas=true;
+
+  if(e.key==="ArrowDown")
+    keys.brake=true;
+
+  if(e.code==="Space")
+    keys.nitro=true;
+
+ }
+);
+
+
+document.addEventListener(
+ "keyup",
+ e=>{
+
+  if(e.key==="ArrowLeft")
+    keys.left=false;
+
+  if(e.key==="ArrowRight")
+    keys.right=false;
+
+  if(e.key==="ArrowUp")
+    keys.gas=false;
+
+  if(e.key==="ArrowDown")
+    keys.brake=false;
+
+  if(e.code==="Space")
+    keys.nitro=false;
+
+ }
+);
+
+
+/* CAMERA */
+
+document.getElementById(
+ "cam"
+).onclick=()=>{
+
+ cameraMode=
+   cameraMode===0?1:0;
+
+};
+
+
+/* =========================
+   CAR SELECTION
+========================= */
+
+document.querySelectorAll(
+ ".carChoice"
+).forEach(el=>{
+
+ el.onclick=()=>{
+
+  document
+   .querySelectorAll(
+    ".carChoice"
+   )
+   .forEach(
+    x=>x.classList.remove(
+      "active"
+    )
+   );
+
+  el.classList.add("active");
+
+  selectedCar=
+    Number(
+      el.dataset.car
+    );
+
+ };
+
+});
+
+
+/* =========================
+   POLICE SPAWN
+========================= */
+
+function spawnPolice(){
+
+ const p=
+   createCar(
+     0xf2f2f2,
+     true
+   );
+
+ scene.add(p);
+
+ p.position.set(
+   player.position.x+
+   (Math.random()>.5?80:-80),
+
+   0,
+
+   player.position.z+
+   (Math.random()>.5?80:-80)
+ );
+
+ police.push({
+   mesh:p,
+   speed:20
+ });
+
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function message(text,color){
+
+ const el=
+   document.getElementById(
+     "message"
+   );
+
+ el.textContent=text;
+
+ el.style.color=
+   color||"#00eaff";
+
+ el.style.opacity=1;
+
+ setTimeout(()=>{
+   el.style.opacity=0;
+ },1500);
+
+}
+
+
+/* =========================
+   GAME UPDATE
+========================= */
+
+let last=performance.now();
+
+function loop(){
+
+ requestAnimationFrame(loop);
+
+ const now=
+   performance.now();
+
+ const dt=
+   Math.min(
+     (now-last)/1000,
+     .05
+   );
+
+ last=now;
+
+
+ if(!running){
+
+   renderer.render(
+     scene,
+     camera
+   );
+
+   return;
+
+ }
+
+
+ const car=
+   cars[selectedCar];
+
+
+ /* ACCELERATION */
+
+ if(keys.gas){
+
+   speed+=
+     car.acc*dt;
+
+ }
+
+
+ /* BRAKE */
+
+ if(keys.brake){
+
+   speed-=
+     45*dt;
+
+ }
+
+
+ /* FRICTION */
+
+ speed*=
+   1-.8*dt;
+
+
+ /* NITRO */
+
+ if(
+   keys.nitro &&
+   nitro>0 &&
+   speed>5
+ ){
+
+   speed+=
+     50*dt;
+
+   nitro-=
+     30*dt;
+
+ }else{
+
+   nitro+=
+     8*dt;
+
+ }
+
+
+ nitro=
+   Math.max(
+     0,
+     Math.min(
+       100,
+       nitro
+     )
+   );
+
+
+ const maxSpeed=
+   keys.nitro
+   ?car.max+18
+   :car.max;
+
+ speed=
+   Math.max(
+     -8,
+     Math.min(
+       maxSpeed,
+       speed
+     )
+   );
+
+
+ /* STEERING */
+
+ let steer=0;
+
+ if(keys.left)
+   steer=-1;
+
+ if(keys.right)
+   steer=1;
+
+
+ rotation+=
+   steer*
+   car.turn*
+   Math.min(
+     1,
+     Math.abs(speed)/12
+   )*
+   dt;
+
+
+ const dx=
+   Math.sin(rotation)*
+   speed*
+   dt;
+
+ const dz=
+   Math.cos(rotation)*
+   speed*
+   dt;
+
+
+ player.position.x+=dx;
+ player.position.z+=dz;
+
+ player.rotation.y=
+   rotation;
+
+
+ /* WORLD LIMIT */
+
+ player.position.x=
+   Math.max(
+     -295,
+     Math.min(
+       295,
+       player.position.x
+     )
+   );
+
+ player.position.z=
+   Math.max(
+     -295,
+     Math.min(
+       295,
+       player.position.z
+     )
+   );
+
+
+ /* SCORE */
+
+ score+=
+   Math.max(
+     0,
+     speed
+   )*
+   dt;
+
+ coins+=
+   Math.floor(
+     Math.max(0,speed)*
+     dt*.08
+   );
+
+
+ /* CHECKPOINT */
+
+ missionDistance+=
+   Math.abs(speed)*dt;
+
+ if(missionDistance>700){
+
+   missionDistance=0;
+
+   checkpoint++;
+
+   score+=500;
+
+   coins+=50;
+
+   message(
+     "MISSION COMPLETE +500 🏁",
+     "#2dff70"
+   );
+
+ }
+
+
+ /* WANTED SYSTEM */
+
+ if(
+   speed>34 &&
+   Math.random()<.002
+ ){
+
+   wanted=
+     Math.min(
+       3,
+       wanted+1
+     );
+
+   spawnPolice();
+
+   message(
+     "WANTED 🚔",
+     "#ff3344"
+   );
+
+ }
+
+
+ /* TRAFFIC */
+
+ traffic.forEach(t=>{
+
+   t.pos+=
+     t.speed*
+     t.dir*
+     dt;
+
+   if(t.pos>320)
+     t.pos=-320;
+
+   if(t.pos<-320)
+     t.pos=320;
+
+
+   if(t.axis==="x"){
+
+     t.mesh.position.x=
+       t.pos;
+
+     t.mesh.position.z=
+       t.lane;
+
+     t.mesh.rotation.y=
+       t.dir>0
+       ?Math.PI/2
+       :-Math.PI/2;
+
+   }else{
+
+     t.mesh.position.z=
+       t.pos;
+
+     t.mesh.position.x=
+       t.lane;
+
+     t.mesh.rotation.y=
+       t.dir>0
+       ?0
+       :Math.PI;
+
+   }
+
+
+   const distance=
+     t.mesh.position.distanceTo(
+       player.position
+     );
+
+
+   if(distance<3.5){
+
+     speed*=.25;
+
+     score=
+       Math.max(
+         0,
+         score-100
+       );
+
+     wanted=
+       Math.min(
+         3,
+         wanted+1
+       );
+
+     message(
+       "CRASH! 💥",
+       "#ff3344"
+     );
+
+   }
+
+ });
+
+
+ /* POLICE AI */
+
+ police.forEach(p=>{
+
+   const target=
+     new THREE.Vector3(
+       player.position.x,
+       0,
+       player.position.z
+     );
+
+   p.mesh.lookAt(target);
+
+   p.mesh.translateZ(
+     p.speed*dt
+   );
+
+
+   const distance=
+     p.mesh.position.distanceTo(
+       player.position
+     );
+
+
+   if(distance<5){
+
+     speed*=.5;
+
+     score=
+       Math.max(
+         0,
+         score-300
+       );
+
+     wanted=0;
+
+     message(
+       "BUSTED 🚔",
+       "#ff2020"
+     );
+
+   }
+
+ });
+
+
+ /* CAMERA */
+
+ const back=
+   cameraMode===0
+   ?12
+   :-5;
+
+ const height=
+   cameraMode===0
+   ?6
+   :2.5;
+
+
+ const targetX=
+   player.position.x-
+   Math.sin(rotation)*
+   back;
+
+ const targetZ=
+   player.position.z-
+   Math.cos(rotation)*
+   back;
+
+
+ camera.position.x+=
+   (targetX-
+    camera.position.x)*
+   5*dt;
+
+ camera.position.z+=
+   (targetZ-
+    camera.position.z)*
+   5*dt;
+
+ camera.position.y+=
+   (height-
+    camera.position.y)*
+   5*dt;
+
+
+ camera.lookAt(
+   player.position.x,
+   1.3,
+   player.position.z
+ );
+
+
+ /* HUD */
+
+ document.getElementById(
+   "speedNumber"
+ ).textContent=
+   Math.round(
+     Math.abs(speed)*4
+   );
+
+
+ document.getElementById(
+   "score"
+ ).textContent=
+   Math.floor(score);
+
+
+ document.getElementById(
+   "coins"
+ ).textContent=
+   coins;
+
+
+ document.getElementById(
+   "wanted"
+ ).textContent=
+   "⭐".repeat(wanted);
+
+
+ document.getElementById(
+   "nitro"
+ ).style.width=
+   nitro+"%";
+
+
+ if(score>best){
+
+   best=
+     Math.floor(score);
+
+   localStorage.setItem(
+     "azanovaBest",
+     best
+   );
+
+ }
+
+
+ document.getElementById(
+   "best"
+ ).textContent=best;
+
+
+ renderer.render(
+   scene,
+   camera
+ );
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.getElementById(
+ "start"
+).onclick=()=>{
+
+ /* replace player */
+
+ scene.remove(player);
+
+ player=
+   createCar(
+     cars[selectedCar].color
+   );
+
+ scene.add(player);
+
+ player.position.set(
+   0,
+   0,
+   100
+ );
+
+ rotation=0;
+
+ speed=0;
+
+ score=0;
+
+ coins=0;
+
+ nitro=100;
+
+ wanted=0;
+
+ missionDistance=0;
+
+ checkpoint=0;
+
+ running=true;
+
+ document.getElementById(
+   "startScreen"
+ ).style.display="none";
+
+ message(
+   "AZANOVA — MISSION 01",
+   "#00eaff"
+ );
+
+};
+
+
+/* =========================
+   RESIZE
+========================= */
+
+window.addEventListener(
+ "resize",
+ ()=>{
+
+  camera.aspect=
+    innerWidth/innerHeight;
+
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(
+    innerWidth,
+    innerHeight
+  );
+
+ }
+);
+
+
+camera.position.set(
+  0,
+  6,
+  88
+);
+
+loop();
+
+</script>
+
+</body>
+</html>

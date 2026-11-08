@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#FFFBF6">
+<title>Free Image &amp; PDF Tools — Compress, Resize, Convert, Crop, Merge</title>
+<meta name="description" content="Ten free browser-based tools: compress, resize, convert WebP, crop, rotate images, image to PDF, merge PDF, PDF to JPG, passport photos and favicons. No upload, no sign-up.">
+<meta name="robots" content="index,follow">
+<link rel="manifest" href="tools-manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="pixshrink-icon-192.png">
+<link rel="apple-touch-icon" href="pixshrink-apple-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PixShrink">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFFBF6;--card:#FFFFFF;--card2:#FFF7EF;--line:#F0E4D8;--txt:#2E2118;
+  --dim:#8B7768;--accent:#FF6B4A;--green:#10B981}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:linear-gradient(180deg,#FFF3E6,#FFFBF6 520px) fixed;color:var(--txt);
+  font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:780px;margin:0 auto;padding:0 18px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+.brand{display:flex;align-items:center;gap:9px}
+.brand .ic{width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,#FFE3D1,#FFD0B5);
+  border:1px solid #FFC4A3;display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden}
+.brand .ic img{width:100%;height:100%;object-fit:cover;display:block}
+.brand b{font-size:15px;letter-spacing:-.2px}
+.brand span{font-size:10px;color:var(--dim);display:block;margin-top:1px;font-weight:500}
+.hero{text-align:center;padding:38px 0 26px}
+.hero h1{font-size:28px;line-height:1.2;margin:0 0 11px;letter-spacing:-.7px;font-weight:800}
+.hero p{margin:0 auto;color:var(--dim);font-size:13.5px;line-height:1.65;max-width:520px}
+.badges{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:15px}
+.badge{font-size:10.5px;color:var(--green);background:rgba(16,185,129,.12);
+  border:1px solid rgba(16,185,129,.30);border-radius:20px;padding:4px 11px;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr;gap:11px}
+@media(min-width:560px){.grid{grid-template-columns:1fr 1fr}}
+.tool{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:15px;transition:.18s;color:var(--txt)}
+.tool:hover{border-color:var(--accent);background:rgba(255,107,74,.05);transform:translateY(-1px)}
+.tool .ic{width:40px;height:40px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;font-size:19px;background:#FFD0B5;border:1px solid #FFC4A3}
+.tool .t{font-size:13.5px;font-weight:700;margin-bottom:3px}
+.tool .d{font-size:11px;color:var(--dim);line-height:1.55}
+.adslot{border:1px dashed var(--line);border-radius:12px;padding:22px;text-align:center;
+  color:#C9B5A3;font-size:10.5px;margin:28px 0}
+.why{margin:34px 0 0}
+.why h2{font-size:17px;margin:0 0 10px;letter-spacing:-.3px}
+.why p{font-size:13px;line-height:1.75;color:#6B5647;margin:0 0 10px}
+footer{border-top:1px solid var(--line);margin-top:32px;padding:20px 0 30px;text-align:center;
+  font-size:11px;color:#A8917F}
+</style>
+<link rel="canonical" href="https://nova-achraf.github.io/nova/tools.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AZAMI">
+<meta property="og:title" content="PixShrink — Free Image &amp; PDF Tools">
+<meta property="og:description" content="Ten free browser-based tools: compress, resize, convert WebP, crop, rotate, image to PDF, merge PDF, PDF to JPG, passport photos, favicons. No upload, no sign-up.">
+<meta property="og:url" content="https://nova-achraf.github.io/nova/tools.html">
+<meta property="og:image" content="https://nova-achraf.github.io/nova/pixshrink-icon-512.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PixShrink — Free Image &amp; PDF Tools">
+<meta name="twitter:description" content="Ten free browser-based tools: compress, resize, convert WebP, crop, rotate, image to PDF, merge PDF, PDF to JPG, passport photos, favicons. No upload, no sign-up.">
+<meta name="twitter:image" content="https://nova-achraf.github.io/nova/pixshrink-icon-512.png">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="ic"><img src="pixshrink-icon-192.png" alt="PixShrink"></div>
+      <div>
+        <b>PixShrink</b>
+        <span>Free online image tools</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Free Image Tools That Never Upload Your Photos</h1>
+    <p>Ten tools to compress, resize, convert, crop, rotate images, build PDFs and make passport photos — all running inside your browser.</p>
+    <div class="badges">
+      <span class="badge">✓ 100% private</span>
+      <span class="badge">✓ No sign-up</span>
+      <span class="badge">✓ No watermarks</span>
+      <span class="badge">✓ Unlimited</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <a class="tool" href="compress.html">
+      <div class="ic">🗜</div>
+      <div>
+        <div class="t">Compress Image</div>
+        <div class="d">Shrink JPG, PNG and WebP files by up to 90% with no visible quality loss.</div>
+      </div>
+    </a>
+
+    <a class="tool" href="resize-image.html">
+      <div class="ic">📐</div>
+      <div>
+        <div class="t">Resize Image</div>
+        <div class="d">Set an exact pixel width or height, or scale by percentage.</div>
+      </div>
+    </a>
+
+    <a class="tool" href="webp-converter.html">
+      <div class="ic">🔄</div>
+      <div>
+        <div class="t">WebP Converter</div>
+        <div class="d">Convert WebP to JPG or PNG — and JPG or PNG to WebP.</div>
+      </div>
+    </a>
+
+    <a class="tool" href="crop-image.html">
+      <div class="ic">✂️</div>
+      <div>
+        <div class="t">Crop Image</div>
+        <div class="d">Crop to 1:1, 4:5, 9:16, 16:9 or any custom ratio.</div>
+      </div>
+    </a>
+
+    <a class="tool" href="rotate-image.html">
+      <div class="ic">🔃</div>
+      <div>
+        <div class="t">Rotate &amp; Flip</div>
+        <div class="d">Fix sideways photos or mirror an image instantly.</div>
+      </div>
+    </a>
+
+    <a class="tool" href="image-to-pdf.html">
+      <div class="ic">📄</div>
+      <div>
+        <div class="t">Image to PDF</div>
+        <div class="d">Combine photos and scans into one clean PDF document.</div>
+      </div>
+    </a>
+
+    <a class="tool" href="coloring-book.html">
+      <div class="ic" style="overflow:hidden"><img src="kdp-icon-192.png" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div>
+        <div class="t">Coloring Book → KDP PDF</div>
+        <div class="d">8.5×11 in with bleed, 300 DPI B&amp;W, blank page after each drawing.</div>
+      </div>
+    </a>
+
+    <a class="tool" href="merge-pdf.html">
+      <div class="ic">📑</div>
+      <div>
+        <div class="t">Merge PDF</div>
+        <div class="d">Combine several PDF files into one document, in your order.</div>
+      </div>
+    </a>
+
+    <a class="tool" href="pdf-to-jpg.html">
+      <div class="ic">🖼</div>
+      <div>
+        <div class="t">PDF to JPG</div>
+        <div class="d">Turn every PDF page into a sharp JPG image.</div>
+      </div>
+    </a>
+
+    <a class="tool" href="passport-photo.html">
+      <div class="ic">🪪</div>
+      <div>
+        <div class="t">Passport Photo</div>
+        <div class="d">35×45 mm, 2×2 in or 51×51 — plus a printable 4-photo sheet.</div>
+      </div>
+    </a>
+
+    <a class="tool" href="favicon-maker.html">
+      <div class="ic">⭐</div>
+      <div>
+        <div class="t">Favicon Generator</div>
+        <div class="d">favicon.ico + every PNG size your site needs.</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="adslot">Ad space</div>
+
+  <div class="why">
+    <h2>Why these tools are different</h2>
+    <p>Almost every “free online converter” uploads your file to a server, processes it, then keeps it for some period of time. That is a real privacy problem for ID cards, contracts, bank statements and family photos.</p>
+    <p>Every tool here uses the browser’s own image engine. Files are read from your device, processed in memory and saved back to your device. There is no upload step, so there is nothing to leak — you can even disconnect from the internet after the page loads and everything still works.</p>
+    <p>There are no accounts, no watermarks, no daily limits and no “upgrade to download” trick. The tools are free and supported by advertising.</p>
+  </div>
+
+  <footer>
+    PixShrink — free browser-based image tools. No uploads, no accounts, no tracking pixels.
+  </footer>
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('tools-sw.js').catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
