@@ -75,7 +75,8 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
   <div class="row" style="margin-top:12px">
     <div style="flex:1;min-width:120px">
       <label class="f">مدة كل تصويرة (ثانية)</label>
-      <input id="dur" type="number" value="3" min="1" max="8" step="0.5">
+      <input id="dur" type="number" value="3" min="1" max="30" step="0.5">
+      <div id="total" style="font-size:11.5px;color:var(--muted);margin-top:6px">المدة الإجمالية: 0 ثانية</div>
     </div>
     <div style="flex:1;min-width:120px">
       <label class="f">الحركة</label>
@@ -231,9 +232,23 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
     };
   });
 
+  function totalDur() {
+    var d = parseFloat(document.getElementById('dur').value) || 3;
+    return d * slides.length;
+  }
+
+  function paintTotal() {
+    var t = totalDur();
+    var txt = slides.length ? (t.toFixed(1).replace('.0', '') + ' ثانية · ' + slides.length + ' تصويرة') : '0 ثانية';
+    document.getElementById('total').textContent = 'المدة الإجمالية: ' + txt;
+  }
+
   function syncButtons() {
     makeBtn.disabled = !slides.length || !support;
+    paintTotal();
   }
+
+  document.getElementById('dur').addEventListener('input', paintTotal);
 
   /* ---------- drawing ---------- */
   function drawSlide(img, p, caption) {
@@ -314,7 +329,7 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
   makeBtn.addEventListener('click', function () {
     if (!slides.length || !support) return;
 
-    var dur = Math.max(1, parseFloat(document.getElementById('dur').value) || 3) * 1000;
+    var dur = Math.min(30, Math.max(1, parseFloat(document.getElementById('dur').value) || 3)) * 1000;
     var caption = document.getElementById('caption').value.trim();
     var total = dur * slides.length;
 
