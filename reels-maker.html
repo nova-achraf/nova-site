@@ -48,7 +48,7 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
 <body>
 
 <a class="back" href="tools.html">‹ رجوع للأدوات</a>
-<h1>Reels Maker 🎬 <span style="font-size:12px;font-weight:600;color:#8a7f76;vertical-align:middle">v5</span></h1>
+<h1>Reels Maker 🎬 <span style="font-size:12px;font-weight:600;color:#8a7f76;vertical-align:middle">v6</span></h1>
 <div class="sub">تصاور + نص = فيديو عمودي جاهز للنشر. كلشي كيتدار فالهاتف ديالك، بلا سيرفر وبلا تسجيل.</div>
 
 <div id="err"></div>
@@ -467,15 +467,19 @@ a.back{display:inline-block;margin-bottom:12px;font-size:12.5px;color:var(--mute
     function frame(now) {
       if (!recording) return;
       var elapsed = now - t0;
-      if (elapsed >= total || stopped) {
+      if (elapsed >= total || stopped || !slides.length) {
         try { recorder.stop(); } catch (e) {}
         return;
       }
       var idx = Math.min(slides.length - 1, Math.floor(elapsed / dur));
+      if (idx < 0) idx = 0;
+      var slide = slides[idx];
+      if (!slide || !slide.img) { try { recorder.stop(); } catch (e) {} return; }
       var p = (elapsed - idx * dur) / dur;
-      drawSlide(slides[idx].img, p, caption);
+      if (!isFinite(p)) p = 0;
+      drawSlide(slide.img, p, caption);
       mirror();
-      bar.style.width = ((elapsed / total) * 100).toFixed(1) + '%';
+      bar.style.width = (total > 0 ? Math.min(100, (elapsed / total) * 100) : 100).toFixed(1) + '%';
       statusEl.textContent = 'كنسجل… باقي ' + Math.ceil((total - elapsed) / 1000) + ' ثانية';
       rafId = requestAnimationFrame(frame);
     }
