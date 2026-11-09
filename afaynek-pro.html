@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Afaynek — أفاينك</title>
+<meta name="theme-color" content="#0F7B3F">
+<link rel="apple-touch-icon" href="azami-apple-icon.png">
+<style>
+:root{
+  --cream:#FFFBF6; --ink:#2E2A26; --muted:#93877D; --line:#EFE7DD; --soft:#F7EFE7;
+  --main:#0F7B3F; --main2:#2FA765; --accent:#D4AF37;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:#EFE6DB;color:var(--ink);overflow:hidden;font-family:"Segoe UI",Tahoma,-apple-system,system-ui,sans-serif}
+#app{max-width:480px;margin:0 auto;height:100dvh;position:relative;overflow:hidden;background:var(--cream);
+  display:flex;flex-direction:column;box-shadow:0 0 60px rgba(70,50,35,.14)}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--cream);
+  transition:transform .28s cubic-bezier(.2,.85,.3,1)}
+#chat{transform:translateX(-102%);z-index:2}
+#chat.on{transform:translateX(0)}
+#home.off{transform:translateX(102%)}
+
+/* header */
+.top{padding:18px 16px 12px;background:linear-gradient(160deg,var(--soft),var(--cream) 70%);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:20px;
+  background:linear-gradient(140deg,var(--main),var(--main2));box-shadow:0 10px 22px rgba(0,0,0,.16);flex:none}
+h1{font-size:19px;margin:0;letter-spacing:-.3px}
+.sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.hbtns{display:flex;gap:8px;margin-top:12px}
+.hbtns button{flex:1;border:1px solid var(--line);background:#fff;border-radius:13px;padding:9px 6px;font-family:inherit;
+  font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
+.hbtns button:active{transform:scale(.97)}
+.search{padding:12px 16px 2px}
+.search input{width:100%;padding:11px 16px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:14px;
+  font-family:inherit;outline:none;color:var(--ink)}
+.list{flex:1;overflow-y:auto;padding:8px 10px 92px}
+.row{display:flex;align-items:center;gap:12px;padding:11px 10px;border-radius:18px;cursor:pointer}
+.row:active{background:var(--soft)}
+.av{width:52px;height:52px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:700;font-size:18px;
+  position:relative;box-shadow:0 6px 14px rgba(60,40,25,.14)}
+.dot{position:absolute;bottom:1px;inset-inline-start:1px;width:13px;height:13px;border-radius:50%;background:#3ECF8E;
+  border:2.5px solid var(--cream)}
+.grow{flex:1;min-width:0}
+.nm{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.nm b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm span{font-size:11px;color:var(--muted);flex:none}
+.ml{font-size:12.5px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fab{position:absolute;inset-inline-start:18px;bottom:22px;width:56px;height:56px;border-radius:50%;border:0;
+  background:linear-gradient(140deg,var(--main),var(--main2));color:#fff;font-size:25px;cursor:pointer;
+  box-shadow:0 14px 30px rgba(0,0,0,.22);display:grid;place-items:center}
+
+/* chat */
+.chead{display:flex;align-items:center;gap:10px;padding:11px 12px;background:#fff;border-bottom:1px solid var(--line)}
+.back{width:36px;height:36px;border-radius:50%;border:0;background:var(--soft);font-size:18px;cursor:pointer;color:var(--ink)}
+.chead .av{width:42px;height:42px;font-size:15px;box-shadow:none}
+.who{flex:1;min-width:0}
+.who b{display:block;font-size:15px}
+.who i{font-style:normal;font-size:11.5px;color:var(--main)}
+.msgs{flex:1;overflow-y:auto;padding:16px 14px 6px;display:flex;flex-direction:column;gap:8px;
+  background-image:radial-gradient(circle at 18% 8%,rgba(0,0,0,.04),transparent 45%)}
+.b{max-width:80%;padding:9px 12px;border-radius:17px;font-size:14px;line-height:1.45;word-wrap:break-word;
+  box-shadow:0 1px 3px rgba(46,42,38,.07);animation:pop .18s ease-out}
+@keyframes pop{from{transform:translateY(6px);opacity:.4}to{transform:none;opacity:1}}
+.b.them{background:#fff;border-end-start-radius:6px;align-self:flex-start}
+.b.me{background:linear-gradient(140deg,var(--main2),var(--main));color:#fff;border-end-end-radius:6px;align-self:flex-end}
+.b .t{font-size:10px;opacity:.65;margin-top:3px;text-align:end;direction:ltr}
+.composer{display:flex;gap:8px;padding:9px 9px calc(9px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line)}
+.composer input{flex:1;min-width:0;border:1px solid var(--line);background:#FBF7F2;border-radius:22px;padding:11px 16px;
+  font-size:14px;font-family:inherit;outline:none;color:var(--ink)}
+.cbtn{width:44px;height:44px;border-radius:50%;border:0;flex:none;font-size:17px;cursor:pointer;display:grid;place-items:center;
+  background:var(--soft);color:var(--ink)}
+.cbtn.send{background:linear-gradient(140deg,var(--main),var(--main2));color:#fff}
+
+/* sheets */
+.modal{position:absolute;inset:0;background:rgba(46,42,38,.4);display:none;place-items:center;padding:22px;z-index:9}
+.modal.on{display:grid}
+.sheet{background:#fff;border-radius:22px;padding:20px;width:100%;max-width:350px;max-height:86dvh;overflow-y:auto;
+  box-shadow:0 22px 54px rgba(0,0,0,.22)}
+.sheet h3{margin:0 0 12px;font-size:16px}
+.langs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.langs button{padding:12px 8px;border-radius:13px;border:2px solid var(--line);background:#fff;font-family:inherit;
+  font-size:13px;font-weight:700;cursor:pointer;color:var(--ink)}
+.langs button.on{border-color:var(--main);background:var(--soft);color:var(--main)}
+.sw{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:14px}
+.sw button{height:32px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer}
+.custom{width:100%;height:44px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:3px}
+.row2{display:flex;gap:8px;margin-top:12px}
+.row2 button{flex:1;padding:12px;border-radius:13px;border:0;font-family:inherit;font-size:14px;cursor:pointer;font-weight:600}
+.ok{background:var(--main);color:#fff}
+.no{background:#F4EDE6;color:var(--ink)}
+.toast{position:absolute;left:50%;bottom:96px;transform:translate(-50%,16px);background:rgba(46,42,38,.93);color:#fff;
+  font-size:12.5px;padding:10px 16px;border-radius:14px;opacity:0;transition:.25s;z-index:20;pointer-events:none;max-width:86%;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <section class="screen" id="home">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">أ</div>
+        <div style="flex:1">
+          <h1 id="tName">أفاينك</h1>
+          <div class="sub" id="tTag">فينك؟</div>
+        </div>
+      </div>
+      <div class="hbtns">
+        <button id="langBtn">🌍 <span id="tLang">اللغة</span></button>
+        <button id="themeBtn">🎨 <span id="tColor">الألوان</span></button>
+        <button id="newBtn">✎ <span id="tNew">محادثة</span></button>
+      </div>
+    </div>
+    <div class="search"><input id="q" placeholder="…"></div>
+    <div class="list" id="list"></div>
+    <button class="fab" id="fab">✎</button>
+  </section>
+
+  <section class="screen" id="chat">
+    <div class="chead">
+      <button class="back" id="back">›</button>
+      <div class="av" id="cav">؟</div>
+      <div class="who"><b id="cname">—</b><i id="cstat">…</i></div>
+    </div>
+    <div class="msgs" id="msgs"></div>
+    <div class="composer">
+      <button class="cbtn" id="mic">🎤</button>
+      <input id="inp">
+      <button class="cbtn send" id="send">➤</button>
+    </div>
+  </section>
+
+  <div class="modal" id="langModal">
+    <div class="sheet">
+      <h3>🌍 <span id="tChooseLang">اختار اللغة</span></h3>
+      <div class="langs" id="langGrid"></div>
+      <div class="row2"><button class="no" id="langClose">×</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="themeModal">
+    <div class="sheet">
+      <h3>🎨 <span id="tChooseColor">اختار اللون</span></h3>
+      <div class="sw" id="swatches"></div>
+      <input class="custom" id="custom" type="color" value="#0F7B3F">
+      <div class="row2">
+        <button class="no" id="themeReset">↺</button>
+        <button class="ok" id="themeClose">✓</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---------------- languages ---------------- */
+  var I18N = {
+    dr: { name:'الدارجة', dir:'rtl', title:'أفاينك', tag:'فينك؟', lang:'اللغة', color:'الألوان', newc:'محادثة',
+          search:'قلّب على شي حد…', ph:'كتب رسالة…', online:'متصل دابا', typing:'كيكتب…', you:'أنت: ',
+          empty:'ما كاين حتى شي محادثة. دوس ✎.', chooseLang:'اختار اللغة', chooseColor:'اختار اللون',
+          start:'بدا المحادثة…', sent:'تصيفطت ✓', newchat:'محادثة جديدة', pick:'سمّي المحادثة', save:'صاوب',
+          replies:['واخا، صافي 👌','إيه! فين كنتي؟','ههههه راه قلبتيها عليا 😂','غادي نجي دغيا','مزيان، عجبني 🔥','شكرا بزاف 🙏'] },
+
+    ar: { name:'العربية', dir:'rtl', title:'أفاينك', tag:'أين أنت؟', lang:'اللغة', color:'الألوان', newc:'محادثة',
+          search:'ابحث عن شخص…', ph:'اكتب رسالة…', online:'متصل الآن', typing:'يكتب…', you:'أنت: ',
+          empty:'لا توجد محادثات. اضغط ✎.', chooseLang:'اختر اللغة', chooseColor:'اختر اللون',
+          start:'ابدأ المحادثة…', sent:'أُرسلت ✓', newchat:'محادثة جديدة', pick:'اسم المحادثة', save:'إنشاء',
+          replies:['حسناً 👌','أين كنت؟','ههههه 😂','سأتي قريباً','جميل، أعجبني 🔥','شكراً جزيلاً 🙏'] },
+
+    fr: { name:'Français', dir:'ltr', title:'Afaynek', tag:'Où es-tu ?', lang:'Langue', color:'Couleurs', newc:'Discussion',
+          search:'Chercher quelqu’un…', ph:'Écrire un message…', online:'En ligne', typing:'écrit…', you:'Vous : ',
+          empty:'Aucune discussion. Appuyez sur ✎.', chooseLang:'Choisir la langue', chooseColor:'Choisir la couleur',
+          start:'Commencez la discussion…', sent:'Envoyé ✓', newchat:'Nouvelle discussion', pick:'Nom de la discussion', save:'Créer',
+          replies:['D’accord 👌','Où étais-tu ?','Hahaha 😂','J’arrive bientôt','J’aime bien 🔥','Merci beaucoup 🙏'] },
+
+    en: { name:'English', dir:'ltr', title:'Afaynek', tag:'Where are you?', lang:'Language', color:'Colors', newc:'Chat',
+          search:'Search someone…', ph:'Type a message…', online:'Online now', typing:'typing…', you:'You: ',
+          empty:'No chats yet. Tap ✎.', chooseLang:'Choose language', chooseColor:'Choose color',
+          start:'Start the conversation…', sent:'Sent ✓', newchat:'New chat', pick:'Chat name', save:'Create',
+          replies:['Okay 👌','Where were you?','Hahaha 😂','Coming soon','I like that 🔥','Thanks a lot 🙏'] },
+
+    es: { name:'Español', dir:'ltr', title:'Afaynek', tag:'¿Dónde estás?', lang:'Idioma', color:'Colores', newc:'Chat',
+          search:'Buscar a alguien…', ph:'Escribe un mensaje…', online:'En línea', typing:'escribiendo…', you:'Tú: ',
+          empty:'No hay chats. Pulsa ✎.', chooseLang:'Elegir idioma', chooseColor:'Elegir color',
+          start:'Empieza la conversación…', sent:'Enviado ✓', newchat:'Nuevo chat', pick:'Nombre del chat', save:'Crear',
+          replies:['Vale 👌','¿Dónde estabas?','Jajaja 😂','Voy enseguida','Me gusta 🔥','Muchas gracias 🙏'] },
+
+    zgh:{ name:'ⵜⴰⵎⴰⵣⵉⵖⵜ', dir:'ltr', title:'Afaynek', tag:'Manik?', lang:'Tutlayt', color:'Ikʷlan', newc:'Asqer',
+          search:'Nadi...', ph:'Ari...', online:'Online', typing:'aray...', you:'Kiyi: ',
+          empty:'Ulac asqer. Ssikd ✎.', chooseLang:'Fren tutlayt', chooseColor:'Fren ikʷlan',
+          start:'Bdu asqer…', sent:'Yuzzin ✓', newchat:'Asqer amaynu', pick:'Isem n usqer', save:'Snulfu',
+          replies:['Wah 👌','Manik?','Hahaha 😂','Ad dduɣ','Ixla 🔥','Tanmmirt 🙏'] }
+  };
+
+  /* ---------------- themes ---------------- */
+  var COLORS = ['#0F7B3F','#1B4B8F','#7C6BFF','#FF6B4A','#D4AF37','#00B8A9','#8E44AD',
+                '#2D9CDB','#EB5757','#F2994A','#FF4D8D','#27AE60','#B3261E','#2F2F2F'];
+
+  var app = { lang:'dr', chats:[], openId:null };
+
+  function T() { return I18N[app.lang] || I18N.dr; }
+  function save() {
+    try {
+      localStorage.setItem('afpro', JSON.stringify({ lang: app.lang, chats: app.chats }));
+    } catch (e) {}
+  }
+  function load() {
+    try {
+      var r = localStorage.getItem('afpro');
+      if (r) {
+        var o = JSON.parse(r);
+        if (o) { if (o.lang) app.lang = o.lang; if (o.chats && o.chats.length) app.chats = o.chats; }
+      }
+    } catch (e) {}
+  }
+
+  function seedIfEmpty() {
+    if (app.chats.length) return;
+    var t = Date.now() - 3600000;
+    app.chats = [
+      { id:'yassine', name:'ياسين', msgs:[{f:'them',x:'وا أخويا، واش وصلاتك اللعبة؟',t:t-90000},{f:'me',x:'إيه، جربتها 🔥',t:t-60000}] },
+      { id:'salma', name:'سلمى', msgs:[{f:'them',x:'نتفقو غدا؟',t:t-3600000}] },
+      { id:'club', name:'Club NOVA', msgs:[{f:'them',x:'Social: new update is live! 🚀',t:t-7200000}] }
+    ];
+    save();
+  }
+
+  function hhmm(ts) {
+    var d = new Date(ts);
+    return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+  }
+  function colorOf(id) {
+    var p = ['#0F7B3F','#1B4B8F','#7C6BFF','#D4AF37','#FF6B4A','#00B8A9'];
+    var s = 0; for (var i=0;i<id.length;i++) s += id.charCodeAt(i);
+    return p[s % p.length];
+  }
+  function initials(n){ return (n||'?').trim().charAt(0); }
+  function chatById(id){ for (var i=0;i<app.chats.length;i++) if (app.chats[i].id===id) return app.chats[i]; return null; }
+  function last(c){ return c.msgs.length ? c.msgs[c.msgs.length-1] : null; }
+  function toast(m){
+    var t=$('toast'); t.textContent=m; t.classList.add('on');
+    clearTimeout(t._i); t._i=setTimeout(function(){t.classList.remove('on');},2000);
+  }
+
+  /* ---------------- apply language ---------------- */
+  function applyLang() {
+    var t = T();
+    document.documentElement.lang = app.lang === 'dr' ? 'ar' : (app.lang === 'zgh' ? 'ber' : app.lang);
+    document.documentElement.dir = t.dir;
+    $('tName').textContent = t.title;
+    $('tTag').textContent = t.tag;
+    $('tLang').textContent = t.lang;
+    $('tColor').textContent = t.color;
+    $('tNew').textContent = t.newc;
+    $('q').placeholder = t.search;
+    $('inp').placeholder = t.ph;
+    $('tChooseLang').textContent = t.chooseLang;
+    $('tChooseColor').textContent = t.chooseColor;
+    Array.prototype.forEach.call(document.querySelectorAll('#langGrid button'), function (b) {
+      b.classList.toggle('on', b.getAttribute('data-l') === app.lang);
+    });
+    renderList();
+    if (app.openId) {
+      var c = chatById(app.openId);
+      if (c) { $('cstat').textContent = t.online; renderMsgs(); }
+    }
+  }
+
+  /* ---------------- list ---------------- */
+  function renderList() {
+    var t = T();
+    var q = $('q').value.trim().toLowerCase();
+    var box = $('list');
+    box.innerHTML = '';
+    var items = app.chats.slice().sort(function(a,b){
+      var la=last(a), lb=last(b);
+      return (lb?lb.t:0)-(la?la.t:0);
+    });
+    var shown = 0;
+    items.forEach(function (c) {
+      if (q && c.name.toLowerCase().indexOf(q) < 0) return;
+      shown++;
+      var l = last(c), col = colorOf(c.id);
+      var row = document.createElement('div');
+      row.className = 'row';
+      row.onclick = function(){ openChat(c.id); };
+      var av = document.createElement('div');
+      av.className = 'av';
+      av.style.background = col;
+      av.textContent = initials(c.name);
+      var d = document.createElement('span'); d.className='dot'; av.appendChild(d);
+      var g = document.createElement('div'); g.className='grow';
+      var nm = document.createElement('div'); nm.className='nm';
+      var b = document.createElement('b'); b.textContent = c.name;
+      var sp = document.createElement('span'); sp.textContent = l ? hhmm(l.t) : '';
+      nm.appendChild(b); nm.appendChild(sp);
+      var ml = document.createElement('div'); ml.className='ml';
+      ml.textContent = l ? (l.f==='me' ? t.you : '') + l.x : t.start;
+      g.appendChild(nm); g.appendChild(ml);
+      row.appendChild(av); row.appendChild(g);
+      box.appendChild(row);
+    });
+    if (!shown) {
+      var e = document.createElement('div');
+      e.style.cssText = 'text-align:center;color:#93877D;font-size:13px;padding:40px 20px';
+      e.textContent = t.empty;
+      box.appendChild(e);
+    }
+  }
+
+  /* ---------------- chat ---------------- */
+  function openChat(id) {
+    var c = chatById(id); if (!c) return;
+    app.openId = id;
+    $('cname').textContent = c.name;
+    $('cstat').textContent = T().online;
+    $('cav').textContent = initials(c.name);
+    $('cav').style.background = colorOf(c.id);
+    renderMsgs();
+    $('home').classList.add('off');
+    $('chat').classList.add('on');
+  }
+  function closeChat() {
+    $('chat').classList.remove('on');
+    $('home').classList.remove('off');
+    app.openId = null;
+    renderList();
+  }
+  function bubble(m) {
+    var b = document.createElement('div');
+    b.className = 'b ' + (m.f === 'me' ? 'me' : 'them');
+    var txt = document.createElement('div'); txt.textContent = m.x;
+    var t = document.createElement('div'); t.className='t';
+    t.textContent = hhmm(m.t) + (m.f==='me' ? ' ✓✓' : '');
+    b.appendChild(txt); b.appendChild(t);
+    return b;
+  }
+  function renderMsgs() {
+    var c = chatById(app.openId); if (!c) return;
+    var box = $('msgs'); box.innerHTML = '';
+    c.msgs.forEach(function (m) { box.appendChild(bubble(m)); });
+    box.scrollTop = box.scrollHeight;
+  }
+  function push(f, x) {
+    var c = chatById(app.openId); if (!c) return;
+    c.msgs.push({ f:f, x:x, t:Date.now() });
+    save();
+    var box = $('msgs');
+    box.appendChild(bubble(c.msgs[c.msgs.length-1]));
+    box.scrollTop = box.scrollHeight;
+  }
+  function botReply() {
+    var c = chatById(app.openId); if (!c) return;
+    var st = $('cstat');
+    st.textContent = T().typing;
+    setTimeout(function () {
+      if (app.openId !== c.id) return;
+      st.textContent = T().online;
+      var r = T().replies;
+      push('them', r[Math.floor(Math.random()*r.length)]);
+    }, 900 + Math.random()*800);
+  }
+  function send() {
+    var v = $('inp').value.trim();
+    if (!v) return;
+    $('inp').value = '';
+    push('me', v);
+    botReply();
+  }
+
+  /* ---------------- theme ---------------- */
+  function shade(hex, p) {
+    var n = parseInt(hex.slice(1),16);
+    var r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+    r=Math.min(255,Math.round(r+(255-r)*p));
+    g=Math.min(255,Math.round(g+(255-g)*p));
+    b=Math.min(255,Math.round(b+(255-b)*p));
+    return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+  }
+  function applyColor(hex, silent) {
+    var root = document.documentElement.style;
+    root.setProperty('--main', hex);
+    root.setProperty('--main2', shade(hex,.28));
+    root.setProperty('--accent', shade(hex,.6));
+    try { localStorage.setItem('afpro_color', hex); } catch(e){}
+    $('custom').value = hex;
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', hex);
+    if (!silent) toast('✓');
+  }
+
+  /* ---------------- init ---------------- */
+  load();
+  seedIfEmpty();
+
+  // languages
+  Object.keys(I18N).forEach(function (k) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('data-l', k);
+    b.textContent = I18N[k].name;
+    b.onclick = function () { app.lang = k; save(); applyLang(); $('langModal').classList.remove('on'); };
+    $('langGrid').appendChild(b);
+  });
+  $('langBtn').onclick = function(){ $('langModal').classList.add('on'); };
+  $('langClose').onclick = function(){ $('langModal').classList.remove('on'); };
+
+  // colors
+  COLORS.forEach(function (c) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.style.background = c;
+    b.onclick = function(){ applyColor(c); };
+    $('swatches').appendChild(b);
+  });
+  $('themeBtn').onclick = function(){ $('themeModal').classList.add('on'); };
+  $('themeClose').onclick = function(){ $('themeModal').classList.remove('on'); };
+  $('custom').oninput = function(){ applyColor(this.value, true); };
+  $('themeReset').onclick = function(){
+    try { localStorage.removeItem('afpro_color'); } catch(e){}
+    var r = document.documentElement.style;
+    r.removeProperty('--main'); r.removeProperty('--main2'); r.removeProperty('--accent');
+    $('custom').value = '#0F7B3F';
+  };
+
+  // events
+  $('send').onclick = send;
+  $('inp').addEventListener('keydown', function(e){ if (e.key==='Enter') send(); });
+  $('back').onclick = closeChat;
+  $('q').addEventListener('input', renderList);
+  $('mic').onclick = function(){ toast('🎤'); };
+  $('fab').onclick = function(){
+    var n = prompt(T().pick);
+    if (!n) return;
+    var id = 'u'+Date.now();
+    app.chats.push({ id:id, name:n, msgs:[] });
+    save(); renderList(); openChat(id);
+  };
+  $('newBtn').onclick = $('fab').onclick;
+
+  // restore color
+  try {
+    var c = localStorage.getItem('afpro_color');
+    if (c) applyColor(c, true);
+  } catch(e){}
+
+  applyLang();
+
+  // expose for quick checks
+  window.__afpro = { lang: function(){ return app.lang; }, setLang: function(l){ app.lang=l; save(); applyLang(); } };
+})();
+</script>
+</body>
+</html>
