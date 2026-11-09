@@ -6,149 +6,220 @@
 <title>أفاينك — Afaynek</title>
 <meta name="theme-color" content="#0E9F6E">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="azami-apple-icon.png">
+<meta name="apple-mobile-web-app-title" content="أفاينك">
+<link rel="manifest" href="afaynek-manifest.json">
+<link rel="apple-touch-icon" href="afaynek-apple-icon.png">
+<link rel="icon" href="afaynek-icon-192.png">
 <style>
 :root{
   --brand:#0E9F6E; --brand2:#17C98C; --brand-ink:#0A6E4C;
-  --cream:#FFFBF6; --ink:#2E2A26; --muted:#8C8177; --line:#EAE2D8; --soft:#F3EFE8;
-  --navh:74px;
+  --cream:#FFFBF6; --ink:#2E2A26; --muted:#8C8177;
+  --line:#EFE7DC; --soft:#F6F1E9; --navh:76px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
-body{background:#EDE7DE;color:var(--ink);overflow:hidden;font-family:"Segoe UI",Tahoma,-apple-system,system-ui,sans-serif}
-#app{max-width:480px;margin:0 auto;height:100dvh;position:relative;overflow:hidden;background:var(--cream);
-  box-shadow:0 0 60px rgba(70,50,35,.14);display:flex;flex-direction:column}
+body{background:#EDE7DE;color:var(--ink);overflow:hidden;
+  font-family:"Segoe UI",Tahoma,-apple-system,system-ui,"Noto Kufi Arabic",sans-serif}
+#app{max-width:480px;margin:0 auto;height:100dvh;position:relative;overflow:hidden;
+  background:var(--cream);box-shadow:0 0 60px rgba(70,50,35,.14);display:flex;flex-direction:column}
 
-/* header */
-.top{position:relative;padding:16px 16px 12px;background:linear-gradient(150deg,#EAFBF3,#FFFBF6 70%);
-  border-bottom:1px solid var(--line);flex:none}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;flex:none;color:#fff;
-  font-weight:800;font-size:20px;background:linear-gradient(140deg,var(--brand),var(--brand2));
-  box-shadow:0 10px 22px rgba(14,159,110,.32)}
+/* ---------- top ---------- */
+.top{position:relative;flex:none;padding:14px 14px 10px;overflow:hidden;
+  background:linear-gradient(160deg,rgba(14,159,110,.14),rgba(212,175,55,.10) 55%,var(--cream) 78%);
+  border-bottom:1px solid var(--line)}
+.top:before,.top:after{content:"";position:absolute;border-radius:50%;opacity:.35;pointer-events:none}
+.top:before{width:150px;height:150px;background:radial-gradient(circle,var(--brand2),transparent 70%);top:-70px;left:-40px}
+.top:after{width:120px;height:120px;background:radial-gradient(circle,#D4AF37,transparent 70%);top:-50px;right:-30px;opacity:.3}
+.brand{display:flex;align-items:center;gap:10px;position:relative;z-index:2}
+.logo{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;flex:none;color:#fff;
+  font-weight:800;font-size:21px;background:linear-gradient(140deg,var(--brand),var(--brand2));
+  box-shadow:0 10px 22px rgba(14,159,110,.34)}
+.bt{flex:1;min-width:0}
 h1{font-size:19px;margin:0;letter-spacing:-.4px}
-.sub{font-size:11px;color:var(--muted);margin-top:1px}
-.hbtn{width:40px;height:40px;border-radius:50%;border:0;background:#fff;font-size:17px;cursor:pointer;
-  box-shadow:0 3px 10px rgba(90,60,40,.08);flex:none}
+.sub{font-size:11px;color:var(--muted);margin-top:2px}
+.hbtn{width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.85);font-size:16px;
+  cursor:pointer;box-shadow:0 3px 10px rgba(90,60,40,.08);flex:none;display:grid;place-items:center}
+.hbtn:active{transform:scale(.94)}
+.avb{width:40px;height:40px;border-radius:50%;border:2px solid #fff;flex:none;cursor:pointer;color:#fff;
+  font-weight:800;font-size:15px;display:grid;place-items:center;
+  background:linear-gradient(140deg,var(--brand),var(--brand2));box-shadow:0 4px 12px rgba(90,60,40,.16)}
+.searchwrap{position:relative;margin-top:12px;z-index:2}
+.search{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.92);border-radius:18px;
+  padding:12px 42px 12px 16px;font-size:14px;font-family:inherit;outline:none;color:var(--ink);
+  box-shadow:0 4px 14px rgba(90,60,40,.05)}
+.search:focus{border-color:var(--brand)}
+.sicon{position:absolute;top:50%;transform:translateY(-50%);right:14px;font-size:15px;opacity:.5;pointer-events:none}
+[dir=ltr] .search{padding:12px 16px 12px 42px}
+[dir=ltr] .sicon{right:auto;left:14px}
 
-/* views */
-.view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;padding-bottom:calc(var(--navh) + 12px)}
+/* ---------- views ---------- */
+.view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;padding-bottom:calc(var(--navh) + 14px)}
 .view.on{display:block}
 #view-thread.on{display:flex;flex-direction:column;height:100%;padding-bottom:0;overflow:hidden}
 
-/* list rows */
-.list{padding:8px 10px}
-.row{display:flex;align-items:center;gap:12px;padding:11px 10px;border-radius:18px;cursor:pointer}
+/* ---------- chips ---------- */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 12px 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;
+  border-radius:16px;padding:9px 13px;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--ink);
+  cursor:pointer;box-shadow:0 3px 10px rgba(90,60,40,.05)}
+.chip:active{transform:scale(.96)}
+.chip .e{font-size:15px}
+.chip.brand{border-color:transparent;background:linear-gradient(140deg,var(--brand),var(--brand2));color:#fff;
+  box-shadow:0 8px 18px rgba(14,159,110,.28)}
+
+.sec{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 4px;
+  font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+
+/* ---------- list ---------- */
+.list{padding:4px 10px}
+.row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:20px;cursor:pointer;position:relative}
 .row:active{background:var(--soft)}
-.av{width:52px;height:52px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:700;
-  font-size:18px;position:relative;box-shadow:0 6px 14px rgba(60,40,25,.14)}
-.dot{position:absolute;bottom:1px;left:1px;width:13px;height:13px;border-radius:50%;background:#2FCB86;
+.av{width:52px;height:52px;border-radius:18px;flex:none;display:grid;place-items:center;color:#fff;
+  font-weight:700;font-size:18px;position:relative;box-shadow:0 6px 14px rgba(60,40,25,.14)}
+.dot{position:absolute;bottom:-1px;left:-1px;width:14px;height:14px;border-radius:50%;background:#2FCB86;
   border:2.5px solid var(--cream)}
 .grow{flex:1;min-width:0}
 .nm{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.nm b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm b{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nm span{font-size:11px;color:var(--muted);flex:none}
 .ml{font-size:12.5px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.empty{text-align:center;color:var(--muted);font-size:13px;padding:36px 18px;line-height:1.7}
+.badge{flex:none;min-width:20px;height:20px;border-radius:10px;background:var(--brand);color:#fff;
+  font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 6px}
+.empty{text-align:center;color:var(--muted);font-size:13px;padding:40px 20px;line-height:1.8}
 
-/* thread */
-.chead{display:flex;align-items:center;gap:10px;padding:11px 12px;background:#fff;border-bottom:1px solid var(--line)}
-.back{width:36px;height:36px;border-radius:50%;border:0;background:var(--soft);font-size:19px;cursor:pointer;flex:none}
-.chead .av{width:42px;height:42px;font-size:15px;box-shadow:none}
+/* ---------- thread ---------- */
+.chead{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.96);
+  border-bottom:1px solid var(--line);flex:none}
+.back{width:36px;height:36px;border-radius:50%;border:0;background:var(--soft);font-size:18px;cursor:pointer;flex:none}
+.chead .av{width:42px;height:42px;font-size:15px;border-radius:14px;box-shadow:none}
 .who{flex:1;min-width:0}
-.who b{display:block;font-size:15px}
-.who i{font-style:normal;font-size:11.5px;color:var(--brand);font-weight:600}
+.who b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who i{font-style:normal;font-size:11.5px;color:var(--brand);font-weight:700}
 .who i.off{color:var(--muted)}
 .msgs{flex:1;overflow-y:auto;padding:14px 12px 6px;display:flex;flex-direction:column;gap:8px;
-  background-image:radial-gradient(circle at 18% 8%,rgba(14,159,110,.06),transparent 42%),
-                   radial-gradient(circle at 85% 85%,rgba(212,175,55,.08),transparent 45%)}
-.b{max-width:80%;padding:9px 12px;border-radius:17px;font-size:14px;line-height:1.45;word-wrap:break-word;
+  background-image:radial-gradient(circle at 15% 6%,rgba(14,159,110,.07),transparent 40%),
+                   radial-gradient(circle at 88% 88%,rgba(212,175,55,.09),transparent 45%)}
+.b{max-width:82%;padding:9px 13px;border-radius:19px;font-size:14px;line-height:1.5;word-wrap:break-word;
   box-shadow:0 1px 3px rgba(46,42,38,.07);animation:pop .18s ease-out}
 @keyframes pop{from{transform:translateY(7px) scale(.98);opacity:.35}to{transform:none;opacity:1}}
-.b.them{background:#fff;border-bottom-right-radius:6px;align-self:flex-start}
-.b.me{background:linear-gradient(140deg,var(--brand2),var(--brand));color:#fff;border-bottom-left-radius:6px;align-self:flex-end}
+.b.them{background:#fff;border-bottom-right-radius:7px;align-self:flex-start}
+.b.me{background:linear-gradient(140deg,var(--brand2),var(--brand));color:#fff;border-bottom-left-radius:7px;align-self:flex-end}
 .b .tt{font-size:10px;opacity:.65;margin-top:4px;text-align:left;direction:ltr}
 .b audio{width:190px;max-width:100%;height:34px;display:block;margin-top:2px}
 .b .nm2{font-size:11px;font-weight:800;opacity:.85;margin-bottom:2px}
-.day{text-align:center;font-size:11px;color:var(--muted)}
-.sys{align-self:center;font-size:11.5px;color:var(--muted);background:#F1EBE3;padding:6px 12px;border-radius:12px;text-align:center}
+.day{align-self:center;font-size:11px;color:var(--muted);background:rgba(255,255,255,.75);
+  padding:5px 12px;border-radius:12px}
+.sys{align-self:center;font-size:11.5px;color:var(--muted);background:#F1EBE3;padding:6px 12px;
+  border-radius:12px;text-align:center;max-width:85%}
 .typing{align-self:flex-start;background:#fff;padding:13px 15px;border-radius:17px;display:flex;gap:4px}
 .typing i{width:7px;height:7px;border-radius:50%;background:#C9BDB2;animation:bl 1s infinite}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
 @keyframes bl{0%,60%,100%{opacity:.3}30%{opacity:1;transform:translateY(-3px)}}
 
+.quick{display:flex;gap:6px;overflow-x:auto;padding:8px 10px 0;background:#fff;flex:none;scrollbar-width:none}
+.quick::-webkit-scrollbar{display:none}
+.quick button{flex:none;border:1px solid var(--line);background:var(--soft);border-radius:14px;
+  padding:7px 11px;font-family:inherit;font-size:12px;color:var(--ink);cursor:pointer}
 .composer{display:flex;align-items:center;gap:7px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));
   background:#fff;border-top:1px solid var(--line);flex:none}
 .composer input{flex:1;min-width:0;border:1px solid var(--line);background:#FBF7F2;border-radius:22px;
   padding:11px 14px;font-size:14px;font-family:inherit;outline:none;color:var(--ink)}
+.composer input:focus{border-color:var(--brand)}
 .cbtn{width:40px;height:40px;border-radius:50%;border:0;flex:none;font-size:17px;cursor:pointer;
   display:grid;place-items:center;background:var(--soft);color:var(--ink)}
-.cbtn.send{background:linear-gradient(140deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 6px 16px rgba(14,159,110,.35)}
+.cbtn.send{background:linear-gradient(140deg,var(--brand),var(--brand2));color:#fff;
+  box-shadow:0 6px 16px rgba(14,159,110,.35)}
 .cbtn.rec{background:#E8453C;color:#fff;animation:pulse 1.1s infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,69,60,.45)}50%{box-shadow:0 0 0 12px rgba(232,69,60,0)}}
-.emoji{max-height:0;overflow:hidden;background:#fff;border-top:1px solid var(--line);transition:max-height .22s}
-.emoji.on{max-height:170px;overflow-y:auto}
+.emoji{max-height:0;overflow:hidden;background:#fff;border-top:1px solid var(--line);transition:max-height .22s;flex:none}
+.emoji.on{max-height:168px;overflow-y:auto}
 .egrid{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;padding:9px}
 .egrid button{border:0;background:transparent;font-size:22px;padding:5px 0;border-radius:10px;cursor:pointer}
 .egrid button:active{background:var(--soft)}
 
-/* nav */
+/* ---------- nav ---------- */
 .nav{position:absolute;left:0;right:0;bottom:0;height:calc(var(--navh) + env(safe-area-inset-bottom));
-  padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.97);border-top:1px solid var(--line);
   display:flex;align-items:center;justify-content:space-around;z-index:6}
 .nav button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;
   font-family:inherit;font-size:10.5px;color:var(--muted);cursor:pointer;padding:6px 10px;border-radius:14px}
-.nav button .i{font-size:20px}
+.nav button .i{font-size:20px;transition:transform .16s}
 .nav button.on{color:var(--brand);font-weight:800}
-.nav button.on .i{transform:translateY(-1px)}
-#view-thread ~ .nav, .nav.hide{display:none}
+.nav button.on .i{transform:translateY(-2px) scale(1.06)}
+.nav.hide{display:none}
 
-/* cards / live / memo */
+/* ---------- generic ---------- */
 .pad{padding:14px}
-.card{background:#fff;border:2px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:15px;margin-bottom:12px;
+  box-shadow:0 6px 20px rgba(90,60,40,.05)}
 .field{margin-bottom:12px}
 .field label{display:block;font-size:12px;font-weight:700;color:#6E635A;margin-bottom:6px}
-.field input,.field select{padding:12px 14px;border-radius:13px;border:2px solid var(--line);background:#fff;
+.field input,.field select{padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;
   font-size:15px;font-family:inherit;width:100%;outline:none;color:var(--ink)}
 .field input:focus{border-color:var(--brand)}
-.btn{width:100%;min-height:52px;border-radius:15px;border:0;font-family:inherit;font-size:15px;font-weight:700;
+.btn{width:100%;min-height:52px;border-radius:16px;border:0;font-family:inherit;font-size:15px;font-weight:700;
   cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn.main{background:linear-gradient(140deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 8px 20px rgba(14,159,110,.3)}
+.btn.main{background:linear-gradient(140deg,var(--brand),var(--brand2));color:#fff;
+  box-shadow:0 8px 20px rgba(14,159,110,.3)}
 .btn.ghost{background:var(--soft);color:var(--ink);border:1px solid var(--line)}
 .btn:active{transform:scale(.985)}
+.note{background:#F1FAF5;border:1.5px solid rgba(14,159,110,.35);border-radius:18px;padding:13px 15px;
+  font-size:12.5px;color:#1F5B45;font-weight:600;line-height:1.7;margin-bottom:12px}
 
-/* memo */
-.mcard{background:#fff;border:2px solid var(--line);border-radius:18px;padding:24px 18px;margin-bottom:14px}
-.mcard.next{border-color:var(--brand);background:#F3FCF8}
-.mw{display:flex;gap:14px;align-items:flex-start}
-.mtime{flex:none;width:104px;background:var(--brand);color:#fff;border-radius:16px;padding:10px 6px;text-align:center}
-.mtime .d{font-size:14px;font-weight:700;opacity:.92}
-.mtime .h{font-size:24px;font-weight:800;letter-spacing:-.5px}
-.mtitle{font-size:22px;font-weight:800;line-height:1.3;word-wrap:break-word}
-.mnote{font-size:16px;color:#5A5049;margin-top:6px}
+/* ---------- memo ---------- */
+.mcard{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:20px 16px;margin-bottom:13px;
+  box-shadow:0 6px 20px rgba(90,60,40,.05)}
+.mcard.next{border-color:var(--brand);background:linear-gradient(160deg,#F3FCF8,#fff 60%)}
+.mw{display:flex;gap:13px;align-items:flex-start}
+.mtime{flex:none;width:100px;background:linear-gradient(150deg,var(--brand),var(--brand2));color:#fff;
+  border-radius:16px;padding:10px 6px;text-align:center;box-shadow:0 6px 16px rgba(14,159,110,.28)}
+.mtime .d{font-size:13px;font-weight:700;opacity:.94}
+.mtime .h{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-top:2px}
+.mtitle{font-size:21px;font-weight:800;line-height:1.35;word-wrap:break-word}
+.mnote{font-size:15px;color:#5A5049;margin-top:6px}
 .macts{display:flex;gap:8px;margin-top:14px}
-.macts button{flex:1;min-height:52px;border-radius:14px;border:2px solid var(--line);background:#fff;
+.macts button{flex:1;min-height:50px;border-radius:15px;border:1.5px solid var(--line);background:#fff;
   font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
 .macts button.say{color:var(--brand-ink);border-color:var(--brand)}
 .macts button.del{color:#B3261E;border-color:#F0C9C6}
 .sech{font-size:12px;font-weight:800;color:var(--muted);margin:14px 4px 8px;letter-spacing:.4px}
 
-/* modal + toast */
+/* ---------- modal / toast ---------- */
 .modal{position:fixed;inset:0;background:rgba(46,42,38,.45);display:none;place-items:center;padding:20px;z-index:30}
 .modal.on{display:grid}
-.sheet{background:#fff;border-radius:22px;padding:18px;width:100%;max-width:360px;max-height:90dvh;overflow-y:auto}
-.sheet h3{margin:0 0 12px;font-size:16px}
+.sheet{background:#fff;border-radius:24px;padding:18px;width:100%;max-width:360px;max-height:88dvh;
+  overflow-y:auto;box-shadow:0 20px 50px rgba(40,25,15,.28)}
+.sheet h3{margin:0 0 14px;font-size:16px;display:flex;align-items:center;gap:8px}
 .row2{display:flex;gap:8px}
-.row2 button{flex:1;min-height:48px;border-radius:13px;border:0;font-family:inherit;font-size:14px;
+.row2 button{flex:1;min-height:48px;border-radius:14px;border:0;font-family:inherit;font-size:14px;
   font-weight:700;cursor:pointer}
-.ok{background:var(--brand);color:#fff}
+.ok{background:linear-gradient(140deg,var(--brand),var(--brand2));color:#fff}
 .no{background:var(--soft);color:var(--ink)}
+.langgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.langgrid button{border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:13px 8px;
+  font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink);line-height:1.4}
+.langgrid button.on{border-color:var(--brand);background:#F1FAF5;color:var(--brand-ink)}
+.swwrap{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-bottom:14px}
+.swwrap button{height:32px;border-radius:50%;border:2px solid #fff;cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.16)}
 .toast{position:absolute;left:50%;bottom:calc(var(--navh) + 18px);transform:translate(-50%,14px);
-  background:rgba(46,42,38,.93);color:#fff;font-size:12.5px;padding:10px 16px;border-radius:14px;
+  background:rgba(46,42,38,.94);color:#fff;font-size:12.5px;padding:10px 16px;border-radius:14px;
   opacity:0;transition:.22s;z-index:40;pointer-events:none;max-width:86%;text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
-.banner{background:#FFF6E5;border:2px solid #E2A93B;border-radius:16px;padding:12px 14px;font-size:12.5px;
-  color:#6B4100;font-weight:600;margin-bottom:12px;line-height:1.6}
+
+/* ---------- video ---------- */
+#call{position:absolute;inset:0;background:#14100E;display:none;z-index:60}
+#call.on{display:block}
+#call #remote{width:100%;height:100%;object-fit:cover;background:#14100E}
+#call #local{position:absolute;top:14px;right:14px;width:104px;height:148px;object-fit:cover;
+  border-radius:18px;border:2px solid rgba(255,255,255,.8);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#call .cbar{position:absolute;left:0;right:0;bottom:26px;display:flex;justify-content:center;gap:16px}
+#call .cbar button{width:58px;height:58px;border-radius:50%;border:0;font-size:22px;color:#fff;cursor:pointer;
+  background:rgba(255,255,255,.16)}
+#call .cbar button.hang{background:#E8453C;width:68px;height:68px}
+#call .cname{position:absolute;top:16px;left:16px;color:#fff;font-size:13px;font-weight:700;
+  background:rgba(0,0,0,.35);padding:6px 12px;border-radius:12px}
 </style>
 </head>
 <body>
@@ -157,29 +228,41 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
   <div class="top">
     <div class="brand">
       <div class="logo">أ</div>
-      <div style="flex:1">
+      <div class="bt">
         <h1>أفاينك</h1>
-        <div class="sub">Afaynek · فينك؟</div>
+        <div class="sub" id="hSub">Afaynek · فينك؟</div>
       </div>
-      <button class="hbtn" id="themeBtn" title="اللون">🎨</button>
-      <button class="hbtn" id="newChat" title="محادثة جديدة">✎</button>
+      <button class="hbtn" id="langBtn" title="Language">🌐</button>
+      <button class="hbtn" id="themeBtn" title="Theme">🎨</button>
+      <button class="avb" id="meBtn">أ</button>
+    </div>
+    <div class="searchwrap">
+      <span class="sicon">🔍</span>
+      <input class="search" id="search" placeholder="قلب على شي حد…" autocomplete="off">
     </div>
   </div>
 
-  <!-- ========== chats ========== -->
   <section class="view on" id="view-home">
+    <div class="chips">
+      <button class="chip brand" id="qNew"><span class="e">✎</span><span data-t="newChat">محادثة جديدة</span></button>
+      <button class="chip" id="qLive"><span class="e">🌍</span><span data-t="room">غرفة Live</span></button>
+      <button class="chip" id="qCall"><span class="e">📹</span><span data-t="call">مكالمة</span></button>
+      <button class="chip" id="qMemo"><span class="e">⏰</span><span data-t="memo">المواعيد</span></button>
+    </div>
+    <div class="sec"><span data-t="chats">المحادثات</span><span id="cnt"></span></div>
     <div class="list" id="chatList"></div>
   </section>
 
-  <!-- ========== thread ========== -->
   <section class="view" id="view-thread">
     <div class="chead">
       <button class="back" id="back">›</button>
       <div class="av" id="tav">؟</div>
       <div class="who"><b id="tname">—</b><i id="tstat">متصل دابا</i></div>
-      <button class="hbtn" id="shareChat">📤</button>
+      <button class="hbtn" id="callBtn" title="Video">📹</button>
+      <button class="hbtn" id="shareChat" title="Share">📤</button>
     </div>
     <div class="msgs" id="msgs"></div>
+    <div class="quick" id="quickRow"></div>
     <div class="emoji" id="emojiPanel"><div class="egrid" id="egrid"></div></div>
     <div class="composer">
       <button class="cbtn" id="emojiBtn">😊</button>
@@ -189,73 +272,101 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     </div>
   </section>
 
-  <!-- ========== live ========== -->
   <section class="view" id="view-live">
     <div class="pad">
-      <div class="banner">🌍 هادي محادثة حقيقية: صاوب كود، عطيه لصاحبك، وهضر معاه من أي بلاد.</div>
+      <div class="note" data-t="liveNote">🌍 محادثة حقيقية بين جوج تليفونات. صاوب كود، عطيه لصاحبك، وهضر معاه من أي بلاد.</div>
       <div class="card">
-        <div class="field"><label>سميتك</label><input id="lnick" maxlength="14" placeholder="مثال: أشرف"></div>
-        <div class="field"><label>كود المحادثة</label>
+        <div class="field"><label data-t="yourName">سميتك</label><input id="lnick" maxlength="14" placeholder="مثال: أشرف"></div>
+        <div class="field"><label data-t="roomCode">كود الغرفة</label>
           <input id="lcode" maxlength="12" placeholder="NOVA2026" style="text-transform:uppercase;letter-spacing:2px">
         </div>
-        <button class="btn main" id="lgo">دخول للمحادثة</button>
+        <button class="btn main" id="lgo">➜ <span data-t="join">دخول للغرفة</span></button>
         <div style="height:8px"></div>
-        <button class="btn ghost" id="lrand">🎲 كود عشوائي</button>
+        <button class="btn ghost" id="lrand">🎲 <span data-t="random">كود عشوائي</span></button>
       </div>
-      <div id="liveStatus" class="empty"></div>
     </div>
   </section>
 
-  <!-- ========== memo ========== -->
   <section class="view" id="view-memo">
     <div class="pad">
-      <div class="sech">⏰ الموعد الجاي</div>
+      <div class="sech" data-t="nextAppt">⏰ الموعد الجاي</div>
       <div id="mNext"></div>
-      <div class="sech">📋 كل المواعيد</div>
+      <div class="sech" data-t="allAppt">📋 كل المواعيد</div>
       <div id="mList"></div>
-      <button class="btn main" id="mAdd">＋ زيد موعد</button>
+      <button class="btn main" id="mAdd">＋ <span data-t="addAppt">زيد موعد</span></button>
     </div>
   </section>
 
-  <!-- nav -->
   <nav class="nav" id="nav">
-    <button class="on" data-view="home"><span class="i">💬</span><span>المحادثات</span></button>
+    <button class="on" data-view="home"><span class="i">💬</span><span data-t="chats">المحادثات</span></button>
     <button data-view="live"><span class="i">🌍</span><span>Live</span></button>
-    <button data-view="memo"><span class="i">⏰</span><span>المواعيد</span></button>
+    <button data-view="memo"><span class="i">⏰</span><span data-t="memo">المواعيد</span></button>
   </nav>
 
-  <!-- modals -->
+  <div id="call">
+    <video id="remote" autoplay playsinline></video>
+    <video id="local" autoplay playsinline muted></video>
+    <div class="cname" id="cname">📹</div>
+    <div class="cbar">
+      <button id="cMute" title="mute">🎤</button>
+      <button id="cFlip" title="flip">🔄</button>
+      <button class="hang" id="cHang" title="end">📵</button>
+    </div>
+  </div>
+
   <div class="modal" id="modalNew">
     <div class="sheet">
-      <h3>محادثة جديدة</h3>
-      <div class="field"><label>السمية</label><input id="newName" maxlength="18" placeholder="مثال: أمين"></div>
-      <div class="row2"><button class="no" id="newCancel">لا</button><button class="ok" id="newOk">صاوب</button></div>
+      <h3>✎ <span data-t="newChat">محادثة جديدة</span></h3>
+      <div class="field"><label data-t="name">السمية</label><input id="newName" maxlength="18" placeholder="مثال: أمين"></div>
+      <div class="row2"><button class="no" id="newCancel" data-t="cancel">لا</button>
+        <button class="ok" id="newOk" data-t="create">صاوب</button></div>
     </div>
   </div>
 
   <div class="modal" id="modalTheme">
     <div class="sheet">
-      <h3>🎨 لون التطبيق</h3>
-      <div id="swatches" style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:12px"></div>
-      <div class="field"><label>لون من عندك</label><input id="customColor" type="color" value="#0E9F6E" style="height:46px;padding:3px"></div>
-      <div class="row2"><button class="no" id="themeReset">الأصلي</button><button class="ok" id="themeClose">صافي</button></div>
+      <h3>🎨 <span data-t="theme">لون التطبيق</span></h3>
+      <div class="swwrap" id="swatches"></div>
+      <div class="field"><label data-t="custom">لون من عندك</label>
+        <input id="customColor" type="color" value="#0E9F6E" style="height:46px;padding:3px"></div>
+      <div class="row2"><button class="no" id="themeReset" data-t="reset">الأصلي</button>
+        <button class="ok" id="themeClose" data-t="done">صافي</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalLang">
+    <div class="sheet">
+      <h3>🌐 <span data-t="language">اللغة</span></h3>
+      <div class="langgrid" id="langGrid"></div>
+      <button class="btn ghost" id="langClose" data-t="done">صافي</button>
+    </div>
+  </div>
+
+  <div class="modal" id="modalMe">
+    <div class="sheet">
+      <h3>👤 <span data-t="profile">حسابي</span></h3>
+      <div class="field"><label data-t="yourName">سميتك</label><input id="meName" maxlength="18" placeholder="أشرف"></div>
+      <div class="field"><label data-t="status">الحالة</label><input id="meStatus" maxlength="30" placeholder="فينك؟ 👋"></div>
+      <div class="row2"><button class="no" id="meClose" data-t="cancel">لا</button>
+        <button class="ok" id="meSave" data-t="save">سجّل</button></div>
     </div>
   </div>
 
   <div class="modal" id="modalMemo">
     <div class="sheet">
-      <h3>موعد جديد</h3>
-      <div class="field"><label>شنو هو؟</label><input id="mt" maxlength="40" placeholder="حبة الدواء"></div>
+      <h3>⏰ <span data-t="newAppt">موعد جديد</span></h3>
+      <div class="field"><label data-t="what">شنو هو؟</label><input id="mt" maxlength="40" placeholder="حبة الدواء"></div>
       <div style="display:flex;gap:8px;margin-bottom:12px">
-        <div class="field" style="flex:1;margin:0"><label>النهار</label><input id="md" type="date"></div>
-        <div class="field" style="flex:1;margin:0"><label>الساعة</label><input id="mh" type="time"></div>
+        <div class="field" style="flex:1;margin:0"><label data-t="day">النهار</label><input id="md" type="date"></div>
+        <div class="field" style="flex:1;margin:0"><label data-t="time">الساعة</label><input id="mh" type="time"></div>
       </div>
       <div class="row2" style="margin-bottom:12px">
-        <button class="no" data-w="60">بعد ساعة</button>
-        <button class="no" data-w="1440">غدا</button>
+        <button class="no" data-w="60" data-t="inHour">بعد ساعة</button>
+        <button class="no" data-w="1440" data-t="tomorrow">غدا</button>
       </div>
-      <div class="field"><label>ملاحظة</label><input id="mn" maxlength="60" placeholder="اختياري"></div>
-      <div class="row2"><button class="no" id="mCancel">لا</button><button class="ok" id="mSave">سجّل</button></div>
+      <div class="field"><label data-t="noteOpt">ملاحظة</label><input id="mn" maxlength="60" placeholder="اختياري"></div>
+      <div class="row2"><button class="no" id="mCancel" data-t="cancel">لا</button>
+        <button class="ok" id="mSave" data-t="save">سجّل</button></div>
     </div>
   </div>
 
@@ -269,10 +380,148 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
   var $ = function (id) { return document.getElementById(id); };
   function toast(m) {
     var t = $('toast'); t.textContent = m; t.classList.add('on');
-    clearTimeout(t._i); t._i = setTimeout(function () { t.classList.remove('on'); }, 2300);
+    clearTimeout(t._i); t._i = setTimeout(function () { t.classList.remove('on'); }, 2400);
   }
   function hhmm(ts) { var d = new Date(ts); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
   function initials(n) { return (n || '؟').trim().charAt(0); }
+  function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  /* ============ languages ============ */
+  var LANGS = [
+    { id: 'dar', label: '🇲🇦 الدارجة', dir: 'rtl' },
+    { id: 'ar',  label: '🇸🇦 العربية', dir: 'rtl' },
+    { id: 'fr',  label: '🇫🇷 Français', dir: 'ltr' },
+    { id: 'en',  label: '🇬🇧 English', dir: 'ltr' },
+    { id: 'es',  label: '🇪🇸 Español', dir: 'ltr' },
+    { id: 'zgh', label: 'ⵣ Tamazight', dir: 'ltr' }
+  ];
+  var T = {
+    dar: {
+      sub:'Afaynek · فينك؟', search:'قلب على شي حد…', chats:'المحادثات', memo:'المواعيد',
+      newChat:'محادثة جديدة', room:'غرفة Live', call:'مكالمة',
+      liveNote:'🌍 محادثة حقيقية بين جوج تليفونات. صاوب كود، عطيه لصاحبك، وهضر معاه من أي بلاد.',
+      yourName:'سميتك', roomCode:'كود الغرفة', join:'دخول للغرفة', random:'كود عشوائي',
+      nextAppt:'⏰ الموعد الجاي', allAppt:'📋 كل المواعيد', addAppt:'زيد موعد', newAppt:'موعد جديد',
+      what:'شنو هو؟', day:'النهار', time:'الساعة', inHour:'بعد ساعة', tomorrow:'غدا', noteOpt:'ملاحظة',
+      cancel:'لا', create:'صاوب', save:'سجّل', done:'صافي', reset:'الأصلي',
+      theme:'لون التطبيق', custom:'لون من عندك', language:'اللغة', profile:'حسابي', status:'الحالة',
+      name:'السمية', noChats:'ما كاين حتى شي محادثة. دوس ✎ باش تبدا.',
+      noResult:'ما لقيت حتى شي حد بهاد السمية.', typeMsg:'كتب رسالة…', online:'متصل دابا',
+      typing:'كيكتب…', you:'أنت', startChat:'بدا المحادثة…', audioMsg:'رسالة صوتية',
+      noAppt:'ما كاين حتى شي موعد جاي.', onlyOne:'هادشي هو الوحيد.', emptyList:'اللائحة خاوية.',
+      today:'اليوم', added:'تسجل ✅', needName:'كتب سمية أولاً', saved:'تسجل 💾',
+      q1:'واخا 👌', q2:'فينك؟', q3:'غادي نجي', q4:'ههههه 😂', q5:'شكرا 🙏'
+    },
+    ar: {
+      sub:'Afaynek · أين أنت؟', search:'ابحث عن شخص…', chats:'المحادثات', memo:'المواعيد',
+      newChat:'محادثة جديدة', room:'غرفة Live', call:'مكالمة',
+      liveNote:'🌍 محادثة حقيقية بين هاتفين. أنشئ رمزاً، أعطه لصديقك، وتحدّث معه من أي بلد.',
+      yourName:'اسمك', roomCode:'رمز الغرفة', join:'دخول الغرفة', random:'رمز عشوائي',
+      nextAppt:'⏰ الموعد القادم', allAppt:'📋 كل المواعيد', addAppt:'إضافة موعد', newAppt:'موعد جديد',
+      what:'ما هو؟', day:'التاريخ', time:'الساعة', inHour:'بعد ساعة', tomorrow:'غداً', noteOpt:'ملاحظة',
+      cancel:'إلغاء', create:'إنشاء', save:'حفظ', done:'تم', reset:'الافتراضي',
+      theme:'لون التطبيق', custom:'لون مخصص', language:'اللغة', profile:'حسابي', status:'الحالة',
+      name:'الاسم', noChats:'لا توجد محادثات. اضغط ✎ للبدء.',
+      noResult:'لا يوجد أحد بهذا الاسم.', typeMsg:'اكتب رسالة…', online:'متصل الآن',
+      typing:'يكتب…', you:'أنت', startChat:'ابدأ المحادثة…', audioMsg:'رسالة صوتية',
+      noAppt:'لا يوجد موعد قادم.', onlyOne:'هذا هو الوحيد.', emptyList:'القائمة فارغة.',
+      today:'اليوم', added:'تم الحفظ ✅', needName:'اكتب الاسم أولاً', saved:'تم الحفظ 💾',
+      q1:'حسناً 👌', q2:'أين أنت؟', q3:'قادم الآن', q4:'ههههه 😂', q5:'شكراً 🙏'
+    },
+    fr: {
+      sub:'Afaynek · T’es où ?', search:'Chercher quelqu’un…', chats:'Discussions', memo:'Rendez-vous',
+      newChat:'Nouvelle discussion', room:'Salon Live', call:'Appel',
+      liveNote:'🌍 Vraie discussion entre deux téléphones. Crée un code, donne-le à un ami, et parlez de partout.',
+      yourName:'Ton prénom', roomCode:'Code du salon', join:'Entrer', random:'Code au hasard',
+      nextAppt:'⏰ Prochain rendez-vous', allAppt:'📋 Tous les rendez-vous', addAppt:'Ajouter', newAppt:'Nouveau rendez-vous',
+      what:'C’est quoi ?', day:'Jour', time:'Heure', inHour:'Dans 1 h', tomorrow:'Demain', noteOpt:'Note',
+      cancel:'Annuler', create:'Créer', save:'Enregistrer', done:'OK', reset:'Défaut',
+      theme:'Couleur', custom:'Couleur perso', language:'Langue', profile:'Mon compte', status:'Statut',
+      name:'Prénom', noChats:'Aucune discussion. Appuie sur ✎ pour commencer.',
+      noResult:'Personne avec ce nom.', typeMsg:'Écris un message…', online:'En ligne',
+      typing:'écrit…', you:'Toi', startChat:'Commence la discussion…', audioMsg:'Message vocal',
+      noAppt:'Aucun rendez-vous à venir.', onlyOne:'C’est le seul.', emptyList:'Liste vide.',
+      today:'Aujourd’hui', added:'Enregistré ✅', needName:'Écris le prénom d’abord', saved:'Enregistré 💾',
+      q1:'D’accord 👌', q2:'T’es où ?', q3:'J’arrive', q4:'Hahaha 😂', q5:'Merci 🙏'
+    },
+    en: {
+      sub:'Afaynek · Where are you?', search:'Find someone…', chats:'Chats', memo:'Reminders',
+      newChat:'New chat', room:'Live room', call:'Call',
+      liveNote:'🌍 A real chat between two phones. Create a code, share it with a friend, and talk from anywhere.',
+      yourName:'Your name', roomCode:'Room code', join:'Join room', random:'Random code',
+      nextAppt:'⏰ Next reminder', allAppt:'📋 All reminders', addAppt:'Add reminder', newAppt:'New reminder',
+      what:'What is it?', day:'Day', time:'Time', inHour:'In 1 hour', tomorrow:'Tomorrow', noteOpt:'Note',
+      cancel:'Cancel', create:'Create', save:'Save', done:'Done', reset:'Default',
+      theme:'App colour', custom:'Custom colour', language:'Language', profile:'Profile', status:'Status',
+      name:'Name', noChats:'No chats yet. Tap ✎ to start.',
+      noResult:'Nobody with that name.', typeMsg:'Write a message…', online:'Online',
+      typing:'typing…', you:'You', startChat:'Start the chat…', audioMsg:'Voice message',
+      noAppt:'No upcoming reminders.', onlyOne:'That’s the only one.', emptyList:'List is empty.',
+      today:'Today', added:'Saved ✅', needName:'Write a name first', saved:'Saved 💾',
+      q1:'Okay 👌', q2:'Where are you?', q3:'On my way', q4:'Hahaha 😂', q5:'Thanks 🙏'
+    },
+    es: {
+      sub:'Afaynek · ¿Dónde estás?', search:'Buscar a alguien…', chats:'Chats', memo:'Recordatorios',
+      newChat:'Nuevo chat', room:'Sala Live', call:'Llamada',
+      liveNote:'🌍 Chat real entre dos teléfonos. Crea un código, compártelo y habla desde cualquier lugar.',
+      yourName:'Tu nombre', roomCode:'Código de sala', join:'Entrar', random:'Código al azar',
+      nextAppt:'⏰ Próximo recordatorio', allAppt:'📋 Todos', addAppt:'Añadir', newAppt:'Nuevo recordatorio',
+      what:'¿Qué es?', day:'Día', time:'Hora', inHour:'En 1 hora', tomorrow:'Mañana', noteOpt:'Nota',
+      cancel:'Cancelar', create:'Crear', save:'Guardar', done:'Listo', reset:'Original',
+      theme:'Color', custom:'Color propio', language:'Idioma', profile:'Mi cuenta', status:'Estado',
+      name:'Nombre', noChats:'No hay chats. Pulsa ✎ para empezar.',
+      noResult:'Nadie con ese nombre.', typeMsg:'Escribe un mensaje…', online:'En línea',
+      typing:'escribiendo…', you:'Tú', startChat:'Empieza el chat…', audioMsg:'Mensaje de voz',
+      noAppt:'No hay recordatorios.', onlyOne:'Es el único.', emptyList:'Lista vacía.',
+      today:'Hoy', added:'Guardado ✅', needName:'Escribe un nombre primero', saved:'Guardado 💾',
+      q1:'Vale 👌', q2:'¿Dónde estás?', q3:'Voy', q4:'Jajaja 😂', q5:'Gracias 🙏'
+    },
+    zgh: {
+      sub:'Afaynek · Mani tgiḍ?', search:'Nadi f yiwen…', chats:'Imsawalen', memo:'Timiyin',
+      newChat:'Amsawal amaynu', room:'Taxxamt Live', call:'Tiɣri',
+      liveNote:'🌍 Amsawal n tidet gr sin tilifunat. Eg tangalt, fk tt i umdakkel, sawal s mani tgiḍ.',
+      yourName:'Isem nnek', roomCode:'Tangalt n texxamt', join:'Kcem', random:'Tangalt s wazur',
+      nextAppt:'⏰ Tamyurt d iteddun', allAppt:'📋 Marra', addAppt:'Rnu tamyurt', newAppt:'Tamyurt tamaynut',
+      what:'Maniɣ?', day:'Ass', time:'Tasragt', inHour:'Deg 1 n usrag', tomorrow:'Azekka', noteOpt:'Tamatart',
+      cancel:'Semmet', create:'Eg', save:'Sekles', done:'Wagi', reset:'Amezwaru',
+      theme:'Ini n usnas', custom:'Ini n yiman', language:'Tutlayt', profile:'Amiḍan', status:'Addad',
+      name:'Isem', noChats:'Ulac imsawalen. Ssit ɣef ✎ ad tbduḍ.',
+      noResult:'Ulac win s yisem-a.', typeMsg:'Aru izen…', online:'Yeḍfer',
+      typing:'yura…', you:'Kečč', startChat:'Bdu amsawal…', audioMsg:'Izen s ṣṣut',
+      noAppt:'Ulac tamyurt.', onlyOne:'Wagi kan.', emptyList:'Tabdart d tilemt.',
+      today:'Ass-a', added:'Yekles ✅', needName:'Aru isem zzwar', saved:'Yekles 💾',
+      q1:'Wagi 👌', q2:'Mani tgiḍ?', q3:'Ttedduɣ', q4:'Hahaha 😂', q5:'Tanemmirt 🙏'
+    }
+  };
+  var LKEY = 'afay_lang', lang = read(LKEY) || 'dar';
+  if (!T[lang]) lang = 'dar';
+  function t(k) { return (T[lang] && T[lang][k]) || T.dar[k] || k; }
+  function applyLang(id) {
+    lang = T[id] ? id : 'dar'; store(LKEY, lang);
+    var dir = 'rtl';
+    for (var i = 0; i < LANGS.length; i++) if (LANGS[i].id === lang) dir = LANGS[i].dir;
+    document.documentElement.lang = lang === 'dar' ? 'ar' : lang;
+    document.documentElement.dir = dir;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-t]'), function (el) {
+      el.textContent = t(el.getAttribute('data-t'));
+    });
+    $('search').placeholder = t('search');
+    $('inp').placeholder = t('typeMsg');
+    $('hSub').textContent = t('sub');
+    renderChats(); renderQuick(); renderMemo();
+    Array.prototype.forEach.call($('langGrid').querySelectorAll('button'), function (b) {
+      b.classList.toggle('on', b.getAttribute('data-l') === lang);
+    });
+  }
+  LANGS.forEach(function (l) {
+    var b = document.createElement('button');
+    b.textContent = l.label; b.setAttribute('data-l', l.id);
+    b.onclick = function () { applyLang(l.id); $('modalLang').classList.remove('on'); };
+    $('langGrid').appendChild(b);
+  });
+  $('langBtn').onclick = function () { $('modalLang').classList.add('on'); };
+  $('langClose').onclick = function () { $('modalLang').classList.remove('on'); };
 
   /* ============ theme ============ */
   var TKEY = 'afay_theme';
@@ -280,8 +529,9 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
                 '#00B8A9', '#8E44AD', '#2D9CDB', '#EB5757', '#F2994A', '#2F2F2F', '#0F7B3F'];
   function mix(hex, p) {
     var n = parseInt(hex.slice(1), 16), r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
-    r = Math.round(r + (255 - r) * p); g = Math.round(g + (255 - g) * p); b = Math.round(b + (255 - b) * p);
-    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    if (p >= 0) { r += (255 - r) * p; g += (255 - g) * p; b += (255 - b) * p; }
+    else { r *= (1 + p); g *= (1 + p); b *= (1 + p); }
+    return '#' + ((1 << 24) + (Math.round(r) << 16) + (Math.round(g) << 8) + Math.round(b)).toString(16).slice(1);
   }
   function applyTheme(hex, save) {
     var r = document.documentElement.style;
@@ -290,19 +540,16 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     r.setProperty('--brand-ink', mix(hex, -.25));
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', hex);
-    $('customColor').value = hex;
-    if (save) { try { localStorage.setItem(TKEY, hex); } catch (e) {} }
+    if ($('customColor')) $('customColor').value = hex;
+    if (save) store(TKEY, hex);
   }
-  (function initTheme() {
-    try { var s = localStorage.getItem(TKEY); if (s) applyTheme(s, false); } catch (e) {}
-    var box = $('swatches');
-    COLORS.forEach(function (c) {
-      var b = document.createElement('button');
-      b.style.cssText = 'height:32px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.16);background:' + c + ';cursor:pointer';
-      b.onclick = function () { applyTheme(c, true); };
-      box.appendChild(b);
-    });
-  })();
+  var savedTheme = read(TKEY); if (savedTheme) applyTheme(savedTheme, false);
+  COLORS.forEach(function (c) {
+    var b = document.createElement('button');
+    b.style.background = c;
+    b.onclick = function () { applyTheme(c, true); };
+    $('swatches').appendChild(b);
+  });
   $('themeBtn').onclick = function () { $('modalTheme').classList.add('on'); };
   $('themeClose').onclick = function () { $('modalTheme').classList.remove('on'); };
   $('customColor').oninput = function () { applyTheme(this.value, true); };
@@ -311,9 +558,24 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     document.documentElement.style.removeProperty('--brand');
     document.documentElement.style.removeProperty('--brand2');
     document.documentElement.style.removeProperty('--brand-ink');
-    $('customColor').value = '#0E9F6E';
-    toast('رجع اللون الأخضر');
   };
+
+  /* ============ profile ============ */
+  var me = { name: read('afay_name') || '', status: read('afay_status') || '' };
+  function paintMe() { $('meBtn').textContent = initials(me.name || 'أ'); }
+  $('meBtn').onclick = function () {
+    $('meName').value = me.name; $('meStatus').value = me.status;
+    $('modalMe').classList.add('on');
+  };
+  $('meClose').onclick = function () { $('modalMe').classList.remove('on'); };
+  $('meSave').onclick = function () {
+    me.name = $('meName').value.trim();
+    me.status = $('meStatus').value.trim();
+    store('afay_name', me.name); store('afay_status', me.status);
+    paintMe(); $('modalMe').classList.remove('on'); toast(t('saved'));
+  };
+  if (me.name) $('lnick').value = me.name;
+  paintMe();
 
   /* ============ nav ============ */
   function showView(name) {
@@ -321,8 +583,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
       $('view-' + v).classList.toggle('on', v === name);
     });
     $('nav').classList.toggle('hide', name === 'thread');
-    var btns = $('nav').querySelectorAll('button');
-    Array.prototype.forEach.call(btns, function (b) {
+    Array.prototype.forEach.call($('nav').querySelectorAll('button'), function (b) {
       b.classList.toggle('on', b.getAttribute('data-view') === name);
     });
     if (name === 'home') renderChats();
@@ -332,33 +593,31 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     b.onclick = function () { showView(b.getAttribute('data-view')); };
   });
 
-  /* ============ local chats ============ */
-  var CKEY = 'afay_chats';
-  var chats = [], openId = null;
+  /* ============ chats ============ */
+  var CKEY = 'afay_chats_v2';
+  var chats = [], openId = null, filter = '';
   var REPLY = ['واخا، صافي 👌', 'إيه! فين كنتي؟', 'ههههه راه قلبتيها عليا 😂', 'غادي نجي دغيا',
     'شنو كتقصد؟', 'مزيان، عجبني هادشي 🔥', 'خليها ليا، أنا كنشوف', 'توحشتك 😄', 'شكرا بزاف 🙏'];
 
   function loadChats() {
-    try {
-      var r = localStorage.getItem(CKEY);
-      if (r) { chats = JSON.parse(r) || []; }
-    } catch (e) { chats = []; }
+    var r = read(CKEY);
+    if (r) { try { chats = JSON.parse(r) || []; } catch (e) { chats = []; } }
     if (!chats.length) {
-      var t = Date.now() - 3600000;
+      var n = Date.now();
       chats = [
-        { id: 'c1', name: 'ياسين', msgs: [{ f: 'them', x: 'وا خويا، واش وصلاتك اللعبة؟', t: t }] },
-        { id: 'c2', name: 'سلمى', msgs: [{ f: 'them', x: 'نتفقو غدا فالثالثة؟', t: t - 7000000 }] },
-        { id: 'c3', name: 'صحاب القسم', msgs: [{ f: 'them', x: 'الفرض تأجل 😭', t: t - 9000000 }] }
+        { id: 'c1', name: 'سلمى', unread: 2, msgs: [{ f: 'them', x: 'واحد صافي 👌', t: n - 1800000 }] },
+        { id: 'c2', name: 'ياسين', unread: 0, msgs: [{ f: 'them', x: 'أنتِ، إيه، حيرتها 🔥', t: n - 4000000 }] },
+        { id: 'c3', name: 'نادي NOVA', unread: 1, msgs: [{ f: 'them', x: '🚀 تحديث جديد خرج للعلن!', t: n - 8000000 }] }
       ];
       saveChats();
     }
   }
-  function saveChats() { try { localStorage.setItem(CKEY, JSON.stringify(chats)); } catch (e) { toast('الذاكرة عامرة'); } }
+  function saveChats() { try { localStorage.setItem(CKEY, JSON.stringify(chats)); } catch (e) {} }
   function byId(id) { for (var i = 0; i < chats.length; i++) if (chats[i].id === id) return chats[i]; return null; }
   function lastOf(c) { return c.msgs.length ? c.msgs[c.msgs.length - 1] : null; }
   function preview(m) {
     if (!m) return '';
-    if (m.kind === 'audio') return '🎤 رسالة صوتية · ' + m.dur + '″';
+    if (m.kind === 'audio') return '🎤 ' + t('audioMsg') + ' · ' + m.dur + '″';
     return m.x;
   }
   function colorOf(id) {
@@ -367,28 +626,25 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     var s = 0; for (var i = 0; i < id.length; i++) s += id.charCodeAt(i);
     return P[s % P.length];
   }
-
   function renderChats() {
-    var box = $('chatList');
-    box.innerHTML = '';
+    if (!$('chatList')) return;
+    var box = $('chatList'); box.innerHTML = '';
     var arr = chats.slice().sort(function (a, b) {
       var la = lastOf(a), lb = lastOf(b);
       return (lb ? lb.t : 0) - (la ? la.t : 0);
     });
+    if (filter) arr = arr.filter(function (c) { return c.name.toLowerCase().indexOf(filter) > -1; });
+    $('cnt').textContent = chats.length ? String(chats.length) : '';
     if (!arr.length) {
-      var e = document.createElement('div');
-      e.className = 'empty';
-      e.textContent = 'ما كاين حتى شي محادثة. دوس ✎ باش تبدا.';
-      box.appendChild(e);
-      return;
+      var e = document.createElement('div'); e.className = 'empty';
+      e.textContent = filter ? t('noResult') : t('noChats');
+      box.appendChild(e); return;
     }
     arr.forEach(function (c) {
       var l = lastOf(c), col = colorOf(c.id);
-      var row = document.createElement('div');
-      row.className = 'row';
+      var row = document.createElement('div'); row.className = 'row';
       row.onclick = function () { openChat(c.id); };
-      var av = document.createElement('div');
-      av.className = 'av';
+      var av = document.createElement('div'); av.className = 'av';
       av.style.background = 'linear-gradient(140deg,' + col[0] + ',' + col[1] + ')';
       av.textContent = initials(c.name);
       var d = document.createElement('span'); d.className = 'dot'; av.appendChild(d);
@@ -398,58 +654,73 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
       var sp = document.createElement('span'); sp.textContent = l ? hhmm(l.t) : '';
       nm.appendChild(b); nm.appendChild(sp);
       var ml = document.createElement('div'); ml.className = 'ml';
-      ml.textContent = l ? (l.f === 'me' ? 'أنت: ' : '') + preview(l) : 'بدا المحادثة…';
+      ml.textContent = l ? (l.f === 'me' ? t('you') + ': ' : '') + preview(l) : t('startChat');
       g.appendChild(nm); g.appendChild(ml);
       row.appendChild(av); row.appendChild(g);
+      if (c.unread) { var bd = document.createElement('div'); bd.className = 'badge'; bd.textContent = c.unread; row.appendChild(bd); }
       box.appendChild(row);
     });
   }
+  $('search').addEventListener('input', function () { filter = this.value.trim().toLowerCase(); renderChats(); });
 
+  function renderQuick() {
+    if (!$('quickRow')) return;
+    var row = $('quickRow'); row.innerHTML = '';
+    ['q1', 'q2', 'q3', 'q4', 'q5'].forEach(function (k) {
+      var b = document.createElement('button'); b.textContent = t(k);
+      b.onclick = function () {
+        $('inp').value = t(k);
+        if (inLive) liveSendText(); else if (openId) sendLocal();
+      };
+      row.appendChild(b);
+    });
+  }
+
+  /* ============ thread ============ */
   function bubble(m) {
     var b = document.createElement('div');
     b.className = 'b ' + (m.f === 'me' ? 'me' : 'them');
     if (m.kind === 'audio' && m.src) {
-      var au = document.createElement('audio');
-      au.controls = true; au.src = m.src;
-      b.appendChild(au);
+      var au = document.createElement('audio'); au.controls = true; au.src = m.src; b.appendChild(au);
     } else {
       if (m.name && m.f !== 'me') {
         var n = document.createElement('div'); n.className = 'nm2'; n.textContent = m.name; b.appendChild(n);
       }
       var tx = document.createElement('div'); tx.textContent = m.x; b.appendChild(tx);
     }
-    var t = document.createElement('div'); t.className = 'tt';
-    t.textContent = hhmm(m.t) + (m.f === 'me' ? ' ✓✓' : '');
-    b.appendChild(t);
+    var tt = document.createElement('div'); tt.className = 'tt';
+    tt.textContent = hhmm(m.t) + (m.f === 'me' ? ' ✓✓' : '');
+    b.appendChild(tt);
     return b;
   }
   function renderThread() {
-    var c = byId(openId);
-    if (!c) return;
-    var box = $('msgs');
-    box.innerHTML = '';
-    var day = document.createElement('div'); day.className = 'day'; day.textContent = 'اليوم';
+    var c = byId(openId); if (!c) return;
+    var box = $('msgs'); box.innerHTML = '';
+    var day = document.createElement('div'); day.className = 'day'; day.textContent = t('today');
     box.appendChild(day);
     c.msgs.forEach(function (m) { box.appendChild(bubble(m)); });
     box.scrollTop = box.scrollHeight;
   }
   function openChat(id) {
-    var c = byId(id);
-    if (!c) return;
-    openId = id;
+    var c = byId(id); if (!c) return;
+    openId = id; c.unread = 0; saveChats();
     $('tname').textContent = c.name;
     var col = colorOf(c.id), av = $('tav');
     av.style.background = 'linear-gradient(140deg,' + col[0] + ',' + col[1] + ')';
     av.textContent = initials(c.name);
-    $('tstat').textContent = 'متصل دابا'; $('tstat').className = '';
-    renderThread();
-    showView('thread');
+    $('tstat').textContent = t('online'); $('tstat').className = '';
+    renderThread(); showView('thread');
   }
-  $('back').onclick = function () { openId = null; showView('home'); };
-
+  $('back').onclick = function () {
+    if (inLive) {
+      inLive = false; openId = null; endAll();
+      $('tname').textContent = '—'; $('tstat').textContent = ''; $('msgs').innerHTML = '';
+      showView('live'); return;
+    }
+    openId = null; showView('home');
+  };
   function pushLocal(f, obj) {
-    var c = byId(openId);
-    if (!c) return;
+    var c = byId(openId); if (!c) return;
     var m = { f: f, t: Date.now() };
     for (var k in obj) m[k] = obj[k];
     c.msgs.push(m); saveChats();
@@ -457,19 +728,17 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     $('msgs').scrollTop = $('msgs').scrollHeight;
   }
   function botReply() {
-    var c = byId(openId);
-    if (!c) return;
+    var c = byId(openId); if (!c) return;
     var st = $('tstat');
-    st.textContent = 'كيكتب…'; st.className = 'off';
+    st.textContent = t('typing'); st.className = 'off';
     var tp = document.createElement('div'); tp.className = 'typing';
     tp.innerHTML = '<i></i><i></i><i></i>';
-    $('msgs').appendChild(tp);
-    $('msgs').scrollTop = $('msgs').scrollHeight;
+    $('msgs').appendChild(tp); $('msgs').scrollTop = $('msgs').scrollHeight;
     var id = c.id;
     setTimeout(function () {
       if (tp.parentNode) tp.parentNode.removeChild(tp);
       if (openId !== id) return;
-      st.textContent = 'متصل دابا'; st.className = '';
+      st.textContent = t('online'); st.className = '';
       pushLocal('them', { x: REPLY[Math.floor(Math.random() * REPLY.length)] });
     }, 800 + Math.random() * 800);
   }
@@ -480,114 +749,108 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     pushLocal('me', { x: v });
     botReply();
   }
-  $('send').onclick = sendLocal;
-  $('inp').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendLocal(); });
+  $('send').onclick = function () { if (inLive) liveSendText(); else sendLocal(); };
+  $('inp').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('send').click(); });
 
-  /* emoji */
   var EMO = ('😀 😂 🤣 😊 😍 😘 😎 🤔 😴 😭 😡 🥳 👍 👏 🙏 💪 🔥 ✨ ❤️ 💔 😅 🙈 🫶 👀 🤝 ' +
     '🎉 🎮 🎧 ⚽ 🌙 ☀️ 🍕 ☕ 🍫 🚀 💡 📸 🎬 🎨 📚 ✍️ ⭐ 💯 😇 😜 🤗 🤩 🥺 😱 🤯 😬 🙃 🌹 🍀 🎁 🎯').split(' ');
   EMO.forEach(function (e) {
-    var b = document.createElement('button');
-    b.type = 'button'; b.textContent = e;
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = e;
     b.onclick = function () { $('inp').value += e; $('inp').focus(); };
     $('egrid').appendChild(b);
   });
   $('emojiBtn').onclick = function () { $('emojiPanel').classList.toggle('on'); };
 
-  /* voice (local chat) */
+  /* ============ local voice ============ */
   var rec = null, chunks = [], recStart = 0, recTimer = 0, stream = null, recording = false;
-  function stopTracks() { if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; } }
+  function stopTracks() { if (stream) { stream.getTracks().forEach(function (x) { x.stop(); }); stream = null; } }
   function startLocalRec() {
-    if (!openId) { toast('حلّ شي محادثة أولاً'); return; }
-    if (!navigator.mediaDevices || !window.MediaRecorder) { toast('المتصفح ما كيدعمش التسجيل'); return; }
+    if (!openId) { toast('⚠️'); return; }
+    if (!navigator.mediaDevices || !window.MediaRecorder) { toast('⚠️'); return; }
     navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) {
-      stream = s;
-      rec = new MediaRecorder(s);
-      chunks = [];
+      stream = s; rec = new MediaRecorder(s); chunks = [];
       rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
       rec.onstop = function () {
         var secs = Math.max(1, Math.round((Date.now() - recStart) / 1000));
         var blob = new Blob(chunks, { type: 'audio/webm' });
         stopTracks();
-        if (!blob.size) { toast('ما تسجل حتى شي حاجة'); return; }
+        if (!blob.size) return;
         var fr = new FileReader();
         fr.onload = function () { pushLocal('me', { kind: 'audio', src: fr.result, dur: secs, x: '' }); botReply(); };
         fr.readAsDataURL(blob);
       };
-      rec.start();
-      recording = true; recStart = Date.now();
+      rec.start(); recording = true; recStart = Date.now();
       $('mic').classList.add('rec'); $('mic').textContent = '⏹';
-      $('tstat').textContent = 'كنسجل…';
       recTimer = setInterval(function () {
         var s2 = Math.floor((Date.now() - recStart) / 1000);
-        $('tstat').textContent = 'كنسجل… 0:' + ('0' + s2).slice(-2);
+        $('tstat').textContent = '0:' + ('0' + s2).slice(-2);
         if (s2 >= 40) stopLocal();
       }, 300);
-    }).catch(function () { toast('عطي الإذن للميكروفون'); });
+    }).catch(function () { toast('🎤'); });
   }
   function stopLocal() {
     if (!recording) return;
     recording = false; clearInterval(recTimer);
     $('mic').classList.remove('rec'); $('mic').textContent = '🎤';
-    $('tstat').textContent = 'متصل دابا';
+    $('tstat').textContent = t('online');
     try { rec.stop(); } catch (e) { stopTracks(); }
   }
-  $('mic').onclick = function () { recording ? stopLocal() : startLocalRec(); };
-
-  /* share */
-  $('shareChat').onclick = function () {
-    var c = byId(openId);
-    var data = { title: 'أفاينك', text: 'جرب أفاينك — تطبيق ميساج ساهل', url: location.href };
-    if (navigator.share) { navigator.share(data).catch(function () {}); return; }
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(data.text + ' ' + data.url)
-        .then(function () { toast('تنسخ الرابط 📋'); }, function () { toast('الكود: ' + (c ? c.name : '')); });
-    } else toast('ما قدرتش ننسخ');
+  $('mic').onclick = function () {
+    if (!inLive) { recording ? stopLocal() : startLocalRec(); return; }
+    recording ? stopLive() : startLiveRec();
   };
 
-  /* new chat */
-  $('newChat').onclick = function () { $('newName').value = ''; $('modalNew').classList.add('on'); };
+  $('shareChat').onclick = function () {
+    var data = { title: 'أفاينك · Afaynek', text: 'جرب أفاينك', url: location.href };
+    if (navigator.share) { navigator.share(data).catch(function () {}); return; }
+    if (navigator.clipboard) navigator.clipboard.writeText(data.text + ' ' + data.url)
+      .then(function () { toast('📋'); }, function () { toast('⚠️'); });
+  };
+
+  $('newChat').onclick = $('qNew').onclick = function () {
+    $('newName').value = ''; $('modalNew').classList.add('on');
+  };
   $('newCancel').onclick = function () { $('modalNew').classList.remove('on'); };
   $('newOk').onclick = function () {
     var n = $('newName').value.trim();
-    if (!n) { toast('كتب سمية أولاً'); return; }
+    if (!n) { toast(t('needName')); return; }
     var id = 'u' + Date.now();
-    chats.push({ id: id, name: n, msgs: [] });
-    saveChats();
-    $('modalNew').classList.remove('on');
-    showView('home');
-    openChat(id);
+    chats.push({ id: id, name: n, unread: 0, msgs: [] });
+    saveChats(); $('modalNew').classList.remove('on'); openChat(id);
   };
+  $('qLive').onclick = function () { showView('live'); };
+  $('qMemo').onclick = function () { showView('memo'); };
+  $('qCall').onclick = function () { showView('live'); toast('🌍 → 📹'); };
 
   /* ============ live ============ */
-  var L = { code: '', name: '', host: false };
+  var L = { code: '', name: '', host: false, callerId: '' };
   var peer = null, conns = [], inLive = false;
 
   function lsys(text) {
-    var box = $('msgs');
     var d = document.createElement('div'); d.className = 'sys'; d.textContent = text;
-    box.appendChild(d); box.scrollTop = box.scrollHeight;
+    $('msgs').appendChild(d); $('msgs').scrollTop = $('msgs').scrollHeight;
   }
   function ljoin() {
-    var nick = $('lnick').value.trim() || 'ضيف';
+    var nick = $('lnick').value.trim() || me.name || 'ضيف';
     var code = $('lcode').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (code.length < 4) { toast('الكود خاصو 4 حروف على الأقل'); return; }
-    if (!window.Peer) { toast('ما تحملش الاتصال — تحقق من الإنترنت'); return; }
+    if (code.length < 4) { toast('4+'); return; }
+    if (!window.Peer) { toast('⚠️'); return; }
     L.name = nick; L.code = code; inLive = true;
-    $('tname').textContent = 'محادثة ' + code;
+    $('tname').textContent = '#' + code;
     $('tav').textContent = code.charAt(0);
     $('tav').style.background = 'linear-gradient(140deg,var(--brand),var(--brand2))';
-    $('tstat').textContent = 'كنتصل…'; $('tstat').className = 'off';
+    $('tstat').textContent = '…'; $('tstat').className = 'off';
     $('msgs').innerHTML = '';
     showView('thread');
     startHost();
   }
   function startHost() {
     L.host = true;
-    peer = new Peer('afaynek-' + L.code, { debug: 0 });
+    try { peer = new Peer('afaynek-' + L.code, { debug: 0 }); }
+    catch (e) { toast('⚠️'); return; }
     peer.on('open', function () {
-      $('tstat').textContent = 'أنت المسؤول · متصل'; $('tstat').className = '';
-      lsys('الغرفة محلولة. صيفط الكود ' + L.code + ' لصحابك.');
+      $('tstat').textContent = '👑 ' + L.code; $('tstat').className = '';
+      lsys('✅ ' + L.code);
     });
     peer.on('connection', function (c) {
       conns.push(c);
@@ -595,65 +858,55 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
       c.on('close', function () { conns = conns.filter(function (x) { return x !== c; }); });
       c.on('error', function () { conns = conns.filter(function (x) { return x !== c; }); });
     });
+    peer.on('call', incomingCall);
     peer.on('error', function (err) {
       if (err && err.type === 'unavailable-id') { try { peer.destroy(); } catch (e) {} startGuest(); }
-      else if (err && err.type === 'peer-unavailable') { toast('صاحب الغرفة مازال ما دخلش'); }
-      else { $('tstat').textContent = 'ما كاينش اتصال'; $('tstat').className = 'off'; }
+      else if (err && err.type === 'peer-unavailable') { toast('⚠️'); }
+      else { $('tstat').textContent = '⚠️'; $('tstat').className = 'off'; }
     });
   }
   function startGuest() {
     L.host = false;
     peer = new Peer({ debug: 0 });
     peer.on('open', function () { connectHost(); });
-    peer.on('error', function () { toast('ما قدرناش ندخلو'); });
+    peer.on('call', incomingCall);
+    peer.on('error', function () { toast('⚠️'); });
   }
   function connectHost() {
     var c = peer.connect('afaynek-' + L.code, { reliable: true });
     c.on('open', function () {
       conns = [c];
-      $('tstat').textContent = 'متصل · ' + L.code; $('tstat').className = '';
-      c.send({ type: 'hello', name: L.name });
-      lsys('دخلتي للغرفة ' + L.code);
+      $('tstat').textContent = '🟢 ' + L.code; $('tstat').className = '';
+      c.send({ type: 'hello', name: L.name, pid: peer.id });
+      lsys('✅ ' + L.code);
     });
     c.on('data', function (d) { liveIn(d, c); });
-    c.on('close', function () { $('tstat').textContent = 'الاتصال تقطع'; $('tstat').className = 'off'; });
+    c.on('close', function () { $('tstat').textContent = '⚠️'; $('tstat').className = 'off'; });
   }
   function liveIn(d, from) {
     if (!d || typeof d !== 'object') return;
-    if (d.type === 'hello') { if (L.host) lsys((d.name || 'شي حد') + ' دخل للغرفة'); return; }
+    if (d.type === 'hello') { if (d.pid) L.callerId = d.pid; if (L.host) lsys((d.name || '—') + ' ✨'); return; }
     if (d.type !== 'msg') return;
     var b = bubble({ f: 'them', kind: d.kind, x: d.body, src: d.src, t: d.t, name: d.name });
-    $('msgs').appendChild(b);
-    $('msgs').scrollTop = $('msgs').scrollHeight;
+    $('msgs').appendChild(b); $('msgs').scrollTop = $('msgs').scrollHeight;
     if (L.host) conns.forEach(function (c) { if (c !== from && c.open) { try { c.send(d); } catch (e) {} } });
   }
   function liveSend(payload) {
-    if (!conns.length) { toast('ما كاين حتى شي حد فالغرفة'); return false; }
+    if (!conns.length) { toast('⚠️'); return false; }
     conns.forEach(function (c) { if (c.open) { try { c.send(payload); } catch (e) {} } });
     return true;
   }
   function liveSendText() {
     var v = $('inp').value.trim();
     if (!v) return;
-    if (!inLive) { sendLocal(); return; }
     var m = { type: 'msg', kind: 'text', name: L.name, body: v, t: Date.now() };
     if (!liveSend(m)) return;
     $('inp').value = '';
     $('msgs').appendChild(bubble({ f: 'me', x: v, t: m.t }));
     $('msgs').scrollTop = $('msgs').scrollHeight;
   }
-
-  /* override send/mic routing: thread is shared between local chats and live rooms */
-  var baseSend = $('send').onclick;
-  $('send').onclick = function () { if (inLive) liveSendText(); else baseSend(); };
-  var baseMic = $('mic').onclick;
-  $('mic').onclick = function () {
-    if (!inLive) { baseMic(); return; }
-    if (recording) { stopLive(); return; }
-    startLiveRec();
-  };
   function startLiveRec() {
-    if (!navigator.mediaDevices || !window.MediaRecorder) { toast('المتصفح ما كيدعمش'); return; }
+    if (!navigator.mediaDevices || !window.MediaRecorder) { toast('⚠️'); return; }
     navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) {
       stream = s; rec = new MediaRecorder(s); chunks = [];
       rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
@@ -661,7 +914,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
         var blob = new Blob(chunks, { type: 'audio/webm' });
         stopTracks();
         if (!blob.size) return;
-        if (blob.size > 700000) { toast('التسجيل طويل بزاف'); return; }
+        if (blob.size > 700000) { toast('⚠️'); return; }
         var fr = new FileReader();
         fr.onload = function () {
           var m = { type: 'msg', kind: 'audio', name: L.name, src: fr.result, t: Date.now() };
@@ -674,7 +927,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
       rec.start(); recording = true; recStart = Date.now();
       $('mic').classList.add('rec'); $('mic').textContent = '⏹';
       recTimer = setInterval(function () { if (Date.now() - recStart > 30000) stopLive(); }, 400);
-    }).catch(function () { toast('عطي الإذن للميكروفون'); });
+    }).catch(function () { toast('🎤'); });
   }
   function stopLive() {
     if (!recording) return;
@@ -682,35 +935,92 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     $('mic').classList.remove('rec'); $('mic').textContent = '🎤';
     try { rec.stop(); } catch (e) { stopTracks(); }
   }
-
   $('lgo').onclick = ljoin;
-  $('lrand').onclick = function () {
-    $('lcode').value = 'NOVA' + Math.floor(1000 + Math.random() * 9000);
+  $('lrand').onclick = function () { $('lcode').value = 'NOVA' + Math.floor(1000 + Math.random() * 9000); };
+
+  /* ============ video calls ============ */
+  var camStream = null, activeCall = null, facing = 'user', muted = false;
+  function getCam() {
+    if (camStream) return Promise.resolve(camStream);
+    return navigator.mediaDevices.getUserMedia({ video: { facingMode: facing }, audio: true })
+      .then(function (s) {
+        camStream = s; $('local').srcObject = s; return s;
+      });
+  }
+  function openCall(name) { $('cname').textContent = '📹 ' + name; $('call').classList.add('on'); }
+  function closeCall() {
+    $('call').classList.remove('on');
+    $('remote').srcObject = null;
+    if (camStream) { camStream.getTracks().forEach(function (x) { x.stop(); }); camStream = null; }
+    $('local').srcObject = null;
+    activeCall = null; muted = false;
+  }
+  function wireCall(call) {
+    activeCall = call;
+    call.on('stream', function (rs) { $('remote').srcObject = rs; });
+    call.on('close', closeCall);
+    call.on('error', function () { toast('⚠️'); closeCall(); });
+  }
+  function startVideoCall() {
+    if (!inLive || !peer) { toast('🌍'); return; }
+    var target = L.host ? L.callerId : ('afaynek-' + L.code);
+    if (!target) { toast('⚠️'); return; }
+    getCam().then(function (s) {
+      openCall($('tname').textContent);
+      var call = peer.call(target, s);
+      if (!call) { toast('⚠️'); closeCall(); return; }
+      wireCall(call);
+    }).catch(function () { toast('📷'); });
+  }
+  function incomingCall(call) {
+    if (!inLive) { try { call.close(); } catch (e) {} return; }
+    getCam().then(function (s) {
+      openCall('—'); call.answer(s); wireCall(call);
+    }).catch(function () { toast('📷'); });
+  }
+  $('callBtn').onclick = startVideoCall;
+  $('cHang').onclick = function () {
+    try { if (activeCall) activeCall.close(); } catch (e) {}
+    closeCall();
   };
-  // leaving thread from live -> back to live panel
-  var baseBack = $('back').onclick;
-  $('back').onclick = function () {
-    if (inLive) {
-      inLive = false; openId = null;
-      try { if (peer) peer.destroy(); } catch (e) {}
-      peer = null; conns = [];
-      $('tname').textContent = 'محادثة'; $('tstat').textContent = '';
-      $('msgs').innerHTML = '';
-      showView('live');
-      return;
-    }
-    baseBack();
+  $('cMute').onclick = function () {
+    if (!camStream) return;
+    muted = !muted;
+    camStream.getAudioTracks().forEach(function (x) { x.enabled = !muted; });
+    $('cMute').textContent = muted ? '🔇' : '🎤';
   };
+  $('cFlip').onclick = function () {
+    facing = facing === 'user' ? 'environment' : 'user';
+    if (!camStream || !activeCall) return;
+    var sender = null;
+    try {
+      var pc = activeCall.peerConnection;
+      if (pc) sender = pc.getSenders().filter(function (s) { return s.track && s.track.kind === 'video'; })[0];
+    } catch (e) {}
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: facing }, audio: false }).then(function (s) {
+      var nt = s.getVideoTracks()[0];
+      if (sender) sender.replaceTrack(nt);
+      var old = camStream.getVideoTracks()[0];
+      if (old) { camStream.removeTrack(old); old.stop(); }
+      camStream.addTrack(nt);
+      $('local').srcObject = camStream;
+    }).catch(function () {});
+  };
+  function endAll() {
+    closeCall();
+    try { if (peer) peer.destroy(); } catch (e) {}
+    peer = null; conns = []; L.callerId = '';
+  }
 
   /* ============ memo ============ */
   var MKEY = 'afay_memo';
   var memo = [], spoken = {};
-  function loadMemo() { try { var r = localStorage.getItem(MKEY); if (r) memo = JSON.parse(r) || []; } catch (e) { memo = []; } }
+  function loadMemo() { var r = read(MKEY); if (r) { try { memo = JSON.parse(r) || []; } catch (e) { memo = []; } } }
   function saveMemo() { try { localStorage.setItem(MKEY, JSON.stringify(memo)); } catch (e) {} }
   function fmtDay(ts) {
     var d = new Date(ts), n = new Date();
-    if (d.toDateString() === n.toDateString()) return 'اليوم';
-    if (d.toDateString() === new Date(n.getTime() + 86400000).toDateString()) return 'غدا';
+    if (d.toDateString() === n.toDateString()) return t('today');
+    if (d.toDateString() === new Date(n.getTime() + 86400000).toDateString()) return t('tomorrow');
     var days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
     return days[d.getDay()] + ' ' + d.getDate() + '/' + (d.getMonth() + 1);
   }
@@ -721,7 +1031,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     return hh + ':' + ('0' + m).slice(-2) + ' ' + ap;
   }
   function speak(text) {
-    if (!('speechSynthesis' in window)) { toast('الصوت ما مدعومش'); return; }
+    if (!('speechSynthesis' in window)) return;
     try {
       window.speechSynthesis.cancel();
       var u = new SpeechSynthesisUtterance(text);
@@ -742,30 +1052,32 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     body.appendChild(tt);
     if (it.note) { var nn = document.createElement('div'); nn.className = 'mnote'; nn.textContent = it.note; body.appendChild(nn); }
     w.appendChild(tm); w.appendChild(body); c.appendChild(w);
-
     var acts = document.createElement('div'); acts.className = 'macts';
-    var say = document.createElement('button'); say.className = 'say'; say.textContent = '🔊 سمعني';
+    var say = document.createElement('button'); say.className = 'say'; say.textContent = '🔊';
     say.onclick = function () {
-      speak(it.title + '. ' + fmtDay(it.ts) + ' فـ ' + fmtTime(it.ts) + (it.note ? '. ' + it.note : ''));
+      speak(it.title + '. ' + fmtDay(it.ts) + ' ' + fmtTime(it.ts) + (it.note ? '. ' + it.note : ''));
     };
-    var del = document.createElement('button'); del.className = 'del'; del.textContent = '🗑 حيّد';
-    del.onclick = function () { memo = memo.filter(function (x) { return x.id !== it.id; }); saveMemo(); renderMemo(); };
-    acts.appendChild(say); acts.appendChild(del);
-    c.appendChild(acts);
+    var del = document.createElement('button'); del.className = 'del'; del.textContent = '🗑';
+    del.onclick = function () {
+      memo = memo.filter(function (x) { return x.id !== it.id; });
+      saveMemo(); renderMemo();
+    };
+    acts.appendChild(say); acts.appendChild(del); c.appendChild(acts);
     return c;
   }
   function renderMemo() {
+    if (!$('mNext')) return;
     var now = Date.now();
     var arr = memo.slice().sort(function (a, b) { return a.ts - b.ts; });
     var up = arr.filter(function (x) { return x.ts >= now - 60000; });
     var nb = $('mNext'); nb.innerHTML = '';
     if (up.length) nb.appendChild(mcard(up[0], true));
-    else { var e = document.createElement('div'); e.className = 'empty'; e.textContent = 'ما كاين حتى شي موعد جاي.'; nb.appendChild(e); }
+    else { var e = document.createElement('div'); e.className = 'empty'; e.textContent = t('noAppt'); nb.appendChild(e); }
     var lb = $('mList'); lb.innerHTML = '';
     var rest = arr.filter(function (x) { return up.length ? x.id !== up[0].id : true; });
     if (!rest.length) {
       var e2 = document.createElement('div'); e2.className = 'empty';
-      e2.textContent = up.length ? 'هادشي هو الوحيد.' : 'اللائحة خاوية.'; lb.appendChild(e2);
+      e2.textContent = up.length ? t('onlyOne') : t('emptyList'); lb.appendChild(e2);
     } else rest.forEach(function (it) { lb.appendChild(mcard(it, false)); });
   }
   $('mAdd').onclick = function () {
@@ -786,7 +1098,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
   });
   $('mSave').onclick = function () {
     var title = $('mt').value.trim();
-    if (!title) { toast('كتب شنو هو الموعد'); return; }
+    if (!title) { toast('⚠️'); return; }
     var ds = $('md').value, hs = $('mh').value || '12:00';
     var ts = Date.now();
     if (ds) {
@@ -794,10 +1106,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
       ts = new Date(+p[0], +p[1] - 1, +p[2], +hp[0], +hp[1] || 0).getTime();
     }
     memo.push({ id: 'm' + Date.now(), title: title, note: $('mn').value.trim(), ts: ts });
-    saveMemo();
-    $('modalMemo').classList.remove('on');
-    renderMemo();
-    toast('تسجل ✅');
+    saveMemo(); $('modalMemo').classList.remove('on'); renderMemo(); toast(t('added'));
   };
   function tickMemo() {
     var now = Date.now();
@@ -805,19 +1114,17 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
       if (it.ts <= now && !spoken[it.id]) {
         spoken[it.id] = true;
         toast('⏰ ' + it.title);
-        speak('تذكير: ' + it.title);
-        it.done = true; saveMemo();
+        speak(it.title);
       }
     });
   }
 
   /* ============ boot ============ */
-  loadChats(); renderChats();
-  loadMemo(); renderMemo();
+  applyLang(lang);
+  loadChats(); loadMemo();
+  renderChats(); renderMemo();
   setInterval(tickMemo, 15000);
-  window.addEventListener('beforeunload', function () {
-    try { if (peer) peer.destroy(); } catch (e) {}
-  });
+  window.addEventListener('beforeunload', function () { endAll(); });
 })();
 </script>
 </body>
