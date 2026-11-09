@@ -1,0 +1,18 @@
+{
+  "name": "أفاينك — Afaynek",
+  "short_name": "أفاينك",
+  "description": "تطبيق ميساج ساهل: محادثات، أوديو، وفيديو. بلا حساب وبلا تعقيد.",
+  "start_url": "./afaynek-live.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFBF6",
+  "theme_color": "#0F7B3F",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "afaynek-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "afaynek-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "afaynek-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
