@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>أفاينك Live — Afaynek Live</title>
+<meta name="theme-color" content="#FF6B4A">
+<link rel="apple-touch-icon" href="azami-apple-icon.png">
+<style>
+:root{--cream:#FFFBF6;--ink:#2E2A26;--muted:#93877D;--orange:#FF6B4A;--gold:#D4AF37;--line:#EFE7DD;--soft:#F7EFE7}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:#EFE6DB;color:var(--ink);overflow:hidden;font-family:"Segoe UI",Tahoma,-apple-system,system-ui,sans-serif}
+#app{max-width:480px;margin:0 auto;height:100dvh;position:relative;overflow:hidden;background:var(--cream);
+  display:flex;flex-direction:column;box-shadow:0 0 60px rgba(70,50,35,.14)}
+
+/* join screen */
+#join{position:absolute;inset:0;z-index:5;background:linear-gradient(165deg,#FFEDE3,#FFF9F2 45%,#FFFBF6);
+  display:flex;flex-direction:column;justify-content:center;padding:26px;gap:14px;transition:.3s}
+#join.hide{opacity:0;pointer-events:none;transform:scale(.98)}
+.jlogo{width:64px;height:64px;border-radius:22px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:28px;
+  background:linear-gradient(140deg,var(--orange),var(--gold));box-shadow:0 14px 30px rgba(255,107,74,.35);margin:0 auto 6px}
+#join h1{margin:0;font-size:24px;text-align:center;letter-spacing:-.5px}
+#join p{margin:0 0 8px;text-align:center;font-size:13px;color:var(--muted);line-height:1.7}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;color:var(--muted);font-weight:600}
+.field input{padding:13px 16px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:15px;
+  font-family:inherit;outline:none;color:var(--ink);text-align:center}
+.field input:focus{border-color:#FFD3C6;box-shadow:0 0 0 3px rgba(255,107,74,.12)}
+.btn{padding:14px;border-radius:15px;border:0;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer}
+.btn.main{background:linear-gradient(140deg,var(--orange),#FF916F);color:#fff;box-shadow:0 10px 24px rgba(255,107,74,.35)}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn:active{transform:scale(.98)}
+.tiny{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.6}
+
+/* chat */
+.chead{display:flex;align-items:center;gap:10px;padding:12px;background:#fff;border-bottom:1px solid var(--line);z-index:3}
+.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:16px;
+  background:linear-gradient(140deg,var(--orange),var(--gold));flex:none}
+.who{flex:1;min-width:0}
+.who b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who i{font-style:normal;font-size:11.5px;color:#2FBF83}
+.who i.off{color:var(--muted)}
+.iconbtn{width:38px;height:38px;border-radius:50%;border:0;background:var(--soft);font-size:16px;cursor:pointer;color:var(--ink);
+  display:grid;place-items:center;flex:none}
+.msgs{flex:1;overflow-y:auto;padding:16px 14px 8px;display:flex;flex-direction:column;gap:8px;
+  background-image:radial-gradient(circle at 18% 8%,rgba(255,107,74,.06),transparent 42%),
+                   radial-gradient(circle at 85% 85%,rgba(212,175,55,.09),transparent 45%)}
+.b{max-width:82%;padding:9px 12px;border-radius:17px;font-size:14px;line-height:1.45;word-wrap:break-word;
+  box-shadow:0 1px 3px rgba(46,42,38,.07);animation:pop .18s ease-out}
+@keyframes pop{from{transform:translateY(7px) scale(.98);opacity:.35}to{transform:none;opacity:1}}
+.b.them{background:#fff;border-bottom-right-radius:6px;align-self:flex-start}
+.b.me{background:linear-gradient(140deg,#FF7A5C,#FF6347);color:#fff;border-bottom-left-radius:6px;align-self:flex-end}
+.b .nm{font-size:11px;font-weight:700;color:var(--orange);margin-bottom:2px}
+.b.me .nm{color:#FFE6DE}
+.b audio{width:190px;max-width:100%;height:34px;display:block;margin-top:2px}
+.b .t{font-size:10px;opacity:.6;margin-top:4px;text-align:left;direction:ltr}
+.sys{align-self:center;font-size:11.5px;color:var(--muted);background:#F4EDE6;padding:6px 12px;border-radius:12px;text-align:center}
+.composer{display:flex;align-items:center;gap:8px;padding:9px 9px calc(9px + env(safe-area-inset-bottom));
+  background:#fff;border-top:1px solid var(--line)}
+.composer input{flex:1;min-width:0;border:1px solid var(--line);background:#FBF7F2;border-radius:22px;padding:11px 16px;
+  font-size:14px;font-family:inherit;outline:none;color:var(--ink)}
+.cbtn{width:42px;height:42px;border-radius:50%;border:0;flex:none;font-size:18px;cursor:pointer;display:grid;place-items:center;
+  background:var(--soft);color:var(--ink)}
+.cbtn.send{background:linear-gradient(140deg,var(--orange),#FF916F);color:#fff;box-shadow:0 6px 16px rgba(255,107,74,.38)}
+.cbtn.rec{background:#E8453C;color:#fff;animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,69,60,.45)}50%{box-shadow:0 0 0 12px rgba(232,69,60,0)}}
+.toast{position:absolute;left:50%;bottom:100px;transform:translate(-50%,16px);background:rgba(46,42,38,.93);color:#fff;
+  font-size:12.5px;padding:10px 16px;border-radius:14px;opacity:0;transition:.25s;z-index:20;pointer-events:none;max-width:86%;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="join">
+    <div class="jlogo">أ</div>
+    <h1>أفاينك Live</h1>
+    <p>ميساج حقيقي بينك وبين أي حد فالعالم.<br>صاوب كود، صيفطو لصاحبك، وهضر معاه.</p>
+    <div class="field">
+      <label>سميتك</label>
+      <input id="nick" maxlength="14" placeholder="مثال: أشرف">
+    </div>
+    <div class="field">
+      <label>كود المحادثة</label>
+      <input id="code" maxlength="12" placeholder="مثال: NOVA2026" style="text-transform:uppercase;letter-spacing:2px">
+    </div>
+    <button class="btn main" id="go">دخول للمحادثة</button>
+    <button class="btn ghost" id="rand">🎲 صاوب كود عشوائي</button>
+    <div class="tiny">نصيحة: عطِ نفس الكود لصاحبك باش تكونو فمحادثة وحدة.</div>
+  </div>
+
+  <div class="chead">
+    <div class="av" id="cav">أ</div>
+    <div class="who"><b id="cname">محادثة</b><i id="cstat" class="off">كنتصل…</i></div>
+    <button class="iconbtn" id="share">📤</button>
+    <button class="iconbtn" id="leave">✕</button>
+  </div>
+
+  <div class="msgs" id="msgs"></div>
+
+  <div class="composer">
+    <button class="cbtn" id="mic">🎤</button>
+    <input id="inp" placeholder="كتب رسالة…" autocomplete="off">
+    <button class="cbtn send" id="send">➤</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var msgsEl = $('msgs'), inp = $('inp');
+
+  var me = { name: 'ضيف', code: '', isHost: false };
+  var peer = null, conns = [], myId = '';
+
+  function toast(m) {
+    var t = $('toast'); t.textContent = m; t.classList.add('on');
+    clearTimeout(t._i); t._i = setTimeout(function () { t.classList.remove('on'); }, 2400);
+  }
+  function hhmm(ts) {
+    var d = new Date(ts);
+    return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  }
+  function sys(text) {
+    var d = document.createElement('div');
+    d.className = 'sys';
+    d.textContent = text;
+    msgsEl.appendChild(d);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+  function esc(s) { return String(s); }
+
+  function bubble(m, mine) {
+    var b = document.createElement('div');
+    b.className = 'b ' + (mine ? 'me' : 'them');
+
+    if (m.kind === 'audio' && m.src) {
+      var au = document.createElement('audio');
+      au.controls = true; au.src = m.src;
+      b.appendChild(au);
+    } else {
+      if (!mine && m.name) {
+        var nm = document.createElement('div');
+        nm.className = 'nm';
+        nm.textContent = m.name;
+        b.appendChild(nm);
+      }
+      var tx = document.createElement('div');
+      tx.textContent = esc(m.body);
+      b.appendChild(tx);
+    }
+    var t = document.createElement('div');
+    t.className = 't';
+    t.textContent = hhmm(m.t);
+    b.appendChild(t);
+    return b;
+  }
+  function show(m, mine) {
+    msgsEl.appendChild(bubble(m, mine));
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+
+  /* ---------- network ---------- */
+  function startHost() {
+    me.isHost = true;
+    var hostId = 'afaynek-' + me.code;
+    peer = new Peer(hostId, { debug: 0 });
+    peer.on('open', function (id) {
+      myId = id;
+      $('cstat').textContent = 'أنت المسؤول · الكود ' + me.code;
+      $('cstat').className = '';
+      sys('المحادثة محلولة. صيفط الكود ' + me.code + ' لصحابك.');
+    });
+    peer.on('connection', function (c) {
+      conns.push(c);
+      c.on('data', function (d) { handleIncoming(d, c); });
+      c.on('close', function () { dropConn(c); });
+      c.on('error', function () { dropConn(c); });
+    });
+    peer.on('error', function (err) {
+      if (err && err.type === 'unavailable-id') {
+        // somebody already hosts this room -> join as guest
+        try { peer.destroy(); } catch (e) {}
+        startGuest();
+      } else if (err && err.type === 'peer-unavailable') {
+        toast('صاحب المحادثة مازال ما دخلش');
+      } else if (err && (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error')) {
+        toast('مشكل فالاتصال — عاود جرّب');
+        $('cstat').textContent = 'ما كاينش اتصال'; $('cstat').className = 'off';
+      }
+    });
+  }
+  function startGuest() {
+    me.isHost = false;
+    peer = new Peer({ debug: 0 });
+    peer.on('open', function (id) {
+      myId = id;
+      $('cstat').textContent = 'كنتصل بالغرفة…';
+      connectHost();
+    });
+    peer.on('error', function () { toast('ما قدرناش ندخلو للغرفة'); });
+  }
+  function connectHost() {
+    var c = peer.connect('afaynek-' + me.code, { reliable: true });
+    c.on('open', function () {
+      conns = [c];
+      $('cstat').textContent = 'متصل · ' + me.code;
+      $('cstat').className = '';
+      c.send({ type: 'hello', name: me.name });
+      sys('دخلتي للمحادثة ' + me.code);
+    });
+    c.on('data', function (d) { handleIncoming(d, c); });
+    c.on('close', function () {
+      $('cstat').textContent = 'الاتصال تقطع'; $('cstat').className = 'off';
+      sys('الاتصال تقطع — عاود دخول');
+    });
+    c.on('error', function () { toast('مشكل فالاتصال'); });
+  }
+  function dropConn(c) {
+    conns = conns.filter(function (x) { return x !== c; });
+  }
+  function relay(payload, except) {
+    conns.forEach(function (c) {
+      if (c === except) return;
+      try { if (c.open) c.send(payload); } catch (e) {}
+    });
+  }
+  function handleIncoming(d, from) {
+    if (!d || typeof d !== 'object') return;
+    if (d.type === 'hello') {
+      if (me.isHost) sys((d.name || 'شي حد') + ' دخل للمحادثة');
+      return;
+    }
+    if (d.type !== 'msg') return;
+    show(d, false);
+    // host relays between guests
+    if (me.isHost) relay(d, from);
+  }
+  function sendPayload(payload) {
+    if (!conns.length) { toast('ما كاين حتى شي حد فالمحادثة'); return false; }
+    try {
+      conns.forEach(function (c) { if (c.open) c.send(payload); });
+      if (me.isHost) { /* already broadcast to all */ }
+      return true;
+    } catch (e) { toast('ما قدرتش نصيفط'); return false; }
+  }
+
+  /* ---------- sending ---------- */
+  function sendText() {
+    var v = inp.value.trim();
+    if (!v) return;
+    if (!conns.length) { toast('ما كاين حتى شي حد فالمحادثة'); return; }
+    var m = { type: 'msg', kind: 'text', name: me.name, body: v, t: Date.now() };
+    inp.value = '';
+    if (sendPayload(m)) show(m, true);
+  }
+  $('send').onclick = sendText;
+  inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') sendText(); });
+
+  /* ---------- voice ---------- */
+  var rec = null, chunks = [], recStart = 0, recTimer = 0, stream = null, recording = false;
+  function stopTracks() { if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; } }
+  function startRec() {
+    if (!conns.length) { toast('ما كاين حتى شي حد فالمحادثة'); return; }
+    if (!navigator.mediaDevices || !window.MediaRecorder) { toast('المتصفح ما كيدعمش التسجيل'); return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) {
+      stream = s;
+      rec = new MediaRecorder(s);
+      chunks = [];
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = function () {
+        var blob = new Blob(chunks, { type: 'audio/webm' });
+        stopTracks();
+        if (!blob.size) { toast('ما تسجل حتى شي حاجة'); return; }
+        if (blob.size > 700000) { toast('التسجيل طويل بزاف — سجّل أقل من 30 ثانية'); return; }
+        var fr = new FileReader();
+        fr.onload = function () {
+          var m = { type: 'msg', kind: 'audio', name: me.name, src: fr.result, t: Date.now() };
+          if (sendPayload(m)) show(m, true);
+        };
+        fr.readAsDataURL(blob);
+      };
+      rec.start();
+      recording = true; recStart = Date.now();
+      $('mic').classList.add('rec'); $('mic').textContent = '⏹';
+      sys('كنسجل… دوس عاود باش تصيفط');
+      recTimer = setInterval(function () {
+        if (Date.now() - recStart > 30000) stopRec();
+      }, 500);
+    }).catch(function () { toast('عطي الإذن للميكروفون'); });
+  }
+  function stopRec() {
+    if (!recording) return;
+    recording = false;
+    clearInterval(recTimer);
+    $('mic').classList.remove('rec'); $('mic').textContent = '🎤';
+    try { rec.stop(); } catch (e) { stopTracks(); }
+  }
+  $('mic').onclick = function () { recording ? stopRec() : startRec(); };
+
+  /* ---------- join / leave / share ---------- */
+  function join() {
+    var nick = $('nick').value.trim() || 'ضيف';
+    var code = $('code').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (code.length < 4) { toast('الكود خاصو 4 حروف على الأقل'); return; }
+    me.name = nick; me.code = code;
+    $('cname').textContent = 'محادثة ' + code;
+    $('cav').textContent = code.charAt(0);
+    $('join').classList.add('hide');
+    msgsEl.innerHTML = '';
+    sys('كنتصل…');
+    if (!window.Peer) { toast('ما تحملش الاتصال — تحقق من الإنترنت'); return; }
+    startHost();
+  }
+  $('go').onclick = join;
+  $('code').addEventListener('keydown', function (e) { if (e.key === 'Enter') join(); });
+  $('nick').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('code').focus(); });
+  $('rand').onclick = function () {
+    var s = 'NOVA' + Math.floor(1000 + Math.random() * 9000);
+    $('code').value = s;
+    toast('الكود: ' + s);
+  };
+  $('share').onclick = function () {
+    var url = location.origin + location.pathname + '?c=' + me.code;
+    var data = { title: 'أفاينك Live', text: 'دخل معايا للمحادثة بالكود ' + me.code, url: url };
+    if (navigator.share) navigator.share(data).catch(function () {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(data.text + ' ' + url)
+      .then(function () { toast('تنسخ الرابط 📋'); }, function () { toast('الكود: ' + me.code); });
+    else toast('الكود: ' + me.code);
+  };
+  $('leave').onclick = function () {
+    location.reload();
+  };
+
+  // prefill from ?c=CODE
+  try {
+    var p = new URLSearchParams(location.search);
+    var c = (p.get('c') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (c) $('code').value = c;
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
