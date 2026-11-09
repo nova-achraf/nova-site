@@ -23,6 +23,25 @@ body{background:#EDE7DE;color:var(--ink);overflow:hidden;
 #app{max-width:480px;margin:0 auto;height:100dvh;position:relative;overflow:hidden;
   background:var(--cream);box-shadow:0 0 60px rgba(70,50,35,.14);display:flex;flex-direction:column}
 
+/* ---------- auth ---------- */
+#auth{position:absolute;inset:0;z-index:80;display:none;flex-direction:column;background:var(--cream);overflow-y:auto}
+#auth.on{display:flex}
+.ahero{padding:44px 20px 30px;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,rgba(14,159,110,.18),rgba(212,175,55,.12) 60%,var(--cream))}
+.ahero:before{content:"";position:absolute;width:220px;height:220px;border-radius:50%;top:-110px;left:-60px;
+  background:radial-gradient(circle,var(--brand2),transparent 70%);opacity:.4}
+.alogo{width:84px;height:84px;border-radius:28px;margin:0 auto 14px;display:grid;place-items:center;
+  color:#fff;font-size:38px;font-weight:800;background:linear-gradient(140deg,var(--brand),var(--brand2));
+  box-shadow:0 16px 34px rgba(14,159,110,.36);position:relative;z-index:2}
+.aname{font-size:27px;font-weight:800;letter-spacing:-.6px;position:relative;z-index:2}
+.atag{font-size:12.5px;color:var(--muted);margin-top:4px;position:relative;z-index:2}
+.abody{padding:0 20px 30px;flex:1}
+.atabs{display:flex;gap:6px;background:var(--soft);padding:5px;border-radius:16px;margin-bottom:14px}
+.atabs button{flex:1;border:0;background:transparent;border-radius:12px;padding:11px;font-family:inherit;
+  font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer}
+.atabs button.on{background:#fff;color:var(--brand-ink);box-shadow:0 3px 10px rgba(90,60,40,.1)}
+.aerr{color:#B3261E;font-size:12.5px;font-weight:700;text-align:center;margin-top:10px;min-height:18px}
+
 /* ---------- top ---------- */
 .top{position:relative;flex:none;padding:14px 14px 10px;overflow:hidden;
   background:linear-gradient(160deg,rgba(14,159,110,.14),rgba(212,175,55,.10) 55%,var(--cream) 78%);
@@ -225,6 +244,29 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
 <body>
 <div id="app">
 
+  <div id="auth">
+    <div class="ahero">
+      <div class="alogo">أ</div>
+      <div class="aname">أفاينك</div>
+      <div class="atag">Afaynek · فينك؟</div>
+    </div>
+    <div class="abody">
+      <div class="atabs">
+        <button id="aTabIn" class="on" data-t="signIn">دخول</button>
+        <button id="aTabUp" data-t="signUp">حساب جديد</button>
+      </div>
+      <div class="note" id="aNote" data-t="authNote">📱 دخل برقم الهاتف. ما كاين حتى كود SMS — غير الرقم وكلمة السر.</div>
+      <div class="field"><label data-t="phone">رقم الهاتف</label>
+        <input id="aPhone" type="tel" inputmode="tel" placeholder="06 12 34 56 78" style="letter-spacing:1px;direction:ltr;text-align:left">
+      </div>
+      <div class="field"><label data-t="password">كلمة السر</label>
+        <input id="aPass" type="password" placeholder="••••" style="direction:ltr;text-align:left">
+      </div>
+      <button class="btn main" id="aBtn" style="margin-top:6px">➜ <span data-t="enter">دخول</span></button>
+      <div class="aerr" id="aErr"></div>
+    </div>
+  </div>
+
   <div class="top">
     <div class="brand">
       <div class="logo">أ</div>
@@ -232,6 +274,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
         <h1>أفاينك</h1>
         <div class="sub" id="hSub">Afaynek · فينك؟</div>
       </div>
+      <button class="hbtn" id="newChat" title="New chat">✎</button>
       <button class="hbtn" id="langBtn" title="Language">🌐</button>
       <button class="hbtn" id="themeBtn" title="Theme">🎨</button>
       <button class="avb" id="meBtn">أ</button>
@@ -345,10 +388,13 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
   <div class="modal" id="modalMe">
     <div class="sheet">
       <h3>👤 <span data-t="profile">حسابي</span></h3>
+      <div class="field"><label data-t="phone">رقم الهاتف</label>
+        <input id="mePhone" type="tel" inputmode="tel" readonly style="background:#F6F1E9;letter-spacing:1px"></div>
       <div class="field"><label data-t="yourName">سميتك</label><input id="meName" maxlength="18" placeholder="أشرف"></div>
       <div class="field"><label data-t="status">الحالة</label><input id="meStatus" maxlength="30" placeholder="فينك؟ 👋"></div>
-      <div class="row2"><button class="no" id="meClose" data-t="cancel">لا</button>
+      <div class="row2" style="margin-bottom:8px"><button class="no" id="meClose" data-t="cancel">لا</button>
         <button class="ok" id="meSave" data-t="save">سجّل</button></div>
+      <button class="btn ghost" id="logout" data-t="logout" style="color:#B3261E">خروج</button>
     </div>
   </div>
 
@@ -494,6 +540,43 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
       q1:'Wagi 👌', q2:'Mani tgiḍ?', q3:'Ttedduɣ', q4:'Hahaha 😂', q5:'Tanemmirt 🙏'
     }
   };
+  var AUTH_T = {
+    dar: { signIn:'دخول', signUp:'حساب جديد', phone:'رقم الهاتف', password:'كلمة السر', enter:'دخول', logout:'خروج',
+      authNote:'📱 رقم الهاتف + كلمة السر. ما كاين حتى كود SMS — والحساب كيتسجل فهاد الجهاز فقط.',
+      errPhone:'عمر رقم صحيح (10 رقم)', errPass:'كلمة السر خاصها 4 حروف على الأقل',
+      errNoAcc:'ما كاين حتى حساب بهاد الرقم. دوس «حساب جديد».', errTaken:'هاد الرقم مسجل من قبل. دوس «دخول».',
+      errWrong:'الرقم ولا كلمة السر غالطة.', welcome:'مرحبا بيك 👋' },
+    ar: { signIn:'دخول', signUp:'حساب جديد', phone:'رقم الهاتف', password:'كلمة السر', enter:'دخول', logout:'خروج',
+      authNote:'📱 رقم الهاتف + كلمة السر. بدون رمز SMS — والحساب يُحفظ على هذا الجهاز فقط.',
+      errPhone:'أدخل رقماً صحيحاً', errPass:'كلمة السر 4 أحرف على الأقل',
+      errNoAcc:'لا يوجد حساب بهذا الرقم. اضغط «حساب جديد».', errTaken:'هذا الرقم مسجّل. اضغط «دخول».',
+      errWrong:'الرقم أو كلمة السر غير صحيحة.', welcome:'أهلاً بك 👋' },
+    fr: { signIn:'Connexion', signUp:'Nouveau compte', phone:'Téléphone', password:'Mot de passe', enter:'Entrer', logout:'Déconnexion',
+      authNote:'📱 Numéro + mot de passe. Pas de code SMS — le compte reste sur cet appareil.',
+      errPhone:'Numéro invalide', errPass:'4 caractères minimum',
+      errNoAcc:'Aucun compte avec ce numéro. Appuie sur « Nouveau compte ».', errTaken:'Numéro déjà utilisé. Appuie sur « Connexion ».',
+      errWrong:'Numéro ou mot de passe incorrect.', welcome:'Bienvenue 👋' },
+    en: { signIn:'Sign in', signUp:'New account', phone:'Phone number', password:'Password', enter:'Enter', logout:'Log out',
+      authNote:'📱 Number + password. No SMS code — the account stays on this device.',
+      errPhone:'Enter a valid number', errPass:'At least 4 characters',
+      errNoAcc:'No account with this number. Tap “New account”.', errTaken:'This number is taken. Tap “Sign in”.',
+      errWrong:'Wrong number or password.', welcome:'Welcome 👋' },
+    es: { signIn:'Entrar', signUp:'Cuenta nueva', phone:'Teléfono', password:'Contraseña', enter:'Entrar', logout:'Salir',
+      authNote:'📱 Número + contraseña. Sin código SMS — la cuenta se guarda en este teléfono.',
+      errPhone:'Número no válido', errPass:'Mínimo 4 caracteres',
+      errNoAcc:'No hay cuenta con ese número. Pulsa «Cuenta nueva».', errTaken:'Número ya usado. Pulsa «Entrar».',
+      errWrong:'Número o contraseña incorrectos.', welcome:'Bienvenido 👋' },
+    zgh: { signIn:'Kcem', signUp:'Amiḍan amaynu', phone:'Uṭṭun n tilifun', password:'Tabaḍnit', enter:'Kcem', logout:'Ffeɣ',
+      authNote:'📱 Uṭṭun + tabaḍnit. Ulac kod SMS — amiḍan iqqim deg usnas-a.',
+      errPhone:'Sekcem uṭṭun iṣeḥḥan', errPass:'4 isekkilen ma drus',
+      errNoAcc:'Ulac amiḍan s uṭṭun-a. Ssit «Amiḍan amaynu».', errTaken:'Uṭṭun-a yettwaṭṭef. Ssit «Kcem».',
+      errWrong:'Uṭṭun neɣ tabaḍnit ẓẓayen.', welcome:'Ansuf 👋' }
+  };
+  Object.keys(AUTH_T).forEach(function (l) {
+    if (!T[l]) return;
+    for (var k in AUTH_T[l]) T[l][k] = AUTH_T[l][k];
+  });
+
   var LKEY = 'afay_lang', lang = read(LKEY) || 'dar';
   if (!T[lang]) lang = 'dar';
   function t(k) { return (T[lang] && T[lang][k]) || T.dar[k] || k; }
@@ -513,6 +596,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     Array.prototype.forEach.call($('langGrid').querySelectorAll('button'), function (b) {
       b.classList.toggle('on', b.getAttribute('data-l') === lang);
     });
+    syncAuth();
   }
   LANGS.forEach(function (l) {
     var b = document.createElement('button');
@@ -561,7 +645,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
   };
 
   /* ============ profile ============ */
-  var me = { name: read('afay_name') || '', status: read('afay_status') || '' };
+  var me = { name: read('afay_name') || '', status: read('afay_status') || '', phone: read('afay_phone') || '' };
   function paintMe() { $('meBtn').textContent = initials(me.name || 'أ'); }
   $('meBtn').onclick = function () {
     $('meName').value = me.name; $('meStatus').value = me.status;
@@ -1119,10 +1203,75 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     });
   }
 
+  /* ============ account: phone + password ============ */
+  var AKEY = 'afay_account', SKEY = 'afay_session', authMode = 'in';
+
+  function getAccount() { try { var a = JSON.parse(read(AKEY) || 'null'); return a && a.phone ? a : null; } catch (e) { return null; } }
+  function normPhone(v) {
+    var s = (v || '').replace(/[^0-9+]/g, '');
+    s = s.replace(/^\+?212/, '0').replace(/^00212/, '0');
+    if (s.charAt(0) !== '0' && s.length === 9) s = '0' + s;
+    return s;
+  }
+  function aErr(m) { $('aErr').textContent = m || ''; }
+  function syncAuth() {
+    $('aTabIn').textContent = t('signIn');
+    $('aTabUp').textContent = t('signUp');
+    $('aBtn').innerHTML = '➜ <span>' + (authMode === 'up' ? t('signUp') : t('enter')) + '</span>';
+    $('aNote').textContent = t('authNote');
+    $('aTabIn').classList.toggle('on', authMode === 'in');
+    $('aTabUp').classList.toggle('on', authMode === 'up');
+    var lbl = $('modalMe').querySelectorAll('label');
+    if ($('mePhone')) $('mePhone').value = me.phone || '';
+    var lo = $('logout'); if (lo) lo.textContent = t('logout');
+  }
+  function showAuth(on) {
+    $('auth').classList.toggle('on', !!on);
+    if (on) { aErr(''); $('aPhone').focus(); }
+  }
+  function doAuth() {
+    var phone = normPhone($('aPhone').value);
+    var pass = $('aPass').value;
+    if (phone.replace(/\D/g, '').length < 9) { aErr(t('errPhone')); return; }
+    if (pass.length < 4) { aErr(t('errPass')); return; }
+    var acc = getAccount();
+    if (authMode === 'up') {
+      if (acc && acc.phone === phone) { aErr(t('errTaken')); return; }
+      store(AKEY, JSON.stringify({ phone: phone, pass: pass }));
+      enterApp(phone);
+      return;
+    }
+    if (!acc) { aErr(t('errNoAcc')); return; }
+    if (acc.phone !== phone || acc.pass !== pass) { aErr(t('errWrong')); return; }
+    enterApp(phone);
+  }
+  function enterApp(phone) {
+    me.phone = phone;
+    if (!me.name) { me.name = ''; }
+    store(SKEY, '1'); store('afay_phone', phone);
+    $('mePhone').value = phone;
+    paintMe(); showAuth(false); renderChats();
+    aErr(''); $('aPass').value = '';
+    toast(t('welcome'));
+  }
+  $('aTabIn').onclick = function () { authMode = 'in'; aErr(''); syncAuth(); };
+  $('aTabUp').onclick = function () { authMode = 'up'; aErr(''); syncAuth(); };
+  $('aBtn').onclick = doAuth;
+  $('aPass').addEventListener('keydown', function (e) { if (e.key === 'Enter') doAuth(); });
+  $('aPhone').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('aPass').focus(); });
+  $('logout').onclick = function () {
+    try { localStorage.removeItem(SKEY); } catch (e) {}
+    $('modalMe').classList.remove('on');
+    $('aPass').value = ''; $('aPhone').value = me.phone || '';
+    showAuth(true);
+  };
+
   /* ============ boot ============ */
   applyLang(lang);
   loadChats(); loadMemo();
   renderChats(); renderMemo();
+  if (read(SKEY) === '1') { showAuth(false); $('mePhone').value = me.phone; }
+  else { showAuth(true); }
   setInterval(tickMemo, 15000);
   window.addEventListener('beforeunload', function () { endAll(); });
 })();
