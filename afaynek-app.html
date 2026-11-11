@@ -327,6 +327,7 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
     <button class="ditem" data-sub="proj"><span class="di">📁</span><span data-t="projects">المشاريع</span><span class="dc" id="cProj"></span></button>
     <button class="ditem" data-sub="sched"><span class="di">⏰</span><span data-t="scheduled">المجدولة</span><span class="dc" id="cSched"></span></button>
     <button class="ditem" data-sub="video"><span class="di">🎬</span><span>صانع الفيديو</span></button>
+    <button class="ditem" id="dPro"><span class="di">⭐</span><span>الترقية لبرو</span><span class="dc" id="cPro2"></span></button>
     <button class="ditem" data-sub="plugins"><span class="di">🔌</span><span data-t="plugins">الإضافات</span></button>
     <div style="height:1px;background:var(--line);margin:10px 6px"></div>
     <button class="ditem" id="dTheme"><span class="di">🎨</span><span data-t="theme">لون التطبيق</span></button>
@@ -514,6 +515,30 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
       <div class="field"><label data-t="noteOpt">ملاحظة</label><input id="mn" maxlength="60" placeholder="اختياري"></div>
       <div class="row2"><button class="no" id="mCancel" data-t="cancel">لا</button>
         <button class="ok" id="mSave" data-t="save">سجّل</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalPro">
+    <div class="sheet">
+      <h3>⭐ خطة برو</h3>
+      <div class="card" style="margin-bottom:10px">
+        <b style="font-size:14px">🎁 مجاني</b>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:4px">
+          1 فيديو فاليوم · جودة HD 720p · كل الميزات الأخرى
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--brand);background:#F3FCF8;margin-bottom:14px">
+        <b style="font-size:14px">⭐ برو — 29 درهم/شهر</b>
+        <div style="font-size:12.5px;color:#1F5B45;line-height:1.7;margin-top:4px">
+          فيديوهات بلا حدود · Full HD 1080p · أولوية فالدعم
+        </div>
+      </div>
+      <div class="aerr" id="proMsg"></div>
+      <button class="btn main" id="proPay">💳 خلّص 29 درهم</button>
+      <div class="field" style="margin-top:12px"><label>عندك كود؟</label>
+        <input id="proCode" placeholder="AFANEKPRO" style="direction:ltr;text-align:left;letter-spacing:2px"></div>
+      <button class="btn ghost" id="proRedeem">🔓 فعّل الكود</button>
+      <button class="btn ghost" id="proClose" style="margin-top:8px">سد</button>
     </div>
   </div>
 
@@ -1436,6 +1461,7 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
       $('cLib').textContent = lib.length || '';
       $('cProj').textContent = proj.length || '';
       $('cSched').textContent = memo.length || '';
+      $('cPro2').textContent = isPro() ? '⭐' : '';
     }
   }
   $('menuBtn').onclick = function () { openDrawer(true); };
@@ -1593,13 +1619,52 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
     }
   }
 
+  /* plans / paywall */
+  var PLANKEY = 'afay_plan', USEKEY = 'afay_viduse';
+  function planData() { try { return JSON.parse(read(PLANKEY) || '{}') || {}; } catch (e) { return {}; } }
+  function isPro() { var p = planData(); return !!(p.pro && (!p.until || p.until > Date.now())); }
+  function dayKey() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function usedToday() {
+    try { var u = JSON.parse(read(USEKEY) || '{}') || {}; return u.d === dayKey() ? (u.n || 0) : 0; }
+    catch (e) { return 0; }
+  }
+  function bumpUse() { try { localStorage.setItem(USEKEY, JSON.stringify({ d: dayKey(), n: usedToday() + 1 })); } catch (e) {} }
+  function freeLeft() { return isPro() ? 99 : Math.max(0, 1 - usedToday()); }
+  function openPro(msg) { $('proMsg').textContent = msg || ''; $('modalPro').classList.add('on'); }
+
+  $('proClose').onclick = function () { $('modalPro').classList.remove('on'); };
+  $('proPay').onclick = function () {
+    $('proMsg').textContent = '💳 الخلاص الإلكتروني مازال ما مربوطش — خاصنا Stripe ولا CMI. منين يتفعّل، غادي تخلص من هنا مباشرة.';
+  };
+  $('proRedeem').onclick = function () {
+    var c = $('proCode').value.trim().toUpperCase().replace(/\s/g, '');
+    var days = c === 'AFANEKPRO' ? 30 : (c === 'NOVA2026' ? 7 : 0);
+    if (!days) { $('proMsg').textContent = '⚠️ الكود ماشي صحيح.'; return; }
+    try { localStorage.setItem(PLANKEY, JSON.stringify({ pro: true, until: Date.now() + days * 86400000 })); } catch (e) {}
+    $('proCode').value = '';
+    $('modalPro').classList.remove('on');
+    $('cPro2').textContent = '⭐';
+    toast('⭐ مرحبا فخطة برو · ' + days + ' يوم');
+    if ($('sub').classList.contains('on')) renderSub('video');
+  };
+  $('dPro').onclick = function () { openDrawer(false); openPro(''); };
+
   /* video maker */
   var VID = { files: [], sec: 3, w: 1080, h: 1920 };
 
   function renderVideoPanel(body) {
     body.innerHTML = '';
+    if (!isPro()) { VID.w = 720; VID.h = 1280; }
     var note = h('div', 'note', '🎬 صاوب فيديو من تصاورك بجودة عالية. كلشي كيتدار فالتليفون ديالك — حتى صورة ما كتطلع للسيرفر.');
     body.appendChild(note);
+
+    var pl = h('div', 'tog');
+    pl.appendChild(h('span', '', isPro() ? '⭐ برو — فيديوهات بلا حدود' : ('🎁 مجاني — باقي ليك ' + freeLeft() + ' فيديو اليوم')));
+    var up = document.createElement('button');
+    up.className = 'sw' + (isPro() ? ' on' : '');
+    up.onclick = function () { openPro(''); };
+    pl.appendChild(up);
+    body.appendChild(pl);
 
     var pick = document.createElement('input');
     pick.type = 'file'; pick.accept = 'image/*'; pick.multiple = true; pick.style.display = 'none';
@@ -1626,9 +1691,13 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
 
     body.appendChild(h('div', 'sech', '🖼 الجودة'));
     var qRow = h('div', 'row2'); qRow.style.marginBottom = '14px';
-    [[720, 1280, 'HD · 720p'], [1080, 1920, 'Full HD · 1080p']].forEach(function (op) {
-      var b = h('button', VID.w === op[0] ? 'ok' : 'no', op[2]);
-      b.onclick = function () { VID.w = op[0]; VID.h = op[1]; renderVideoPanel(body); };
+    [[720, 1280, 'HD · 720p'], [1080, 1920, 'Full HD · 1080p 🔒']].forEach(function (op) {
+      var locked = op[0] === 1080 && !isPro();
+      var b = h('button', (VID.w === op[0] && !locked) ? 'ok' : 'no', locked ? op[2] : op[2].replace(' 🔒', ''));
+      b.onclick = function () {
+        if (locked) { openPro('Full HD متاح غير فخطة برو ⭐'); return; }
+        VID.w = op[0]; VID.h = op[1]; renderVideoPanel(body);
+      };
       qRow.appendChild(b);
     });
     body.appendChild(qRow);
@@ -1660,6 +1729,10 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
     go.onclick = function () {
       if (!VID.files.length) { toast('⚠️ ختار تصاور أولاً'); return; }
       if (VID.files.length < 2) { toast('⚠️ زيد صورة وحدة على الأقل'); return; }
+      if (!isPro() && freeLeft() <= 0) {
+        openPro('🎬 خلّصتي الفيديو المجاني ديال اليوم. برو كيعطيك فيديوهات بلا حدود ⭐');
+        return;
+      }
       if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { toast('⚠️'); return; }
       go.disabled = true; go.textContent = '⏳ كنصاوب الفيديو…';
       out.innerHTML = '';
@@ -1667,6 +1740,7 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
       Promise.all(loaded).then(function (list) {
         list = list.filter(function (i) { return i; });
         if (!list.length) { go.disabled = false; go.textContent = '🎬 صاوب الفيديو'; return; }
+        if (!isPro()) bumpUse();
         recordVideo(list, function (url) {
           go.disabled = false; go.textContent = '🎬 عاود صاوب';
           var v = document.createElement('video');
