@@ -1,7 +1,7 @@
 {
-  "name": "كلام — Kalam",
-  "short_name": "كلام",
-  "description": "كلام — تطبيق ميساج ساهل: محادثات، أوديو، وفيديو. بلا حساب وبلا تعقيد.",
+  "name": "لاغي — Laghi",
+  "short_name": "لاغي",
+  "description": "لاغي — تطبيق ميساج ساهل: محادثات، أوديو، وفيديو. بلا حساب وبلا تعقيد.",
   "start_url": "./afaynek-live.html",
   "scope": "./",
   "display": "standalone",

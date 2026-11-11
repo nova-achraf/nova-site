@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>كلام — Kalam</title>
+<title>لاغي — Laghi</title>
 <meta name="theme-color" content="#FF6B4A">
 <link rel="apple-touch-icon" href="afaynek-apple-icon.png">
 <link rel="manifest" href="afaynek-manifest.json">
@@ -87,8 +87,8 @@ body{background:#EFE6DB;color:var(--ink);overflow:hidden;font-family:"Segoe UI",
 <div id="app">
 
   <div id="join">
-    <div class="jlogo">ك</div>
-    <h1>كلام</h1>
+    <div class="jlogo">ل</div>
+    <h1>لاغي</h1>
     <p>ميساج حقيقي بينك وبين أي حد فالعالم.<br>صاوب كود، صيفطو لصاحبك، وهضر معاه.</p>
     <div class="field">
       <label>سميتك</label>
@@ -421,7 +421,7 @@ body{background:#EFE6DB;color:var(--ink);overflow:hidden;font-family:"Segoe UI",
   };
   $('share').onclick = function () {
     var url = location.origin + location.pathname + '?c=' + me.code;
-    var data = { title: 'كلام', text: 'دخل معايا للمحادثة بالكود ' + me.code, url: url };
+    var data = { title: 'لاغي', text: 'دخل معايا للمحادثة بالكود ' + me.code, url: url };
     if (navigator.share) navigator.share(data).catch(function () {});
     else if (navigator.clipboard) navigator.clipboard.writeText(data.text + ' ' + url)
       .then(function () { toast('تنسخ الرابط 📋'); }, function () { toast('الكود: ' + me.code); });
