@@ -187,6 +187,11 @@
   .side-act .ic{width:20px;text-align:center;font-size:15px;flex-shrink:0}
   .side-act .lbl{flex:1}
   .side-act .tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+  .side-swatches{display:flex;gap:8px;padding:2px 10px 10px}
+  .side-swatches button{flex:1;height:26px;border-radius:8px;cursor:pointer;border:2px solid var(--line)}
+  .side-swatches .sw-dark{background:linear-gradient(135deg,#0A0A0F,#D4AF37)}
+  .side-swatches .sw-light{background:linear-gradient(135deg,#FFFBF6,#E2603F)}
+  .side-swatches .sw-ocean{background:linear-gradient(135deg,#06141D,#4ECDC4)}
   /* THEME: LIGHT (cream + terracotta) */
   body.light{
     --bg:#FFFBF6;--bg2:#FFF7EE;--card:#F7F0E6;--line:#E8DDCC;
@@ -240,7 +245,12 @@
   </div>
   <div class="side-sec">
     <div class="side-cap">إعدادات</div>
-    <button class="side-act" onclick="toggleTheme()"><span class="ic">🌗</span><span class="lbl">المظهر</span><span class="tag" id="themeTag">داكن</span></button>
+    <button class="side-act" onclick="toggleTheme()"><span class="ic">🌗</span><span class="lbl">المظهر</span><span class="tag" id="themeTag">فاتح</span></button>
+    <div class="side-swatches">
+      <button class="sw-dark" onclick="setTheme('dark')" title="داكن"></button>
+      <button class="sw-light" onclick="setTheme('light')" title="فاتح"></button>
+      <button class="sw-ocean" onclick="setTheme('ocean')" title="أزرق"></button>
+    </div>
     <button class="side-act" onclick="cycleFont()"><span class="ic">🔠</span><span class="lbl">حجم الخط</span><span class="tag" id="fontTag">عادي</span></button>
     <button class="side-act" onclick="clearConvs()"><span class="ic">🗑️</span><span class="lbl">مسح كل المحادثات</span></button>
   </div>
@@ -471,12 +481,14 @@ function applyTheme(t){
   var tg=document.getElementById('themeTag');if(tg)tg.textContent=label;
   var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',color);
 }
+function setTheme(t){
+  try{localStorage.setItem(THEME_KEY,t);localStorage.setItem('azami_theme_v2','1')}catch(e){}
+  applyTheme(t);
+}
 function toggleTheme(){
-  var cur='dark';try{cur=localStorage.getItem(THEME_KEY)||'dark'}catch(e){}
+  var cur='light';try{cur=localStorage.getItem(THEME_KEY)||'light'}catch(e){}
   var idx=0;for(var i=0;i<THEMES.length;i++){if(THEMES[i][0]===cur)idx=i}
-  var nxt=THEMES[(idx+1)%THEMES.length][0];
-  try{localStorage.setItem(THEME_KEY,nxt)}catch(e){}
-  applyTheme(nxt);
+  setTheme(THEMES[(idx+1)%THEMES.length][0]);
 }
 function applyFont(f){
   document.body.classList.remove('fs-s','fs-l');
@@ -499,8 +511,12 @@ function clearConvs(){
   if(window.innerWidth<=768)toggleSidebar();
 }
 (function initSettings(){
-  var t='dark',f='m';
-  try{t=localStorage.getItem(THEME_KEY)||'dark';f=localStorage.getItem(FONT_KEY)||'m'}catch(e){}
+  var t='light',f='m';
+  try{
+    var seen=localStorage.getItem('azami_theme_v2');
+    t=seen?(localStorage.getItem(THEME_KEY)||'light'):'light';
+    f=localStorage.getItem(FONT_KEY)||'m';
+  }catch(e){}
   applyTheme(t);applyFont(f);
 })();
 /* === VIDEO MAKER === */
