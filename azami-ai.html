@@ -166,6 +166,19 @@
   .sheet a.dl{display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,#1B7A5A,#0E5C4A);color:#fff;padding:14px;border-radius:12px;font-weight:800;font-size:16px;margin-bottom:8px;box-shadow:0 6px 18px rgba(27,122,90,.35)}
   .sheet a.alt{display:block;text-align:center;text-decoration:none;background:var(--card);color:var(--gold2);border:1.5px solid var(--line);padding:12px;border-radius:12px;font-weight:700;font-size:14px;margin-bottom:8px}
   .err{color:var(--red);font-size:12px;margin-top:6px;display:none}
+  /* VIDEO MAKER */
+  #vidModal .sheet{max-width:420px;max-height:92dvh;overflow-y:auto}
+  .vid-note{font-size:12.5px;color:var(--muted);line-height:1.7;margin-bottom:12px}
+  .vid-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}
+  .vid-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+  .vid-info{font-size:12.5px;color:var(--muted);margin:6px 2px 10px}
+  .vid-cap{font-size:12px;font-weight:700;color:var(--gold2);margin:10px 0 6px}
+  .vid-row{display:flex;gap:8px;margin-bottom:10px}
+  .vid-row button{flex:1;width:auto;padding:10px 4px;background:var(--card);border:1.5px solid var(--line);color:var(--muted);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
+  .vid-row button.on{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:#1b130b}
+  .vid-out{margin-top:12px}
+  .vid-out video{width:100%;border-radius:12px;background:#000;margin-bottom:8px}
+  .vid-out a{display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:12px;border-radius:10px;font-weight:700;font-size:14px}
   /* SIDE MENU SECTIONS */
   .side-sec{padding:4px 8px;border-top:1px solid var(--line);flex-shrink:0}
   .side-cap{font-size:10px;letter-spacing:1.4px;color:var(--muted);padding:8px 6px 4px;font-weight:700}
@@ -219,6 +232,7 @@
   <div class="side-list" id="convList"></div>
   <div class="side-sec">
     <div class="side-cap">أدوات</div>
+    <button class="side-act" onclick="openVideo()"><span class="ic">🎬</span><span class="lbl">صانع الفيديو</span><span class="tag">جديد</span></button>
     <button class="side-act" onclick="openPdf()"><span class="ic">📄</span><span class="lbl">صور → PDF</span></button>
     <button class="side-act" onclick="exportChat()"><span class="ic">⬇️</span><span class="lbl">تصدير المحادثة</span></button>
     <button class="side-act" onclick="openMemory()"><span class="ic">🧠</span><span class="lbl">ذاكرة AZAMI</span></button>
@@ -286,6 +300,25 @@
   </div>
 </div>
 <input type="file" id="pdfInput" accept="image/*" multiple hidden onchange="pdfFromImages(this)">
+
+<!-- VIDEO MAKER -->
+<div class="modal" id="vidModal">
+  <div class="sheet">
+    <h3>🎬 صانع الفيديو</h3>
+    <p class="vid-note">ختار من 2 حتى 12 صورة، AZAMI يصاوب ليك فيديو عمودي بالحركة والانتقالات. كلشي كيتدار فالمتصفح — ما كتطلع حتى صورة للسيرفر.</p>
+    <button class="go" onclick="document.getElementById('vidInput').click()">📷 ختار التصاور</button>
+    <input type="file" id="vidInput" accept="image/*" multiple hidden onchange="onVidPick(this)">
+    <div class="vid-grid" id="vidThumbs"></div>
+    <div class="vid-info" id="vidInfo">ما ختارتي حتى صورة.</div>
+    <div class="vid-cap">⏱ مدة كل صورة</div>
+    <div class="vid-row" id="vidDur"></div>
+    <div class="vid-cap">🖼 الجودة</div>
+    <div class="vid-row" id="vidQual"></div>
+    <button class="go" id="vidGo" onclick="makeVideo()">🎬 صاوب الفيديو</button>
+    <div class="vid-out" id="vidOut"></div>
+    <button class="skip" onclick="closeVideo()">إغلاق</button>
+  </div>
+</div>
 <script>
 const KEY='azami_ai_gemini_key';
 let APIKEY='';try{APIKEY=localStorage.getItem(KEY)||''}catch(e){}
@@ -470,6 +503,106 @@ function clearConvs(){
   try{t=localStorage.getItem(THEME_KEY)||'dark';f=localStorage.getItem(FONT_KEY)||'m'}catch(e){}
   applyTheme(t);applyFont(f);
 })();
+/* === VIDEO MAKER === */
+var VID={files:[],sec:3,w:720,h:1280};
+function openVideo(){document.getElementById('vidModal').classList.add('show');renderVid();}
+function closeVideo(){document.getElementById('vidModal').classList.remove('show');}
+function renderVid(){
+  var dur=document.getElementById('vidDur'),qual=document.getElementById('vidQual');
+  if(!dur||!qual)return;
+  dur.innerHTML='';qual.innerHTML='';
+  [[2,'2 ثانية'],[3,'3 ثواني'],[5,'5 ثواني']].forEach(function(o){
+    var b=document.createElement('button');b.textContent=o[1];
+    if(VID.sec===o[0])b.className='on';
+    b.onclick=function(){VID.sec=o[0];renderVid()};
+    dur.appendChild(b);
+  });
+  [[720,1280,'HD · 720p'],[1080,1920,'Full HD · 1080p']].forEach(function(o){
+    var b=document.createElement('button');b.textContent=o[2];
+    if(VID.w===o[0])b.className='on';
+    b.onclick=function(){VID.w=o[0];VID.h=o[1];renderVid()};
+    qual.appendChild(b);
+  });
+  var th=document.getElementById('vidThumbs');th.innerHTML='';
+  VID.files.forEach(function(f,i){
+    var im=document.createElement('img');im.src=URL.createObjectURL(f);
+    im.onclick=function(){VID.files.splice(i,1);renderVid()};
+    th.appendChild(im);
+  });
+  document.getElementById('vidInfo').textContent=VID.files.length
+    ?(VID.files.length+' تصاور · '+(VID.files.length*VID.sec)+' ثانية · '+VID.w+'p · كليك على صورة باش تحيدها')
+    :'ما ختارتي حتى صورة.';
+}
+function onVidPick(inp){
+  var fs=Array.prototype.slice.call(inp.files||[]);inp.value='';
+  if(!fs.length)return;
+  VID.files=VID.files.concat(fs).slice(0,12);renderVid();
+}
+function vidLoadImg(f){
+  return new Promise(function(res){
+    var i=new Image();
+    i.onload=function(){res(i)};i.onerror=function(){res(null)};
+    i.src=URL.createObjectURL(f);
+  });
+}
+function makeVideo(){
+  if(VID.files.length<2){alert('⚠️ ختار على الأقل جوج تصاور.');return;}
+  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){alert('⚠️ المتصفح ديالك ما كيدعمش تسجيل الفيديو. جرب Chrome.');return;}
+  var go=document.getElementById('vidGo');go.disabled=true;go.textContent='⏳ كنصاوب الفيديو…';
+  var out=document.getElementById('vidOut');out.innerHTML='';
+  Promise.all(VID.files.map(vidLoadImg)).then(function(list){
+    list=list.filter(function(i){return i});
+    if(!list.length){go.disabled=false;go.textContent='🎬 صاوب الفيديو';alert('⚠️ ما قدرتش نحمل التصاور.');return;}
+    vidRecord(list,function(url){
+      go.disabled=false;go.textContent='🎬 عاود صاوب';
+      var v=document.createElement('video');
+      v.src=url;v.controls=true;v.playsInline=true;v.loop=true;v.muted=true;
+      var a=document.createElement('a');
+      a.href=url;a.download='azami-video-'+Date.now()+'.webm';a.textContent='⬇️ حمّل الفيديو';
+      out.appendChild(v);out.appendChild(a);
+      out.scrollIntoView({behavior:'smooth',block:'nearest'});
+    });
+  });
+}
+function vidRecord(list,done){
+  var W=VID.w,H=VID.h;
+  var cv=document.createElement('canvas');cv.width=W;cv.height=H;
+  var cx=cv.getContext('2d');
+  var stream=cv.captureStream(30);
+  var mime='video/webm';
+  if(MediaRecorder.isTypeSupported('video/webm;codecs=vp9'))mime='video/webm;codecs=vp9';
+  var bits=W>=1080?9000000:4500000;
+  var rec;try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:bits});}
+  catch(e){rec=new MediaRecorder(stream);}
+  var chunks=[];
+  rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data)};
+  rec.onstop=function(){done(URL.createObjectURL(new Blob(chunks,{type:'video/webm'})))};
+  function draw(img,p){
+    cx.fillStyle='#000';cx.fillRect(0,0,W,H);
+    if(!img)return;
+    var zoom=1+0.08*p;
+    var sc=Math.max(W/img.width,H/img.height)*zoom;
+    var dw=img.width*sc,dh=img.height*sc;
+    cx.drawImage(img,(W-dw)/2,(H-dh)/2,dw,dh);
+  }
+  var per=VID.sec*1000,fade=550,total=list.length*per,t0=0;
+  rec.start();t0=performance.now();
+  function frame(){
+    var now=performance.now()-t0;
+    var idx=Math.min(list.length-1,Math.floor(now/per));
+    draw(list[idx],(now%per)/per);
+    var nt=(idx+1)*per;
+    if(idx<list.length-1&&now>nt-fade){
+      var a=(now-(nt-fade))/fade;
+      cx.globalAlpha=Math.max(0,Math.min(1,a));
+      draw(list[idx+1],0);
+      cx.globalAlpha=1;
+    }
+    if(now>=total){try{rec.stop()}catch(e){}return;}
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
 /* === IMAGE TOGGLE === */
 function toggleImg(){imgMode=!imgMode;var b=document.getElementById('imgBtn');if(imgMode){b.classList.add('active');b.textContent='🎨✓';document.getElementById('in').placeholder='اكتب وصف التصويرة...'}else{b.classList.remove('active');b.textContent='🎨';document.getElementById('in').placeholder='كتب لـ AZAMI AI...'}}
 /* === SEND === */
