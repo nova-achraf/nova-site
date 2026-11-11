@@ -174,13 +174,23 @@
   .side-act .ic{width:20px;text-align:center;font-size:15px;flex-shrink:0}
   .side-act .lbl{flex:1}
   .side-act .tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
-  /* LIGHT THEME */
+  /* THEME: LIGHT (cream + terracotta) */
   body.light{
-    --bg:#FFFBF6;--bg2:#FFF6EC;--card:#F6EFE6;--line:#E7DCCB;
-    --txt:#231F1A;--muted:#8A7A66;--side:#FBF4EA;
+    --bg:#FFFBF6;--bg2:#FFF7EE;--card:#F7F0E6;--line:#E8DDCC;
+    --txt:#241F1A;--muted:#8A7A66;--side:#FBF4EA;
+    --gold:#E2603F;--gold2:#F07A54;--green:#0E7A5F;--green2:#12946F;
   }
-  body.light .inp-btn.send,body.light .inp-btn.active{color:#231F1A}
-  body.light .msg-text a{color:#0E5C4A}
+  body.light .inp-btn.send,body.light .inp-btn.active{color:#FFFBF6}
+  body.light .msg-text a{color:#0E7A5F}
+  body.light .ico-ai{background:linear-gradient(135deg,#12946F,#0E7A5F)}
+  /* THEME: OCEAN (midnight + aqua) */
+  body.ocean{
+    --bg:#06141D;--bg2:#0A2130;--card:#102F3F;--line:#1B4657;
+    --txt:#EAF7FA;--muted:#83A9B7;--side:#06121A;
+    --gold:#4ECDC4;--gold2:#8CE9E2;--green:#0C5F6E;--green2:#137F8C;
+  }
+  body.ocean .inp-btn.send,body.ocean .inp-btn.active{color:#06141D}
+  body.ocean .msg-text a{color:#8CE9E2}
   /* FONT SIZE */
   body.fs-s .msg-text{font-size:13px}
   body.fs-l .msg-text{font-size:17px}
@@ -418,15 +428,22 @@ function toggleSidebar(){document.getElementById('sidebar').classList.toggle('hi
 /* === SETTINGS: theme + font + clear === */
 var THEME_KEY='azami_theme',FONT_KEY='azami_font';
 var FONT_STEPS=[['s','صغير'],['m','عادي'],['l','كبير']];
+var THEMES=[['dark','داكن','#0A0A0F'],['light','فاتح','#FFFBF6'],['ocean','أزرق','#06141D']];
 function applyTheme(t){
+  if(t!=='light'&&t!=='ocean')t='dark';
   document.body.classList.toggle('light',t==='light');
-  var tg=document.getElementById('themeTag');if(tg)tg.textContent=t==='light'?'فاتح':'داكن';
-  var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#FFFBF6':'#0A0A0F');
+  document.body.classList.toggle('ocean',t==='ocean');
+  var label='داكن',color='#0A0A0F';
+  for(var i=0;i<THEMES.length;i++){if(THEMES[i][0]===t){label=THEMES[i][1];color=THEMES[i][2]}}
+  var tg=document.getElementById('themeTag');if(tg)tg.textContent=label;
+  var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',color);
 }
 function toggleTheme(){
-  var t=document.body.classList.contains('light')?'dark':'light';
-  try{localStorage.setItem(THEME_KEY,t)}catch(e){}
-  applyTheme(t);
+  var cur='dark';try{cur=localStorage.getItem(THEME_KEY)||'dark'}catch(e){}
+  var idx=0;for(var i=0;i<THEMES.length;i++){if(THEMES[i][0]===cur)idx=i}
+  var nxt=THEMES[(idx+1)%THEMES.length][0];
+  try{localStorage.setItem(THEME_KEY,nxt)}catch(e){}
+  applyTheme(nxt);
 }
 function applyFont(f){
   document.body.classList.remove('fs-s','fs-l');
