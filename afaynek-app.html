@@ -322,6 +322,7 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
         <small id="dPhone"></small>
       </div>
     </div>
+    <button class="ditem" id="newChat"><span class="di">✎</span><span data-t="newChat">محادثة جديدة</span></button>
     <button class="ditem" data-sub="images"><span class="di">🖼</span><span data-t="images">الصور</span><span class="dc" id="cImages"></span></button>
     <button class="ditem" data-sub="lib"><span class="di">📚</span><span data-t="library">المكتبة</span><span class="dc" id="cLib"></span></button>
     <button class="ditem" data-sub="proj"><span class="di">📁</span><span data-t="projects">المشاريع</span><span class="dc" id="cProj"></span></button>
@@ -330,9 +331,9 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
     <button class="ditem" id="dPro"><span class="di">⭐</span><span>الترقية لبرو</span><span class="dc" id="cPro2"></span></button>
     <button class="ditem" data-sub="plugins"><span class="di">🔌</span><span data-t="plugins">الإضافات</span></button>
     <div style="height:1px;background:var(--line);margin:10px 6px"></div>
-    <button class="ditem" id="dTheme"><span class="di">🎨</span><span data-t="theme">لون التطبيق</span></button>
-    <button class="ditem" id="dLang"><span class="di">🌐</span><span data-t="language">اللغة</span></button>
-    <button class="ditem" id="dMe"><span class="di">👤</span><span data-t="profile">حسابي</span></button>
+    <button class="ditem" id="themeBtn"><span class="di">🎨</span><span data-t="theme">لون التطبيق</span></button>
+    <button class="ditem" id="langBtn"><span class="di">🌐</span><span data-t="language">اللغة</span></button>
+    <button class="ditem" id="meBtn"><span class="di">👤</span><span data-t="profile">حسابي</span></button>
   </div>
 
   <div id="sub">
@@ -374,10 +375,6 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
         <div class="sub" id="hSub">Afaynek · فينك؟</div>
       </div>
       <button class="hbtn" id="menuBtn" title="Menu">☰</button>
-      <button class="hbtn" id="newChat" title="New chat">✎</button>
-      <button class="hbtn" id="langBtn" title="Language">🌐</button>
-      <button class="hbtn" id="themeBtn" title="Theme">🎨</button>
-      <button class="avb" id="meBtn">أ</button>
     </div>
     <div class="searchwrap">
       <span class="sicon">🔍</span>
@@ -735,7 +732,7 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
     b.onclick = function () { applyLang(l.id); $('modalLang').classList.remove('on'); };
     $('langGrid').appendChild(b);
   });
-  $('langBtn').onclick = function () { $('modalLang').classList.add('on'); };
+  $('langBtn').onclick = function () { openDrawer(false); $('modalLang').classList.add('on'); };
   $('langClose').onclick = function () { $('modalLang').classList.remove('on'); };
 
   /* ============ theme ============ */
@@ -765,7 +762,7 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
     b.onclick = function () { applyTheme(c, true); };
     $('swatches').appendChild(b);
   });
-  $('themeBtn').onclick = function () { $('modalTheme').classList.add('on'); };
+  $('themeBtn').onclick = function () { openDrawer(false); $('modalTheme').classList.add('on'); };
   $('themeClose').onclick = function () { $('modalTheme').classList.remove('on'); };
   $('customColor').oninput = function () { applyTheme(this.value, true); };
   $('themeReset').onclick = function () {
@@ -777,8 +774,9 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
 
   /* ============ profile ============ */
   var me = { name: read('afay_name') || '', status: read('afay_status') || '', phone: read('afay_phone') || '' };
-  function paintMe() { $('meBtn').textContent = initials(me.name || 'أ'); }
+  function paintMe() { var d = $('dAvatar'); if (d) d.textContent = initials(me.name || 'أ'); }
   $('meBtn').onclick = function () {
+    openDrawer(false);
     $('meName').value = me.name; $('meStatus').value = me.status;
     $('modalMe').classList.add('on');
   };
@@ -1030,6 +1028,7 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
   };
 
   $('newChat').onclick = $('qNew').onclick = function () {
+    openDrawer(false);
     $('newName').value = ''; $('modalNew').classList.add('on');
   };
   $('newCancel').onclick = function () { $('modalNew').classList.remove('on'); };
@@ -1471,9 +1470,6 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
   }
   $('menuBtn').onclick = function () { openDrawer(true); };
   $('rim').onclick = function () { openDrawer(false); };
-  $('dTheme').onclick = function () { openDrawer(false); $('modalTheme').classList.add('on'); };
-  $('dLang').onclick = function () { openDrawer(false); $('modalLang').classList.add('on'); };
-  $('dMe').onclick = function () { openDrawer(false); $('meBtn').click(); };
   $('subBack').onclick = function () { $('sub').classList.remove('on'); renderChats(); };
 
   function openSub(key) {
