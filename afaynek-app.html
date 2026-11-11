@@ -204,6 +204,53 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
 .macts button.del{color:#B3261E;border-color:#F0C9C6}
 .sech{font-size:12px;font-weight:800;color:var(--muted);margin:14px 4px 8px;letter-spacing:.4px}
 
+/* ---------- drawer + subviews ---------- */
+#rim{position:absolute;inset:0;background:rgba(46,42,38,.42);opacity:0;pointer-events:none;
+  transition:.2s;z-index:70}
+#rim.on{opacity:1;pointer-events:auto}
+#drawer{position:absolute;top:0;bottom:0;right:0;width:79%;max-width:320px;background:var(--cream);
+  z-index:75;transform:translateX(105%);transition:transform .24s ease;box-shadow:-8px 0 30px rgba(60,40,25,.2);
+  display:flex;flex-direction:column;padding:18px 14px;overflow-y:auto}
+#drawer.on{transform:none}
+[dir=ltr] #drawer{right:auto;left:0;transform:translateX(-105%);box-shadow:8px 0 30px rgba(60,40,25,.2)}
+[dir=ltr] #drawer.on{transform:none}
+.dhead{display:flex;align-items:center;gap:11px;padding:6px 4px 16px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.dhead .b{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;color:#fff;font-weight:800;
+  font-size:19px;background:linear-gradient(140deg,var(--brand),var(--brand2));box-shadow:0 8px 18px rgba(14,159,110,.3)}
+.dhead b{display:block;font-size:15px}
+.dhead small{color:var(--muted);font-size:11.5px;direction:ltr;display:block;text-align:start}
+.ditem{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;padding:13px 12px;
+  border-radius:16px;font-family:inherit;font-size:14.5px;font-weight:700;color:var(--ink);cursor:pointer;text-align:start}
+.ditem:active,.ditem:hover{background:var(--soft)}
+.ditem .di{font-size:19px;width:24px;text-align:center}
+.ditem .dc{margin-inline-start:auto;font-size:11px;color:var(--muted);font-weight:600}
+#sub{position:absolute;inset:0;z-index:78;background:var(--cream);display:none;flex-direction:column}
+#sub.on{display:flex}
+.subhead{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);
+  background:#fff;flex:none}
+.subhead b{font-size:16px}
+.subbody{flex:1;overflow-y:auto;padding:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid3 img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;background:var(--soft)}
+.noteitem{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:10px;
+  display:flex;gap:10px;align-items:flex-start}
+.noteitem p{margin:0;flex:1;font-size:13.5px;line-height:1.6}
+.noteitem button{border:0;background:transparent;font-size:16px;cursor:pointer;color:#B3261E}
+.pj{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:10px}
+.pj b{font-size:15px;display:block}
+.pj small{color:var(--muted);font-size:12.5px;display:block;margin-top:4px;line-height:1.5}
+.tog{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);
+  border-radius:16px;padding:14px;margin-bottom:10px;font-size:14px;font-weight:700}
+.sw{width:50px;height:29px;border-radius:16px;background:#DDD3C8;position:relative;cursor:pointer;flex:none;
+  border:0;transition:.18s}
+.sw:after{content:"";position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;background:#fff;
+  transition:.18s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.sw.on{background:var(--brand)}
+.sw.on:after{left:24px}
+body.big .b{font-size:16px}
+body.big .mtitle{font-size:24px}
+body.big .ml{font-size:14px}
+
 /* ---------- modal / toast ---------- */
 .modal{position:fixed;inset:0;background:rgba(46,42,38,.45);display:none;place-items:center;padding:20px;z-index:30}
 .modal.on{display:grid}
@@ -244,6 +291,34 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
 <body>
 <div id="app">
 
+  <div id="rim"></div>
+  <div id="drawer">
+    <div class="dhead">
+      <div class="b" id="dAvatar">أ</div>
+      <div style="flex:1;min-width:0">
+        <b id="dName">—</b>
+        <small id="dPhone"></small>
+      </div>
+    </div>
+    <button class="ditem" data-sub="images"><span class="di">🖼</span><span data-t="images">الصور</span><span class="dc" id="cImages"></span></button>
+    <button class="ditem" data-sub="lib"><span class="di">📚</span><span data-t="library">المكتبة</span><span class="dc" id="cLib"></span></button>
+    <button class="ditem" data-sub="proj"><span class="di">📁</span><span data-t="projects">المشاريع</span><span class="dc" id="cProj"></span></button>
+    <button class="ditem" data-sub="sched"><span class="di">⏰</span><span data-t="scheduled">المجدولة</span><span class="dc" id="cSched"></span></button>
+    <button class="ditem" data-sub="plugins"><span class="di">🔌</span><span data-t="plugins">الإضافات</span></button>
+    <div style="height:1px;background:var(--line);margin:10px 6px"></div>
+    <button class="ditem" id="dTheme"><span class="di">🎨</span><span data-t="theme">لون التطبيق</span></button>
+    <button class="ditem" id="dLang"><span class="di">🌐</span><span data-t="language">اللغة</span></button>
+    <button class="ditem" id="dMe"><span class="di">👤</span><span data-t="profile">حسابي</span></button>
+  </div>
+
+  <div id="sub">
+    <div class="subhead">
+      <button class="back" id="subBack">›</button>
+      <b id="subTitle">—</b>
+    </div>
+    <div class="subbody" id="subBody"></div>
+  </div>
+
   <div id="auth">
     <div class="ahero">
       <div class="alogo">أ</div>
@@ -274,6 +349,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
         <h1>أفاينك</h1>
         <div class="sub" id="hSub">Afaynek · فينك؟</div>
       </div>
+      <button class="hbtn" id="menuBtn" title="Menu">☰</button>
       <button class="hbtn" id="newChat" title="New chat">✎</button>
       <button class="hbtn" id="langBtn" title="Language">🌐</button>
       <button class="hbtn" id="themeBtn" title="Theme">🎨</button>
@@ -308,6 +384,8 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     <div class="quick" id="quickRow"></div>
     <div class="emoji" id="emojiPanel"><div class="egrid" id="egrid"></div></div>
     <div class="composer">
+      <button class="cbtn" id="attachBtn">📎</button>
+      <input type="file" id="pickImg" accept="image/*" style="display:none">
       <button class="cbtn" id="emojiBtn">😊</button>
       <input id="inp" placeholder="كتب رسالة…" autocomplete="off">
       <button class="cbtn" id="mic">🎤</button>
@@ -702,6 +780,7 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
   function preview(m) {
     if (!m) return '';
     if (m.kind === 'audio') return '🎤 ' + t('audioMsg') + ' · ' + m.dur + '″';
+    if (m.kind === 'image') return '🖼 ' + t('imageMsg');
     return m.x;
   }
   function colorOf(id) {
@@ -766,6 +845,12 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     b.className = 'b ' + (m.f === 'me' ? 'me' : 'them');
     if (m.kind === 'audio' && m.src) {
       var au = document.createElement('audio'); au.controls = true; au.src = m.src; b.appendChild(au);
+    } else if (m.kind === 'image' && m.src) {
+      var im = document.createElement('img');
+      im.src = m.src; im.style.cssText = 'max-width:100%;border-radius:14px;display:block';
+      b.appendChild(im);
+      if (m.x) { var cap = document.createElement('div'); cap.textContent = m.x; cap.style.marginTop = '6px'; b.appendChild(cap); }
+      b.classList.add('media');
     } else {
       if (m.name && m.f !== 'me') {
         var n = document.createElement('div'); n.className = 'nm2'; n.textContent = m.name; b.appendChild(n);
@@ -1198,7 +1283,8 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
       if (it.ts <= now && !spoken[it.id]) {
         spoken[it.id] = true;
         toast('⏰ ' + it.title);
-        speak(it.title);
+        if (PLUG.sound) speak(it.title);
+        if (PLUG.vibrate && navigator.vibrate) navigator.vibrate(220);
       }
     });
   }
@@ -1266,8 +1352,257 @@ h1{font-size:19px;margin:0;letter-spacing:-.4px}
     showAuth(true);
   };
 
+  /* ============ drawer + sub views ============ */
+  var EXT_T = {
+    dar: { images:'الصور', library:'المكتبة', projects:'المشاريع', scheduled:'المجدولة', plugins:'الإضافات',
+      imageMsg:'صورة', addImage:'📷 زيد صورة', addNote:'✍️ زيد ملاحظة', notePh:'كتب ملاحظة…',
+      noImages:'ما كاين حتى صورة. صيفط صورة فمحادثة ولا زيد واحدة من هنا.',
+      noNotes:'المكتبة خاوية. سجل أفكارك وملاحظاتك هنا.', noProjects:'ما كاين حتى مشروع.',
+      projName:'سمية المشروع', projDesc:'وصف قصير', addProj:'＋ زيد مشروع',
+      sound:'🔔 صوت التذكير', vibrate:'📳 اهتزاز', bigText:'🔠 خط كبير',
+      noteSaved:'تسجلت 📚', imgSaved:'تصيفطت 🖼' },
+    ar: { images:'الصور', library:'المكتبة', projects:'المشاريع', scheduled:'المجدولة', plugins:'الإضافات',
+      imageMsg:'صورة', addImage:'📷 إضافة صورة', addNote:'✍️ إضافة ملاحظة', notePh:'اكتب ملاحظة…',
+      noImages:'لا توجد صور. أرسل صورة في محادثة أو أضف واحدة من هنا.',
+      noNotes:'المكتبة فارغة. احفظ أفكارك هنا.', noProjects:'لا توجد مشاريع.',
+      projName:'اسم المشروع', projDesc:'وصف قصير', addProj:'＋ إضافة مشروع',
+      sound:'🔔 صوت التذكير', vibrate:'📳 اهتزاز', bigText:'🔠 خط كبير',
+      noteSaved:'تم الحفظ 📚', imgSaved:'تم الإرسال 🖼' },
+    fr: { images:'Images', library:'Bibliothèque', projects:'Projets', scheduled:'Planifiées', plugins:'Plugins',
+      imageMsg:'Image', addImage:'📷 Ajouter une image', addNote:'✍️ Ajouter une note', notePh:'Écris une note…',
+      noImages:'Aucune image. Envoie une photo dans un chat ou ajoutes-en une ici.',
+      noNotes:'Bibliothèque vide. Garde tes idées ici.', noProjects:'Aucun projet.',
+      projName:'Nom du projet', projDesc:'Description courte', addProj:'＋ Nouveau projet',
+      sound:'🔔 Son des rappels', vibrate:'📳 Vibration', bigText:'🔠 Grand texte',
+      noteSaved:'Enregistré 📚', imgSaved:'Envoyé 🖼' },
+    en: { images:'Images', library:'Library', projects:'Projects', scheduled:'Scheduled', plugins:'Plugins',
+      imageMsg:'Image', addImage:'📷 Add image', addNote:'✍️ Add note', notePh:'Write a note…',
+      noImages:'No images yet. Send one in a chat or add one here.',
+      noNotes:'Library is empty. Keep your ideas here.', noProjects:'No projects.',
+      projName:'Project name', projDesc:'Short description', addProj:'＋ New project',
+      sound:'🔔 Reminder sound', vibrate:'📳 Vibration', bigText:'🔠 Large text',
+      noteSaved:'Saved 📚', imgSaved:'Sent 🖼' },
+    es: { images:'Imágenes', library:'Biblioteca', projects:'Proyectos', scheduled:'Programadas', plugins:'Plugins',
+      imageMsg:'Imagen', addImage:'📷 Añadir imagen', addNote:'✍️ Añadir nota', notePh:'Escribe una nota…',
+      noImages:'No hay imágenes. Envía una en un chat o añádela aquí.',
+      noNotes:'Biblioteca vacía. Guarda tus ideas aquí.', noProjects:'No hay proyectos.',
+      projName:'Nombre del proyecto', projDesc:'Descripción corta', addProj:'＋ Nuevo proyecto',
+      sound:'🔔 Sonido', vibrate:'📳 Vibración', bigText:'🔠 Texto grande',
+      noteSaved:'Guardado 📚', imgSaved:'Enviado 🖼' },
+    zgh: { images:'Tugniwin', library:'Tasdliwt', projects:'Isenfaren', scheduled:'Yettwamuddu', plugins:'Ijiṭṭa',
+      imageMsg:'Tugna', addImage:'📷 Rnu tugna', addNote:'✍️ Rnu tamatart', notePh:'Aru tamatart…',
+      noImages:'Ulac tugniwin. Azen tugna deg umsawal neɣ rnu yiwet dagi.',
+      noNotes:'Tasdliwt d tilemt. Sekles tiktiwin-ik dagi.', noProjects:'Ulac isenfaren.',
+      projName:'Isem n usenfar', projDesc:'Assaɣ aweṭṭuf', addProj:'＋ Asenfar amaynu',
+      sound:'🔔 Ṣṣut n usmekti', vibrate:'📳 Arejrij', bigText:'🔠 Tira tameqqrant',
+      noteSaved:'Yekles 📚', imgSaved:'Yettwazen 🖼' }
+  };
+  Object.keys(EXT_T).forEach(function (l) {
+    if (!T[l]) return;
+    for (var k in EXT_T[l]) T[l][k] = EXT_T[l][k];
+  });
+
+  function openDrawer(on) {
+    $('drawer').classList.toggle('on', !!on);
+    $('rim').classList.toggle('on', !!on);
+    if (on) {
+      $('dName').textContent = me.name || t('profile');
+      $('dPhone').textContent = me.phone || '';
+      $('dAvatar').textContent = initials(me.name || 'أ');
+      $('cImages').textContent = photos().length || '';
+      $('cLib').textContent = lib.length || '';
+      $('cProj').textContent = proj.length || '';
+      $('cSched').textContent = memo.length || '';
+    }
+  }
+  $('menuBtn').onclick = function () { openDrawer(true); };
+  $('rim').onclick = function () { openDrawer(false); };
+  $('dTheme').onclick = function () { openDrawer(false); $('modalTheme').classList.add('on'); };
+  $('dLang').onclick = function () { openDrawer(false); $('modalLang').classList.add('on'); };
+  $('dMe').onclick = function () { openDrawer(false); $('meBtn').click(); };
+  $('subBack').onclick = function () { $('sub').classList.remove('on'); renderChats(); };
+
+  function openSub(key) {
+    openDrawer(false);
+    $('sub').classList.add('on');
+    $('subTitle').textContent = t(key);
+    renderSub(key);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.ditem[data-sub]'), function (b) {
+    b.onclick = function () { openSub(b.getAttribute('data-sub')); };
+  });
+
+  /* data helpers */
+  function photos() {
+    var out = [];
+    chats.forEach(function (c) {
+      c.msgs.forEach(function (m) { if (m.kind === 'image' && m.src) out.push(m); });
+    });
+    return out;
+  }
+  var lib = [];
+  try { lib = JSON.parse(read('afay_lib') || '[]') || []; } catch (e) { lib = []; }
+  function saveLib() { try { localStorage.setItem('afay_lib', JSON.stringify(lib)); } catch (e) { toast('⚠️'); } }
+
+  var proj = [];
+  try { proj = JSON.parse(read('afay_proj') || '[]') || []; } catch (e) { proj = []; }
+  if (!proj.length) {
+    proj = [
+      { n: 'NOVA', d: 'الموقع، الألعاب، وأفاينك 🚀' },
+      { n: 'Azamilux', d: 'حانوت Etsy — دعوات رقمية وكتب تلوين 🛍️' }
+    ];
+    try { localStorage.setItem('afay_proj', JSON.stringify(proj)); } catch (e) {}
+  }
+  function saveProj() { try { localStorage.setItem('afay_proj', JSON.stringify(proj)); } catch (e) {} }
+
+  var PLUG = { sound: true, vibrate: true, big: false };
+  try {
+    var pj = JSON.parse(read('afay_plug') || '{}');
+    for (var pk in pj) PLUG[pk] = pj[pk];
+  } catch (e) {}
+  function savePlug() { try { localStorage.setItem('afay_plug', JSON.stringify(PLUG)); } catch (e) {} }
+  function applyPlug() { document.body.classList.toggle('big', !!PLUG.big); }
+
+  function h(tag, cls, txt) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt != null) e.textContent = txt;
+    return e;
+  }
+  function emptyBox(msg) { return h('div', 'empty', msg); }
+
+  function renderSub(key) {
+    var body = $('subBody'); body.innerHTML = '';
+    if (key === 'images') {
+      var ph = photos();
+      if (!ph.length) body.appendChild(emptyBox(t('noImages')));
+      else {
+        var g = h('div', 'grid3');
+        ph.slice().reverse().forEach(function (m) {
+          var im = document.createElement('img'); im.src = m.src; g.appendChild(im);
+        });
+        body.appendChild(g);
+      }
+      var a1 = h('button', 'btn main', t('addImage'));
+      a1.style.marginTop = '14px';
+      a1.onclick = function () { $('pickImg').click(); };
+      body.appendChild(a1);
+      return;
+    }
+    if (key === 'lib') {
+      var in1 = document.createElement('input');
+      in1.placeholder = t('notePh');
+      in1.style.cssText = 'width:100%;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);' +
+        'font-family:inherit;font-size:14px;margin-bottom:10px;outline:none;color:var(--ink)';
+      body.appendChild(in1);
+      var addB = h('button', 'btn main', t('addNote'));
+      addB.onclick = function () {
+        var v = in1.value.trim(); if (!v) return;
+        lib.push({ id: 'n' + Date.now(), text: v, t: Date.now() });
+        saveLib(); in1.value = ''; toast(t('noteSaved')); renderSub('lib');
+      };
+      body.appendChild(addB);
+      var sp = h('div', ''); sp.style.height = '14px'; body.appendChild(sp);
+      if (!lib.length) body.appendChild(emptyBox(t('noNotes')));
+      lib.slice().reverse().forEach(function (n) {
+        var row = h('div', 'noteitem');
+        row.appendChild(h('p', '', n.text));
+        var del = document.createElement('button'); del.textContent = '🗑';
+        del.onclick = function () {
+          lib = lib.filter(function (x) { return x.id !== n.id; });
+          saveLib(); renderSub('lib');
+        };
+        row.appendChild(del); body.appendChild(row);
+      });
+      return;
+    }
+    if (key === 'proj') {
+      proj.forEach(function (p) {
+        var c = h('div', 'pj');
+        c.appendChild(h('b', '', p.n));
+        c.appendChild(h('small', '', p.d || ''));
+        body.appendChild(c);
+      });
+      if (!proj.length) body.appendChild(emptyBox(t('noProjects')));
+      var nm = document.createElement('input');
+      nm.placeholder = t('projName');
+      nm.style.cssText = 'width:100%;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);' +
+        'font-family:inherit;font-size:14px;margin-bottom:8px;outline:none;color:var(--ink)';
+      var ds = document.createElement('input');
+      ds.placeholder = t('projDesc');
+      ds.style.cssText = nm.style.cssText;
+      var ab = h('button', 'btn main', t('addProj'));
+      ab.onclick = function () {
+        var n = nm.value.trim(); if (!n) return;
+        proj.push({ n: n, d: ds.value.trim() }); saveProj(); renderSub('proj');
+      };
+      body.appendChild(nm); body.appendChild(ds); body.appendChild(ab);
+      return;
+    }
+    if (key === 'sched') {
+      if (!memo.length) body.appendChild(emptyBox(t('noAppt')));
+      memo.slice().sort(function (a, b) { return a.ts - b.ts; }).forEach(function (it) {
+        var c = h('div', 'pj');
+        c.appendChild(h('b', '', it.title));
+        c.appendChild(h('small', '', fmtDay(it.ts) + ' · ' + fmtTime(it.ts) + (it.note ? ' — ' + it.note : '')));
+        body.appendChild(c);
+      });
+      var sb = h('button', 'btn main', '＋ ' + t('addAppt'));
+      sb.style.marginTop = '6px';
+      sb.onclick = function () { $('sub').classList.remove('on'); showView('memo'); $('mAdd').click(); };
+      body.appendChild(sb);
+      return;
+    }
+    if (key === 'plugins') {
+      [['sound', 'sound'], ['vibrate', 'vibrate'], ['big', 'bigText']].forEach(function (pair) {
+        var row = h('div', 'tog');
+        row.appendChild(h('span', '', t(pair[1])));
+        var sw = document.createElement('button');
+        sw.className = 'sw' + (PLUG[pair[0]] ? ' on' : '');
+        sw.onclick = function () {
+          PLUG[pair[0]] = !PLUG[pair[0]];
+          sw.classList.toggle('on', PLUG[pair[0]]);
+          savePlug(); applyPlug();
+        };
+        row.appendChild(sw); body.appendChild(row);
+      });
+    }
+  }
+
+  /* image attach */
+  $('attachBtn').onclick = function () {
+    if (inLive) { toast('🌍'); return; }
+    if (!openId) { toast('⚠️'); return; }
+    $('pickImg').click();
+  };
+  $('pickImg').addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    this.value = '';
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var max = 720, w = img.width, hh = img.height;
+        if (w > hh && w > max) { hh = Math.round(hh * max / w); w = max; }
+        else if (hh >= w && hh > max) { w = Math.round(w * max / hh); hh = max; }
+        var cv = document.createElement('canvas');
+        cv.width = w; cv.height = hh;
+        cv.getContext('2d').drawImage(img, 0, 0, w, hh);
+        var src = cv.toDataURL('image/jpeg', .72);
+        try {
+          pushLocal('me', { kind: 'image', src: src, x: '' });
+          botReply(); toast(t('imgSaved'));
+        } catch (e) { toast('⚠️'); }
+      };
+      img.src = rd.result;
+    };
+    rd.readAsDataURL(f);
+  });
+
   /* ============ boot ============ */
   applyLang(lang);
+  applyPlug();
   loadChats(); loadMemo();
   renderChats(); renderMemo();
   if (read(SKEY) === '1') { showAuth(false); $('mePhone').value = me.phone; }
