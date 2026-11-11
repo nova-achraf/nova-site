@@ -166,6 +166,24 @@
   .sheet a.dl{display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,#1B7A5A,#0E5C4A);color:#fff;padding:14px;border-radius:12px;font-weight:800;font-size:16px;margin-bottom:8px;box-shadow:0 6px 18px rgba(27,122,90,.35)}
   .sheet a.alt{display:block;text-align:center;text-decoration:none;background:var(--card);color:var(--gold2);border:1.5px solid var(--line);padding:12px;border-radius:12px;font-weight:700;font-size:14px;margin-bottom:8px}
   .err{color:var(--red);font-size:12px;margin-top:6px;display:none}
+  /* SIDE MENU SECTIONS */
+  .side-sec{padding:4px 8px;border-top:1px solid var(--line);flex-shrink:0}
+  .side-cap{font-size:10px;letter-spacing:1.4px;color:var(--muted);padding:8px 6px 4px;font-weight:700}
+  .side-act{display:flex;align-items:center;gap:10px;width:100%;padding:10px 10px;background:transparent;border:none;color:var(--txt);font-size:13px;font-family:inherit;border-radius:8px;cursor:pointer;text-align:right}
+  .side-act:active{background:var(--card)}
+  .side-act .ic{width:20px;text-align:center;font-size:15px;flex-shrink:0}
+  .side-act .lbl{flex:1}
+  .side-act .tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+  /* LIGHT THEME */
+  body.light{
+    --bg:#FFFBF6;--bg2:#FFF6EC;--card:#F6EFE6;--line:#E7DCCB;
+    --txt:#231F1A;--muted:#8A7A66;--side:#FBF4EA;
+  }
+  body.light .inp-btn.send,body.light .inp-btn.active{color:#231F1A}
+  body.light .msg-text a{color:#0E5C4A}
+  /* FONT SIZE */
+  body.fs-s .msg-text{font-size:13px}
+  body.fs-l .msg-text{font-size:17px}
   @media(max-width:768px){.sidebar{position:fixed;right:0;top:0;bottom:0;box-shadow:-4px 0 20px rgba(0,0,0,.4)}}
 </style>
 <link rel="canonical" href="https://nova-achraf.github.io/nova/azami-ai.html">
@@ -189,6 +207,19 @@
     <input class="side-search" id="sideSearch" placeholder="🔍 بحث فالمحادثات..." oninput="searchConvs()">
   </div>
   <div class="side-list" id="convList"></div>
+  <div class="side-sec">
+    <div class="side-cap">أدوات</div>
+    <button class="side-act" onclick="openPdf()"><span class="ic">📄</span><span class="lbl">صور → PDF</span></button>
+    <button class="side-act" onclick="exportChat()"><span class="ic">⬇️</span><span class="lbl">تصدير المحادثة</span></button>
+    <button class="side-act" onclick="openMemory()"><span class="ic">🧠</span><span class="lbl">ذاكرة AZAMI</span></button>
+    <button class="side-act" onclick="openKey()"><span class="ic">🔑</span><span class="lbl">المفتاح</span></button>
+  </div>
+  <div class="side-sec">
+    <div class="side-cap">إعدادات</div>
+    <button class="side-act" onclick="toggleTheme()"><span class="ic">🌗</span><span class="lbl">المظهر</span><span class="tag" id="themeTag">داكن</span></button>
+    <button class="side-act" onclick="cycleFont()"><span class="ic">🔠</span><span class="lbl">حجم الخط</span><span class="tag" id="fontTag">عادي</span></button>
+    <button class="side-act" onclick="clearConvs()"><span class="ic">🗑️</span><span class="lbl">مسح كل المحادثات</span></button>
+  </div>
   <div class="side-bot"><img src="azami-logo.webp"><b>AZAMI AI</b><small>Moroccan Roots · Global Intelligence</small></div>
 </div>
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -198,13 +229,6 @@
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
     <img src="azami-logo.webp" class="h-logo" alt="AZAMI AI">
     <div><div class="h-title">AZAMI AI</div><div class="h-sub">Moroccan Roots · Global Intelligence</div></div>
-    <div class="h-right">
-      <button class="h-btn" onclick="exportChat()">⬇️ تصدير</button>
-      <button class="h-btn" onclick="newChat()">✨ جديد</button>
-      <button class="h-btn" onclick="openPdf()">📄 PDF</button>
-      <button class="h-btn" onclick="openMemory()" title="ذاكرة AZAMI">🧠</button>
-      <button class="h-btn" onclick="openKey()">🔑</button>
-    </div>
   </header>
   <div class="edit-banner" id="editBanner">✏️ تعديل رسالة — <button onclick="cancelEdit()">إلغاء</button></div>
   <main id="chat"></main>
@@ -391,6 +415,44 @@ function saveKey(){var v=document.getElementById('keyIn').value.trim();if(!v){do
 function quick(t){document.getElementById('in').value=t;send()}
 /* === SIDEBAR === */
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('hide');document.getElementById('overlay').classList.toggle('show')}
+/* === SETTINGS: theme + font + clear === */
+var THEME_KEY='azami_theme',FONT_KEY='azami_font';
+var FONT_STEPS=[['s','صغير'],['m','عادي'],['l','كبير']];
+function applyTheme(t){
+  document.body.classList.toggle('light',t==='light');
+  var tg=document.getElementById('themeTag');if(tg)tg.textContent=t==='light'?'فاتح':'داكن';
+  var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#FFFBF6':'#0A0A0F');
+}
+function toggleTheme(){
+  var t=document.body.classList.contains('light')?'dark':'light';
+  try{localStorage.setItem(THEME_KEY,t)}catch(e){}
+  applyTheme(t);
+}
+function applyFont(f){
+  document.body.classList.remove('fs-s','fs-l');
+  if(f==='s')document.body.classList.add('fs-s');
+  if(f==='l')document.body.classList.add('fs-l');
+  var ft=document.getElementById('fontTag');
+  if(ft){for(var i=0;i<FONT_STEPS.length;i++){if(FONT_STEPS[i][0]===f)ft.textContent=FONT_STEPS[i][1]}}
+}
+function cycleFont(){
+  var cur='m';try{cur=localStorage.getItem(FONT_KEY)||'m'}catch(e){}
+  var idx=0;for(var i=0;i<FONT_STEPS.length;i++){if(FONT_STEPS[i][0]===cur)idx=i}
+  var nxt=FONT_STEPS[(idx+1)%FONT_STEPS.length][0];
+  try{localStorage.setItem(FONT_KEY,nxt)}catch(e){}
+  applyFont(nxt);
+}
+function clearConvs(){
+  if(!confirm('🗑️ مسح كل المحادثات؟ ما يمكنش نرجعوهم.'))return;
+  convs={main:{title:'المحادثة الرئيسية',msgs:[],hist:[]}};curConv='main';
+  saveConvs();renderConvList();renderChat();
+  if(window.innerWidth<=768)toggleSidebar();
+}
+(function initSettings(){
+  var t='dark',f='m';
+  try{t=localStorage.getItem(THEME_KEY)||'dark';f=localStorage.getItem(FONT_KEY)||'m'}catch(e){}
+  applyTheme(t);applyFont(f);
+})();
 /* === IMAGE TOGGLE === */
 function toggleImg(){imgMode=!imgMode;var b=document.getElementById('imgBtn');if(imgMode){b.classList.add('active');b.textContent='🎨✓';document.getElementById('in').placeholder='اكتب وصف التصويرة...'}else{b.classList.remove('active');b.textContent='🎨';document.getElementById('in').placeholder='كتب لـ AZAMI AI...'}}
 /* === SEND === */
