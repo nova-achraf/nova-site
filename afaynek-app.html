@@ -534,7 +534,11 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
         </div>
       </div>
       <div class="aerr" id="proMsg"></div>
-      <button class="btn main" id="proPay">💳 خلّص 29 درهم</button>
+      <button class="btn main" id="proPay">📲 اطلب برو فواتساب</button>
+      <button class="btn ghost" id="proCopy" style="margin-top:8px">📋 انسخ طلبك</button>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:10px;text-align:center">
+        كتحوّل 29 درهم (تحويل بنكي ولا CashPlus)، من بعد كنعطيك كود التفعيل وتدخلو تحت 👇
+      </div>
       <div class="field" style="margin-top:12px"><label>عندك كود؟</label>
         <input id="proCode" placeholder="AFANEKPRO" style="direction:ltr;text-align:left;letter-spacing:2px"></div>
       <button class="btn ghost" id="proRedeem">🔓 فعّل الكود</button>
@@ -1633,8 +1637,22 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
   function openPro(msg) { $('proMsg').textContent = msg || ''; $('modalPro').classList.add('on'); }
 
   $('proClose').onclick = function () { $('modalPro').classList.remove('on'); };
+  var SELLER_WA = ''; /* رقم الواتساب ديال البائع، مثال: 212612345678 */
+  function proOrderText() {
+    return 'السلام عليكم 👋\nبغيت نفعّل خطة برو ديال أفاينك ⭐\n• السمية: ' + (me.name || '—') +
+      '\n• الرقم: ' + (me.phone || '—') + '\n• الخطة: 29 درهم / شهر\nمنتظر الكود 🙏';
+  }
   $('proPay').onclick = function () {
-    $('proMsg').textContent = '💳 الخلاص الإلكتروني مازال ما مربوطش — خاصنا Stripe ولا CMI. منين يتفعّل، غادي تخلص من هنا مباشرة.';
+    var txt = encodeURIComponent(proOrderText());
+    var url = SELLER_WA ? ('https://wa.me/' + SELLER_WA + '?text=' + txt) : ('https://wa.me/?text=' + txt);
+    window.open(url, '_blank');
+  };
+  $('proCopy').onclick = function () {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(proOrderText()).then(function () {
+        $('proMsg').textContent = '📋 تنسخ. صيفطو فواتساب ولا فالإيميل.';
+      }, function () { $('proMsg').textContent = '⚠️ ما قدرتش ننسخ'; });
+    } else $('proMsg').textContent = '⚠️ ما قدرتش ننسخ';
   };
   $('proRedeem').onclick = function () {
     var c = $('proCode').value.trim().toUpperCase().replace(/\s/g, '');
