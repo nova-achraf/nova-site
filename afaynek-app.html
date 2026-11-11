@@ -528,16 +528,17 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
         </div>
       </div>
       <div class="card" style="border-color:var(--brand);background:#F3FCF8;margin-bottom:14px">
-        <b style="font-size:14px">⭐ برو — 29 درهم/شهر</b>
+        <b style="font-size:14px">⭐ برو — <span id="proPrice">29 درهم/شهر</span></b>
         <div style="font-size:12.5px;color:#1F5B45;line-height:1.7;margin-top:4px">
           فيديوهات بلا حدود · Full HD 1080p · أولوية فالدعم
         </div>
+        <div style="font-size:11.5px;color:#1F5B45;margin-top:6px">🌍 Visa · Mastercard · PayPal</div>
       </div>
       <div class="aerr" id="proMsg"></div>
-      <button class="btn main" id="proPay">📲 اطلب برو فواتساب</button>
+      <button class="btn main" id="proPay">📲 اطلب برو</button>
       <button class="btn ghost" id="proCopy" style="margin-top:8px">📋 انسخ طلبك</button>
       <div style="font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:10px;text-align:center">
-        كتحوّل 29 درهم (تحويل بنكي ولا CashPlus)، من بعد كنعطيك كود التفعيل وتدخلو تحت 👇
+        🌍 الدفع الدولي: Visa · Mastercard · PayPal — الخلاص بالكارطة كيتفعّل عبر بوابة آمنة، ودابا كتقدر تطلب يدوياً وتوصلك الكود.
       </div>
       <div class="field" style="margin-top:12px"><label>عندك كود؟</label>
         <input id="proCode" placeholder="AFANEKPRO" style="direction:ltr;text-align:left;letter-spacing:2px"></div>
@@ -1634,15 +1635,24 @@ body.dark .mnote,body.dark .field label{color:#C8BCB0}
   }
   function bumpUse() { try { localStorage.setItem(USEKEY, JSON.stringify({ d: dayKey(), n: usedToday() + 1 })); } catch (e) {} }
   function freeLeft() { return isPro() ? 99 : Math.max(0, 1 - usedToday()); }
-  function openPro(msg) { $('proMsg').textContent = msg || ''; $('modalPro').classList.add('on'); }
+  function openPro(msg) {
+    $('proMsg').textContent = msg || '';
+    var prices = { dar: '29 درهم/شهر', ar: '29 درهم/شهر', fr: '3 €/mois', en: '$3.30/month', es: '3 €/mes', zgh: '$3.30/month' };
+    if ($('proPrice')) $('proPrice').textContent = prices[lang] || prices.en;
+    if ($('proPay')) $('proPay').textContent = CHECKOUT_URL ? '💳 خلّص بالكارطة' : '📲 اطلب برو';
+    $('modalPro').classList.add('on');
+  }
 
   $('proClose').onclick = function () { $('modalPro').classList.remove('on'); };
   var SELLER_WA = ''; /* رقم الواتساب ديال البائع، مثال: 212612345678 */
+  var CHECKOUT_URL = ''; /* رابط صفحة الخلاص (Payhip / Lemon Squeezy / Stripe) */
   function proOrderText() {
     return 'السلام عليكم 👋\nبغيت نفعّل خطة برو ديال أفاينك ⭐\n• السمية: ' + (me.name || '—') +
-      '\n• الرقم: ' + (me.phone || '—') + '\n• الخطة: 29 درهم / شهر\nمنتظر الكود 🙏';
+      '\n• الرقم: ' + (me.phone || '—') + '\n• الخطة: PRO — 3 USD / 29 MAD فالشهر' +
+      '\n• اللغة: ' + lang + '\nمنتظر الكود 🙏';
   }
   $('proPay').onclick = function () {
+    if (CHECKOUT_URL) { window.open(CHECKOUT_URL, '_blank'); return; }
     var txt = encodeURIComponent(proOrderText());
     var url = SELLER_WA ? ('https://wa.me/' + SELLER_WA + '?text=' + txt) : ('https://wa.me/?text=' + txt);
     window.open(url, '_blank');
