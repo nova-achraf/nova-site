@@ -251,6 +251,28 @@ body.big .b{font-size:16px}
 body.big .mtitle{font-size:24px}
 body.big .ml{font-size:14px}
 
+/* ---------- dark mode ---------- */
+body.dark{--cream:#191512;--ink:#F2EAE1;--muted:#A2958A;--line:#332B25;--soft:#241E1A}
+body.dark{background:#0F0C0A}
+body.dark #app{background:#191512}
+body.dark .top{background:linear-gradient(160deg,rgba(14,159,110,.22),rgba(212,175,55,.10) 55%,#191512 78%)}
+body.dark .search,body.dark .composer input,body.dark .field input,body.dark .field select,
+body.dark .noteitem input{background:#241E1A;color:#F2EAE1;border-color:#332B25}
+body.dark .nav,body.dark .composer,body.dark .chead,body.dark .subhead,body.dark .quick,body.dark .emoji{background:#201A16}
+body.dark .card,body.dark .b.them,body.dark .mcard,body.dark .sheet,body.dark .noteitem,body.dark .pj,
+body.dark .tog,body.dark .langgrid button{background:#221C18;color:#F2EAE1}
+body.dark .row:active,body.dark .chip,body.dark .cbtn{background:#241E1A;color:#F2EAE1}
+body.dark .chip{background:#221C18;border-color:#332B25}
+body.dark .back,body.dark .hbtn{background:#241E1A;color:#F2EAE1}
+body.dark .mcard.next{background:linear-gradient(160deg,#1F2A24,#221C18 60%)}
+body.dark .day{background:rgba(255,255,255,.06)}
+body.dark .sys{background:#241E1A}
+body.dark .langgrid button.on{background:#1F2A24}
+body.dark .toast{background:rgba(255,255,255,.92);color:#1A1613}
+body.dark #drawer{background:#191512}
+body.dark #sub{background:#191512}
+body.dark .mnote,body.dark .field label{color:#C8BCB0}
+
 /* ---------- modal / toast ---------- */
 .modal{position:fixed;inset:0;background:rgba(46,42,38,.45);display:none;place-items:center;padding:20px;z-index:30}
 .modal.on{display:grid}
@@ -304,6 +326,7 @@ body.big .ml{font-size:14px}
     <button class="ditem" data-sub="lib"><span class="di">📚</span><span data-t="library">المكتبة</span><span class="dc" id="cLib"></span></button>
     <button class="ditem" data-sub="proj"><span class="di">📁</span><span data-t="projects">المشاريع</span><span class="dc" id="cProj"></span></button>
     <button class="ditem" data-sub="sched"><span class="di">⏰</span><span data-t="scheduled">المجدولة</span><span class="dc" id="cSched"></span></button>
+    <button class="ditem" data-sub="video"><span class="di">🎬</span><span>صانع الفيديو</span></button>
     <button class="ditem" data-sub="plugins"><span class="di">🔌</span><span data-t="plugins">الإضافات</span></button>
     <div style="height:1px;background:var(--line);margin:10px 6px"></div>
     <button class="ditem" id="dTheme"><span class="di">🎨</span><span data-t="theme">لون التطبيق</span></button>
@@ -1473,6 +1496,7 @@ body.big .ml{font-size:14px}
 
   function renderSub(key) {
     var body = $('subBody'); body.innerHTML = '';
+    if (key === 'video') { renderVideoPanel(body); return; }
     if (key === 'images') {
       var ph = photos();
       if (!ph.length) body.appendChild(emptyBox(t('noImages')));
@@ -1569,6 +1593,154 @@ body.big .ml{font-size:14px}
     }
   }
 
+  /* video maker */
+  var VID = { files: [], sec: 3, w: 1080, h: 1920 };
+
+  function renderVideoPanel(body) {
+    body.innerHTML = '';
+    var note = h('div', 'note', '🎬 صاوب فيديو من تصاورك بجودة عالية. كلشي كيتدار فالتليفون ديالك — حتى صورة ما كتطلع للسيرفر.');
+    body.appendChild(note);
+
+    var pick = document.createElement('input');
+    pick.type = 'file'; pick.accept = 'image/*'; pick.multiple = true; pick.style.display = 'none';
+    body.appendChild(pick);
+
+    var bPick = h('button', 'btn main', '📷 ختار التصاور');
+    bPick.onclick = function () { pick.click(); };
+    body.appendChild(bPick);
+
+    var thumbs = h('div', 'grid3'); thumbs.style.marginTop = '10px';
+    body.appendChild(thumbs);
+    var info = h('div', '', '');
+    info.style.cssText = 'font-size:12.5px;color:var(--muted);margin:10px 2px';
+    body.appendChild(info);
+
+    body.appendChild(h('div', 'sech', '⏱ مدة كل صورة'));
+    var dRow = h('div', 'row2'); dRow.style.marginBottom = '14px';
+    [[2, '2 ثانية'], [3, '3 ثواني'], [5, '5 ثواني']].forEach(function (op) {
+      var b = h('button', VID.sec === op[0] ? 'ok' : 'no', op[1]);
+      b.onclick = function () { VID.sec = op[0]; renderVideoPanel(body); };
+      dRow.appendChild(b);
+    });
+    body.appendChild(dRow);
+
+    body.appendChild(h('div', 'sech', '🖼 الجودة'));
+    var qRow = h('div', 'row2'); qRow.style.marginBottom = '14px';
+    [[720, 1280, 'HD · 720p'], [1080, 1920, 'Full HD · 1080p']].forEach(function (op) {
+      var b = h('button', VID.w === op[0] ? 'ok' : 'no', op[2]);
+      b.onclick = function () { VID.w = op[0]; VID.h = op[1]; renderVideoPanel(body); };
+      qRow.appendChild(b);
+    });
+    body.appendChild(qRow);
+
+    var go = h('button', 'btn main', '🎬 صاوب الفيديو');
+    body.appendChild(go);
+    var out = h('div', ''); out.style.marginTop = '14px';
+    body.appendChild(out);
+
+    function paintThumbs() {
+      thumbs.innerHTML = '';
+      VID.files.forEach(function (f) {
+        var im = document.createElement('img');
+        im.src = URL.createObjectURL(f);
+        thumbs.appendChild(im);
+      });
+      info.textContent = VID.files.length ? (VID.files.length + ' تصاور · ' + (VID.files.length * VID.sec) + ' ثانية') : 'ما ختارتي حتى صورة.';
+    }
+    paintThumbs();
+
+    pick.addEventListener('change', function () {
+      var fs = Array.prototype.slice.call(this.files || []);
+      this.value = '';
+      if (!fs.length) return;
+      VID.files = VID.files.concat(fs).slice(0, 12);
+      paintThumbs();
+    });
+
+    go.onclick = function () {
+      if (!VID.files.length) { toast('⚠️ ختار تصاور أولاً'); return; }
+      if (VID.files.length < 2) { toast('⚠️ زيد صورة وحدة على الأقل'); return; }
+      if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { toast('⚠️'); return; }
+      go.disabled = true; go.textContent = '⏳ كنصاوب الفيديو…';
+      out.innerHTML = '';
+      var loaded = VID.files.map(loadImg);
+      Promise.all(loaded).then(function (list) {
+        list = list.filter(function (i) { return i; });
+        if (!list.length) { go.disabled = false; go.textContent = '🎬 صاوب الفيديو'; return; }
+        recordVideo(list, function (url) {
+          go.disabled = false; go.textContent = '🎬 عاود صاوب';
+          var v = document.createElement('video');
+          v.src = url; v.controls = true; v.playsInline = true; v.loop = true; v.muted = true;
+          v.style.cssText = 'width:100%;border-radius:16px;background:#000;margin-bottom:10px';
+          var a = document.createElement('a');
+          a.href = url; a.download = 'afaynek-' + Date.now() + '.webm';
+          a.className = 'btn main'; a.textContent = '⬇️ حمّل الفيديو';
+          a.style.textDecoration = 'none';
+          out.appendChild(v); out.appendChild(a);
+          toast('✅ واجد');
+        });
+      });
+    };
+  }
+
+  function loadImg(f) {
+    return new Promise(function (res) {
+      var i = new Image();
+      i.onload = function () { res(i); };
+      i.onerror = function () { res(null); };
+      i.src = URL.createObjectURL(f);
+    });
+  }
+
+  function recordVideo(list, done) {
+    var W = VID.w, H = VID.h;
+    var cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    var cx = cv.getContext('2d');
+    var stream = cv.captureStream(30);
+    var mime = 'video/webm';
+    if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) mime = 'video/webm;codecs=vp9';
+    var bits = W >= 1080 ? 9000000 : 4500000;
+    var rec;
+    try { rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: bits }); }
+    catch (e) { rec = new MediaRecorder(stream); }
+    var chunks = [];
+    rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = function () {
+      var blob = new Blob(chunks, { type: 'video/webm' });
+      done(URL.createObjectURL(blob));
+    };
+
+    function draw(img, p) {
+      cx.fillStyle = '#000'; cx.fillRect(0, 0, W, H);
+      if (!img) return;
+      var zoom = 1 + 0.08 * p;
+      var sc = Math.max(W / img.width, H / img.height) * zoom;
+      var dw = img.width * sc, dh = img.height * sc;
+      cx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+    }
+
+    var per = VID.sec * 1000, fade = 550, total = list.length * per;
+    var t0 = 0;
+    rec.start();
+    t0 = performance.now();
+    function frame() {
+      var now = performance.now() - t0;
+      var idx = Math.min(list.length - 1, Math.floor(now / per));
+      draw(list[idx], (now % per) / per);
+      var nt = (idx + 1) * per;
+      if (idx < list.length - 1 && now > nt - fade) {
+        var a = (now - (nt - fade)) / fade;
+        cx.globalAlpha = Math.max(0, Math.min(1, a));
+        draw(list[idx + 1], 0);
+        cx.globalAlpha = 1;
+      }
+      if (now >= total) { try { rec.stop(); } catch (e) {} return; }
+      requestAnimationFrame(frame);
+    }
+    frame();
+  }
+
   /* image attach */
   $('attachBtn').onclick = function () {
     if (inLive) { toast('🌍'); return; }
@@ -1583,13 +1755,13 @@ body.big .ml{font-size:14px}
     rd.onload = function () {
       var img = new Image();
       img.onload = function () {
-        var max = 720, w = img.width, hh = img.height;
+        var max = 1600, w = img.width, hh = img.height;
         if (w > hh && w > max) { hh = Math.round(hh * max / w); w = max; }
         else if (hh >= w && hh > max) { w = Math.round(w * max / hh); hh = max; }
         var cv = document.createElement('canvas');
         cv.width = w; cv.height = hh;
         cv.getContext('2d').drawImage(img, 0, 0, w, hh);
-        var src = cv.toDataURL('image/jpeg', .72);
+        var src = cv.toDataURL('image/jpeg', .88);
         try {
           pushLocal('me', { kind: 'image', src: src, x: '' });
           botReply(); toast(t('imgSaved'));
