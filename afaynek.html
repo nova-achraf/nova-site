@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>أفاينك — Afaynek</title>
+<title>لاغي — Laghi</title>
 <meta name="theme-color" content="#FF6B4A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="azami-apple-icon.png">
@@ -147,8 +147,8 @@ h1{font-size:20px;margin:0;letter-spacing:-.4px}
       <div class="brand">
         <div class="logo">أ</div>
         <div style="flex:1">
-          <h1>أفاينك</h1>
-          <div class="sub">Afaynek · فينك؟</div>
+          <h1>لاغي</h1>
+          <div class="sub">Laghi · فينك؟</div>
         </div>
       </div>
       <div class="tools">
@@ -184,7 +184,7 @@ h1{font-size:20px;margin:0;letter-spacing:-.4px}
   <div class="modal" id="modal">
     <div class="sheet">
       <h3>محادثة جديدة</h3>
-      <p>سمّي المحادثة، وأفاينك غادي يجاوبك بحال صاحبك.</p>
+      <p>سمّي المحادثة، ولاغي غادي يجاوبك بحال صاحبك.</p>
       <input id="newName" placeholder="مثال: أمين" maxlength="18">
       <div class="row2">
         <button class="no" id="cancelNew">لا</button>
@@ -532,7 +532,7 @@ h1{font-size:20px;margin:0;letter-spacing:-.4px}
 
   /* ---------- share ---------- */
   function shareWhat(text, title) {
-    var data = { title: title || 'أفاينك', text: text, url: location.href };
+    var data = { title: title || 'لاغي', text: text, url: location.href };
     if (navigator.share) {
       navigator.share(data).catch(function () {});
       return;
@@ -548,12 +548,12 @@ h1{font-size:20px;margin:0;letter-spacing:-.4px}
     }
   }
   $('shareApp').onclick = function () {
-    shareWhat('جرب أفاينك — تطبيق ميساج بحال واتساب، ساهل وسريع 😍');
+    shareWhat('جرب لاغي — تطبيق ميساج بحال واتساب، ساهل وسريع 😍');
   };
   $('mShare').onclick = function () {
     var c = chatById(app.openId);
     $('menuModal').classList.remove('on');
-    shareWhat(c ? ('شوف هاد المحادثة فـأفاينك: ' + c.name) : 'أفاينك');
+    shareWhat(c ? ('شوف هاد المحادثة فـلاغي: ' + c.name) : 'لاغي');
   };
   $('mCall').onclick = function () {
     $('menuModal').classList.remove('on');
