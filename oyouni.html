@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>عيوني — نصائح للعناية بالعين</title>
+<meta name="theme-color" content="#141414">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="عيوني">
+<style>
+  :root{
+    --cream:#FFFBF6; --ink:#17140F; --muted:#77705F; --line:#E9E0D1;
+    --yellow:#F7CE46; --yellow-soft:#FDF3D2; --blue:#2A5FD6; --blue-soft:#E8EEFC;
+    --black:#141414;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans Arabic",Tahoma,sans-serif;
+    background:var(--cream);color:var(--ink);
+    display:flex;flex-direction:column;height:100dvh;overflow:hidden;
+  }
+  header{
+    background:var(--black);color:#fff;padding:12px 16px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+  }
+  .mark{
+    width:32px;height:32px;border-radius:50%;border:1.5px solid #fff;
+    display:flex;align-items:center;justify-content:center;font-size:15px;
+  }
+  .brand{font-size:15px;font-weight:700;letter-spacing:.3px}
+  .brand small{display:block;font-size:10.5px;font-weight:400;opacity:.7;letter-spacing:.5px}
+  main{flex:1;overflow-y:auto;padding:16px 16px 24px}
+  .view{display:none}
+  .view.on{display:block}
+
+  /* عناوين */
+  .hbox{
+    background:var(--blue-soft);border:1.5px solid #B9C9F5;border-radius:12px;
+    padding:12px;text-align:center;font-weight:700;font-size:15px;color:#1B3E96;
+  }
+  .counter{
+    display:inline-block;background:#8C8C8C;color:#fff;font-size:11.5px;
+    padding:3px 10px;border-radius:8px;margin:10px 0;
+  }
+
+  /* بطاقة النصيحة */
+  .slide{
+    border-radius:18px;padding:20px 18px;position:relative;overflow:hidden;
+    box-shadow:0 6px 20px rgba(23,20,15,.08);
+  }
+  .slide.y{background:var(--yellow);color:#1A1508}
+  .slide.b{background:var(--blue);color:#fff}
+  .slide.g{background:#0E7A5F;color:#fff}
+  .slide.o{background:#E2603F;color:#fff}
+  .slide.p{background:#7B4FB3;color:#fff}
+  .sico{font-size:30px;line-height:1;margin-bottom:10px}
+  .slide h2{margin:0 0 8px;font-size:19px;line-height:1.5}
+  .slide p{margin:0;font-size:14.5px;line-height:1.85;opacity:.92}
+  .badge{
+    display:inline-block;margin-top:14px;font-size:11px;font-weight:700;
+    background:rgba(0,0,0,.12);padding:5px 10px;border-radius:8px;
+  }
+  .slide.y .badge{background:rgba(0,0,0,.1)}
+
+  .navrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
+  .dots{display:flex;gap:6px;flex-wrap:wrap}
+  .dot{width:7px;height:7px;border-radius:50%;background:#D8CFC0}
+  .dot.on{background:var(--ink);width:18px;border-radius:4px}
+  .arrow{
+    width:48px;height:48px;border-radius:50%;border:none;background:var(--blue);color:#F7CE46;
+    font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 14px rgba(42,95,214,.3);
+  }
+  .arrow:active{transform:scale(.95)}
+  .arrow.ghost{background:transparent;color:var(--muted);box-shadow:none;border:1.5px solid var(--line)}
+  .arrow:disabled{opacity:.35}
+
+  /* الرئيسية */
+  .hero{border-radius:18px;background:var(--black);color:#fff;padding:24px 20px;text-align:center}
+  .hero .eye{font-size:44px;margin-bottom:10px}
+  .hero h1{margin:0 0 8px;font-size:20px;line-height:1.6}
+  .hero p{margin:0;font-size:14px;line-height:1.9;opacity:.75}
+  .cta{
+    width:100%;margin-top:16px;padding:14px;border:none;border-radius:14px;
+    background:var(--yellow);color:#1A1508;font-weight:800;font-size:15px;
+    font-family:inherit;cursor:pointer;
+  }
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 12px}
+  .stat b{display:block;font-size:22px;color:var(--blue)}
+  .stat span{font-size:12px;color:var(--muted);line-height:1.6}
+
+  /* الأسئلة */
+  .q{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+  .q>button{
+    width:100%;display:flex;align-items:center;gap:10px;justify-content:space-between;
+    padding:14px;background:none;border:none;font-family:inherit;font-size:14px;
+    font-weight:600;color:var(--ink);text-align:right;cursor:pointer;line-height:1.6;
+  }
+  .q .a{display:none;padding:0 14px 14px;font-size:13.5px;line-height:1.95;color:var(--muted)}
+  .q.open .a{display:block}
+  .q.open .plus{transform:rotate(45deg)}
+  .plus{transition:transform .2s ease;font-size:18px;color:var(--blue);flex-shrink:0}
+
+  .note{
+    font-size:11.5px;color:var(--muted);line-height:1.9;margin-top:16px;
+    border-top:1px dashed var(--line);padding-top:12px;
+  }
+
+  /* شريط سفلي */
+  nav{
+    flex-shrink:0;background:var(--black);display:flex;justify-content:space-around;
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  }
+  nav button{
+    background:none;border:none;color:#9A968C;font-family:inherit;font-size:10.5px;
+    display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 8px;
+    cursor:pointer;min-width:72px;
+  }
+  nav button .ni{font-size:19px;line-height:1}
+  nav button.on{color:#fff}
+  nav button.on .ni{color:var(--yellow)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="mark">◉</div>
+  <div class="brand">عيوني<small>نصائح للعناية بالعين</small></div>
+</header>
+
+<main>
+  <!-- الرئيسية -->
+  <section class="view on" id="vHome">
+    <div class="hero">
+      <div class="eye">👁️</div>
+      <h1>عينيك تستاهل رعاية كل نهار</h1>
+      <p>خمس نصائح بسيطة كتخفف من التعب البصري وكتساعدك تحافظ على نظرك. كل نصيحة كتاخد 30 ثانية.</p>
+      <button class="cta" onclick="goTips()">بدا النصائح الخمسة ←</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>20 دقيقة</b><span>كل 20 دقيقة ديال الشاشة، شوف بعيد 20 ثانية</span></div>
+      <div class="stat"><b>50–60 سم</b><span>المسافة المزيانة بين عينيك والشاشة</span></div>
+      <div class="stat"><b>كل سنتين</b><span>فحص العيون للبالغين بلا مشاكل</span></div>
+      <div class="stat"><b>100% UV</b><span> نواضر كتحمي من الإشعاع فوق البنفسجي</span></div>
+    </div>
+    <p class="note">هاد التطبيق للتوعية العامة فقط. إلا حسيتي بألم، ولا تغير مفاجئ فالنظر، ولا وميض ضوئي — مشي عند طبيب العيون.</p>
+  </section>
+
+  <!-- النصائح -->
+  <section class="view" id="vTips">
+    <div class="hbox">نصائح للعناية بعينيك</div>
+    <div class="counter" id="counter">1 / 5</div>
+    <div id="slideBox"></div>
+    <div class="navrow">
+      <button class="arrow ghost" id="prev" onclick="moveTip(-1)" aria-label="السابق">→</button>
+      <div class="dots" id="dots"></div>
+      <button class="arrow" id="next" onclick="moveTip(1)" aria-label="التالي">←</button>
+    </div>
+  </section>
+
+  <!-- الأسئلة -->
+  <section class="view" id="vFaq">
+    <div class="hbox">الأسئلة الشائعة</div>
+    <div style="height:12px"></div>
+    <div id="faqBox"></div>
+    <p class="note">المعلومات عامة. التشخيص والعلاج كيحتاجو طبيب عيون مرخص.</p>
+  </section>
+</main>
+
+<nav>
+  <button class="on" data-v="vHome" onclick="show('vHome')"><span class="ni">⌂</span>الرئيسية</button>
+  <button data-v="vTips" onclick="show('vTips')"><span class="ni">ⓘ</span>نصائح للعناية بعينيك</button>
+  <button data-v="vFaq" onclick="show('vFaq')"><span class="ni">?</span>الأسئلة الشائعة</button>
+</nav>
+
+<script>
+var TIPS = [
+  { c:'y', ico:'🩺', t:'فحص منتظم للعيون', p:'الفحص المنتظم كيكتشف مشاكل العين فالبداية، وقتاش العلاج كيكون ساهل. الاكتشاف المبكر كيحمي البصر على المدى الطويل.', b:'كل سنتين للبالغين' },
+  { c:'b', ico:'⏳', t:'قاعدة 20-20-20', p:'من بعد كل 20 دقيقة ديال الشاشة، شوف لحاجة بعيدة تقريبا 6 متر لمدة 20 ثانية. هادشي كيريّح عضلات العين.', b:'للخدمة والدراسة' },
+  { c:'g', ico:'🕶️', t:'نواضر فالشمس', p:'اختر نواضر كتوقف 100% من أشعة UVA و UVB. الشمس القوية كتضر القرنية والعدسة حتى فالأيام المغطية بالغيوم.', b:'فالصيف وحتى فالشتا' },
+  { c:'o', ico:'🥗', t:'الماكلة والترطيب', p:'الخضروات الورقية، الجزر، والحوت فيه فيتامين A وأوميغا 3. شرب الماء بانتظام كينقص جفاف العين، والتدخين كيزيد الخطر.', b:'بلا سكر زايد' },
+  { c:'p', ico:'🧼', t:'نظافة العين', p:'غسل اليدين قبل ما تمس شي حاجة فعينك، وماتفركش عينك. إلا كنتي كتخدم فورشة ولا فغبرة، لبس حماية للعين.', b:'حماية من الالتهابات' }
+];
+
+var FAQ = [
+  { q:'شحال مرة خاصني نفحص عيوني؟', a:'البالغين اللي ماعندهومش مشاكل: كل سنتين تقريبا. إلا كنتي كتلبس نظاضر، ولا عندك السكري، ولا تاريخ عائلي ديال أمراض العين، ولا فوق 40 عام — غالبا سنويا، وحسب نصيحة الطبيب.' },
+  { q:'شحال خاصني نبعّد الشاشة من عينيا؟', a:'تقريبا 50 حتى 60 سم للتلفون واللابتوب، وكتّخلي الشاشة تحت مستوى العين شوية. زيد فسّح الخط باش ماتقربش بزاف.' },
+  { q:'عيني كتجف وكتحرق فآخر النهار، شنو ندير؟', a:'غالبا تعب بصري ولا جفاف. ريّح عينيك، رمّش بزاف، ونقص من الشاشة. إلا بقا الحال أيام، سير عند طبيب العيون باش يشوف واش خاصك قطرة ولا حاجة أخرى.' },
+  { q:'إيمتا خاصني نمشي للطوارئ؟', a:'إلا كان فقدان مفاجئ فالنظر، ولا وجع قوي، ولا وميض/بقع سوداء بزاف، ولا شي إصابة فالعين — ماتسناش، سير دغيا للطوارئ.' },
+  { q:'واش الضو الأزرق ديال الشاشة خطير؟', a:'الدراسات مازال ما مؤكداش الأضرار طويلة المدى، ولكن الشاشة كتسبب تعب بصري وجفاف. الحل الأبسط: مسافة مزيانة، راحة منتظمة، وضو نهاري كافي.' }
+];
+
+var idx = 0;
+function el(tag, cls, txt){ var e = document.createElement(tag); if(cls) e.className = cls; if(txt != null) e.textContent = txt; return e; }
+
+function renderTip(){
+  var t = TIPS[idx];
+  var box = document.getElementById('slideBox');
+  box.innerHTML = '';
+  var s = el('div', 'slide ' + t.c);
+  s.appendChild(el('div', 'sico', t.ico));
+  s.appendChild(el('h2', '', t.t));
+  s.appendChild(el('p', '', t.p));
+  s.appendChild(el('div', 'badge', t.b));
+  box.appendChild(s);
+
+  document.getElementById('counter').textContent = (idx + 1) + ' / ' + TIPS.length;
+  document.getElementById('prev').disabled = idx === 0;
+  document.getElementById('next').disabled = idx === TIPS.length - 1;
+
+  var d = document.getElementById('dots'); d.innerHTML = '';
+  TIPS.forEach(function(_, i){
+    var x = el('span', 'dot' + (i === idx ? ' on' : ''));
+    x.onclick = function(){ idx = i; renderTip(); };
+    d.appendChild(x);
+  });
+}
+function moveTip(n){
+  var next = idx + n;
+  if (next < 0 || next >= TIPS.length) return;
+  idx = next; renderTip();
+}
+function renderFaq(){
+  var box = document.getElementById('faqBox'); box.innerHTML = '';
+  FAQ.forEach(function(item){
+    var q = el('div', 'q');
+    var btn = el('button');
+    btn.appendChild(el('span', '', item.q));
+    btn.appendChild(el('span', 'plus', '+'));
+    var a = el('div', 'a', item.a);
+    btn.onclick = function(){ q.classList.toggle('open'); };
+    q.appendChild(btn); q.appendChild(a);
+    box.appendChild(q);
+  });
+}
+function show(v){
+  ['vHome','vTips','vFaq'].forEach(function(id){
+    document.getElementById(id).classList.toggle('on', id === v);
+  });
+  document.querySelectorAll('nav button').forEach(function(b){
+    b.classList.toggle('on', b.getAttribute('data-v') === v);
+  });
+  document.querySelector('main').scrollTop = 0;
+}
+function goTips(){ show('vTips'); }
+
+/* swipe */
+(function(){
+  var x0 = null;
+  var tips = document.getElementById('vTips');
+  tips.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; }, {passive:true});
+  tips.addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) moveTip(dx > 0 ? -1 : 1); /* RTL: swiping right -> previous */
+    x0 = null;
+  }, {passive:true});
+})();
+
+renderTip();
+renderFaq();
+</script>
+</body>
+</html>
