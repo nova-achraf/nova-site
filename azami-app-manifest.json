@@ -1,0 +1,21 @@
+{
+  "name": "AZAMI AI — Moroccan Roots. Global Intelligence.",
+  "short_name": "AZAMI AI",
+  "description": "مساعد ذكاء اصطناعي مغربي: محادثات، صور، صانع فيديو، صور إلى PDF.",
+  "id": "/nova-site/azami-ai.html",
+  "start_url": "azami-ai.html?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen"],
+  "orientation": "portrait",
+  "background_color": "#0A0A0F",
+  "theme_color": "#0A0A0F",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "azami-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "azami-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "azami-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
