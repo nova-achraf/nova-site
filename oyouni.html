@@ -109,6 +109,47 @@
     border-top:1px dashed var(--line);padding-top:12px;
   }
 
+  /* اختبار النظر */
+  .hint{font-size:12.5px;color:var(--muted);line-height:1.9;margin:10px 0}
+  .caliber{display:flex;justify-content:center;padding:18px 0}
+  .cardbox{
+    height:54px;border:2px dashed var(--blue);border-radius:8px;
+    background:var(--blue-soft);position:relative;
+  }
+  .cardbox:after{
+    content:'85.6 mm';position:absolute;inset:0;display:flex;
+    align-items:center;justify-content:center;font-size:11px;color:var(--blue);
+  }
+  #calRange{width:100%;accent-color:var(--blue);margin:6px 0 4px}
+  .testbar{
+    display:flex;justify-content:space-between;gap:10px;align-items:center;
+    font-size:11.5px;color:var(--muted);background:#fff;border:1px solid var(--line);
+    border-radius:10px;padding:8px 10px;margin-bottom:14px;
+  }
+  .ebox{
+    background:#fff;border:1px solid var(--line);border-radius:18px;
+    min-height:220px;display:flex;align-items:center;justify-content:center;
+    padding:20px;margin-bottom:14px;
+  }
+  .eletter{
+    font-family:Georgia,serif;font-weight:700;color:#111;line-height:1;
+    transition:font-size .15s ease;
+  }
+  .dirs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .dir{
+    padding:16px;border-radius:14px;border:1.5px solid var(--line);background:#fff;
+    font-size:22px;color:var(--blue);cursor:pointer;font-family:inherit;
+  }
+  .dir:active{background:var(--blue-soft);border-color:var(--blue)}
+  .result{
+    border-radius:16px;padding:18px;margin:6px 0 12px;line-height:1.9;
+    background:var(--blue-soft);border:1.5px solid #B9C9F5;color:#1B3E96;font-size:14px;
+  }
+  .result b{display:block;font-size:18px;margin-bottom:6px}
+  .result.ok{background:#E6F4EC;border-color:#B7DFC9;color:#14603F}
+  .result.warn{background:#FDF3D2;border-color:#E8D79A;color:#7A5B10}
+  .cta.ghost2{background:transparent;border:1.5px solid var(--line);color:var(--muted);margin-top:8px}
+
   /* شريط سفلي */
   nav{
     flex-shrink:0;background:var(--black);display:flex;justify-content:space-around;
@@ -168,12 +209,54 @@
     <div id="faqBox"></div>
     <p class="note">المعلومات عامة. التشخيص والعلاج كيحتاجو طبيب عيون مرخص.</p>
   </section>
+
+  <!-- اختبار النظر -->
+  <section class="view" id="vTest">
+    <div class="hbox">اختبار النظر</div>
+
+    <!-- معايرة -->
+    <div id="calib">
+      <p class="hint">قبل ما نبداو، دخّل كارطة بنكية ولا كارطة ديال الهوية فالخانة واستعمل السلايدر حتى تلاصق الحواف. هادشي كيخلي المقاسات دقيقة فالتليفون ديالك.</p>
+      <div class="caliber">
+        <div class="cardbox" id="cardbox"></div>
+      </div>
+      <input type="range" id="calRange" min="120" max="300" step="1" value="200" oninput="onCalib(this.value)">
+      <p class="hint" id="calInfo">المقياس: —</p>
+      <button class="cta" onclick="saveCalib()">✅ الكارطة بحال هادي — بدا الاختبار</button>
+    </div>
+
+    <!-- الاختبار -->
+    <div id="testWrap" style="display:none">
+      <div class="testbar">
+        <span id="testStep">1 / 5</span>
+        <span>بعّد التليفون 40 سم وحطو فمستوى عينيك</span>
+      </div>
+      <div class="ebox"><div class="eletter" id="eletter">E</div></div>
+      <p class="hint">شكون اتجاه الفتحة ديال حرف E؟</p>
+      <div class="dirs">
+        <button class="dir" onclick="answer('up')" aria-label="فوق">↑</button>
+        <button class="dir" onclick="answer('right')" aria-label="يمين">→</button>
+        <button class="dir" onclick="answer('down')" aria-label="تحت">↓</button>
+        <button class="dir" onclick="answer('left')" aria-label="يسار">←</button>
+      </div>
+      <p class="note">إلا ما قدرتيش تشوف الحرف، غير جاوب بأي حاجة وكمّل — كانحسبو لي شفتي.</p>
+    </div>
+
+    <!-- النتيجة -->
+    <div id="testEnd" style="display:none">
+      <div class="result" id="resBox"></div>
+      <button class="cta" onclick="startTest()">🔁 عاود الاختبار</button>
+      <button class="cta ghost2" onclick="recalib()">📏 عاود المعايرة</button>
+      <p class="note">هاد الاختبار تقريبي للتوعية فقط. ما كيعوّضش فحص طبيب العيون، والنتيجة كتتأثر بالضو والإضاءة والمسافة.</p>
+    </div>
+  </section>
 </main>
 
 <nav>
   <button class="on" data-v="vHome" onclick="show('vHome')"><span class="ni">⌂</span>الرئيسية</button>
-  <button data-v="vTips" onclick="show('vTips')"><span class="ni">ⓘ</span>نصائح للعناية بعينيك</button>
-  <button data-v="vFaq" onclick="show('vFaq')"><span class="ni">?</span>الأسئلة الشائعة</button>
+  <button data-v="vTips" onclick="show('vTips')"><span class="ni">ⓘ</span>نصائح</button>
+  <button data-v="vTest" onclick="show('vTest')"><span class="ni">👁</span>فحص النظر</button>
+  <button data-v="vFaq" onclick="show('vFaq')"><span class="ni">?</span>الأسئلة</button>
 </nav>
 
 <script>
@@ -237,7 +320,7 @@ function renderFaq(){
   });
 }
 function show(v){
-  ['vHome','vTips','vFaq'].forEach(function(id){
+  ['vHome','vTips','vTest','vFaq'].forEach(function(id){
     document.getElementById(id).classList.toggle('on', id === v);
   });
   document.querySelectorAll('nav button').forEach(function(b){
@@ -259,6 +342,94 @@ function goTips(){ show('vTips'); }
     x0 = null;
   }, {passive:true});
 })();
+
+/* === اختبار النظر (Tumbling E) === */
+var CAL_KEY = 'oyouni_ppmm';
+var ppmm = 3.7;
+try { var _c = parseFloat(localStorage.getItem(CAL_KEY)); if (_c > 1) ppmm = _c; } catch (e) {}
+
+var TEST = { levels: [0.05, 0.08, 0.10, 0.125, 0.16], idx: 0, ok: 0, rot: 0 };
+var DIST_MM = 400; /* 40 سم */
+
+(function initCal() {
+  var box = document.getElementById('cardbox');
+  var r = document.getElementById('calRange');
+  r.value = Math.round(ppmm * 53.98);
+  onCalib(r.value);
+  box.style.height = r.value + 'px';
+})();
+
+function onCalib(v) {
+  var h = parseFloat(v) || 200;
+  var box = document.getElementById('cardbox');
+  box.style.height = h + 'px';
+  box.style.width = (h * 85.6 / 53.98) + 'px';
+  var p = h / 53.98;
+  document.getElementById('calInfo').textContent = 'المقياس: ' + p.toFixed(2) + ' بكسل لكل مم';
+}
+
+function saveCalib() {
+  var h = parseFloat(document.getElementById('calRange').value) || 200;
+  ppmm = h / 53.98;
+  try { localStorage.setItem(CAL_KEY, String(ppmm)); } catch (e) {}
+  startTest();
+}
+
+function recalib() {
+  document.getElementById('calib').style.display = 'block';
+  document.getElementById('testWrap').style.display = 'none';
+  document.getElementById('testEnd').style.display = 'none';
+}
+
+function startTest() {
+  document.getElementById('calib').style.display = 'none';
+  document.getElementById('testEnd').style.display = 'none';
+  document.getElementById('testWrap').style.display = 'block';
+  TEST.idx = 0; TEST.ok = 0;
+  nextE();
+}
+
+function nextE() {
+  if (TEST.idx >= TEST.levels.length) { finishTest(); return; }
+  var v = TEST.levels[TEST.idx];
+  var heightMm = DIST_MM * (5 / v) * (Math.PI / 10800);
+  var px = heightMm * ppmm;
+  var maxPx = Math.min(window.innerWidth * 0.62, 210);
+  px = Math.max(9, Math.min(px, maxPx));
+  var e = document.getElementById('eletter');
+  e.style.fontSize = px + 'px';
+  TEST.rot = Math.floor(Math.random() * 4);
+  e.style.transform = 'rotate(' + (TEST.rot * 90) + 'deg)';
+  document.getElementById('testStep').textContent = (TEST.idx + 1) + ' / ' + TEST.levels.length;
+}
+
+function answer(dir) {
+  var map = { right: 0, down: 1, left: 2, up: 3 };
+  if (map[dir] === TEST.rot) TEST.ok++;
+  TEST.idx++;
+  nextE();
+}
+
+function finishTest() {
+  document.getElementById('testWrap').style.display = 'none';
+  document.getElementById('testEnd').style.display = 'block';
+  var n = TEST.ok;
+  var box = document.getElementById('resBox');
+  box.className = 'result';
+  if (n >= 4) {
+    box.classList.add('ok');
+    box.innerHTML = '<b>النتيجة: ' + n + ' / 5 ✅</b>' +
+      'بصرك كيبان مزيان فهاد الاختبار. كمّل بالنصائح ديال الراحة والفحص كل سنتين.';
+  } else if (n === 3) {
+    box.classList.add('warn');
+    box.innerHTML = '<b>النتيجة: ' + n + ' / 5</b>' +
+      'كاينة شي صعوبة فبعض الحروف. جرب مرة أخرى بضو مزيان ومسافة 40 سم، وإلا بقات النتيجة، دير فحص عند طبيب العيون.';
+  } else {
+    box.classList.add('warn');
+    box.innerHTML = '<b>النتيجة: ' + n + ' / 5</b>' +
+      'صعيب تشوف الحروف فهاد الاختبار. تأكد من المسافة والضو، وإلا بقا الحال، سير لطبيب العيون فالقريب.';
+  }
+}
 
 renderTip();
 renderFaq();
