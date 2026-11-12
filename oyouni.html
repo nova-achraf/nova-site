@@ -149,6 +149,40 @@
   .result.ok{background:#E6F4EC;border-color:#B7DFC9;color:#14603F}
   .result.warn{background:#FDF3D2;border-color:#E8D79A;color:#7A5B10}
   .cta.ghost2{background:transparent;border:1.5px solid var(--line);color:var(--muted);margin-top:8px}
+  .card{
+    display:flex;gap:12px;align-items:flex-start;width:100%;text-align:right;
+    background:#fff;border:1px solid var(--line);border-radius:16px;
+    padding:14px;margin-bottom:10px;font-family:inherit;color:inherit;cursor:pointer;
+  }
+  .card:active{background:var(--blue-soft);border-color:#B9C9F5}
+  .card .ico{
+    width:42px;height:42px;flex-shrink:0;border-radius:12px;background:var(--yellow-soft);
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+  }
+  .card .tx{min-width:0}
+  .card b{display:block;font-size:14.5px;margin-bottom:3px}
+  .card .tx span{display:block;font-size:12.5px;color:var(--muted);line-height:1.7}
+  .back{
+    background:none;border:none;font-family:inherit;font-size:12.5px;color:var(--muted);
+    padding:6px 0;margin-bottom:8px;cursor:pointer;
+  }
+  .seg{display:flex;gap:8px;margin-bottom:14px}
+  .seg button{
+    flex:1;padding:11px 6px;border-radius:12px;border:1.5px solid var(--line);
+    background:#fff;font-family:inherit;font-size:13px;color:var(--muted);cursor:pointer;
+  }
+  .seg button.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:700}
+  .plateWrap{display:flex;justify-content:center;margin:6px 0 12px}
+  #plate{width:100%;max-width:300px;height:auto;border-radius:50%;border:6px solid #fff;box-shadow:0 4px 16px rgba(23,20,15,.12)}
+  .answerRow{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+  .answerRow input{
+    flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--line);
+    font-family:inherit;font-size:16px;text-align:center;color:var(--ink);outline:none;min-width:0;
+  }
+  .answerRow input:focus{border-color:var(--blue)}
+  .cta.small{width:auto;padding:12px 18px;margin:0;flex-shrink:0;font-size:14px}
+  #plateDots{margin:10px 0}
+  #plateDots i{background:#D8CFC0}#plateDots i.on{background:var(--blue)}
 
   /* شريط سفلي */
   nav{
@@ -210,44 +244,79 @@
     <p class="note">المعلومات عامة. التشخيص والعلاج كيحتاجو طبيب عيون مرخص.</p>
   </section>
 
-  <!-- اختبار النظر -->
+  <!-- الاختبارات -->
   <section class="view" id="vTest">
-    <div class="hbox">اختبار النظر</div>
+    <div class="hbox">الاختبارات</div>
 
-    <!-- معايرة -->
-    <div id="calib">
-      <p class="hint">قبل ما نبداو، دخّل كارطة بنكية ولا كارطة ديال الهوية فالخانة واستعمل السلايدر حتى تلاصق الحواف. هادشي كيخلي المقاسات دقيقة فالتليفون ديالك.</p>
-      <div class="caliber">
-        <div class="cardbox" id="cardbox"></div>
-      </div>
-      <input type="range" id="calRange" min="120" max="300" step="1" value="200" oninput="onCalib(this.value)">
-      <p class="hint" id="calInfo">المقياس: —</p>
-      <button class="cta" onclick="saveCalib()">✅ الكارطة بحال هادي — بدا الاختبار</button>
+    <!-- قائمة الاختبارات -->
+    <div id="testMenu">
+      <button class="card" onclick="openE()">
+        <span class="ico">👁️</span>
+        <span class="tx"><b>حدة الإبصار — قريب وبعيد</b><span>حرف E دوّار بمعايرة بالكارطة. كتقيس نظر القريب (40 سم) والنظر البعيد (1 متر).</span></span>
+      </button>
+      <button class="card" onclick="openColor()">
+        <span class="ico">🎨</span>
+        <span class="tx"><b>اختبار عمى الألوان</b><span>4 لوحات على طريقة إيشيهارا: رقم مخبّي فالنقط. كتشوف واش عندك صعوبة فالتمييز بين الأحمر والأخضر.</span></span>
+      </button>
+      <p class="note">الاختبارين تقريبيين للتوعية. التشخيص النهائي عند طبيب العيون.</p>
     </div>
 
-    <!-- الاختبار -->
-    <div id="testWrap" style="display:none">
-      <div class="testbar">
-        <span id="testStep">1 / 5</span>
-        <span>بعّد التليفون 40 سم وحطو فمستوى عينيك</span>
+    <!-- معايرة + اختبار E -->
+    <div id="eTest" style="display:none">
+      <button class="back" onclick="backMenu()">→ رجوع</button>
+
+      <div id="calib">
+        <p class="hint">دخّل كارطة بنكية ولا كارطة الهوية فالمستطيل، وحرّك السلايدر حتى تلاصق الحواف بالضبط. هاد المعايرة كتخلي القياس دقيق فالتليفون ديالك.</p>
+        <div class="caliber"><div class="cardbox" id="cardbox"></div></div>
+        <input type="range" id="calRange" min="120" max="300" step="1" value="200" oninput="onCalib(this.value)">
+        <p class="hint" id="calInfo">المقياس: —</p>
+
+        <p class="hint" style="margin-top:14px">ختار المسافة:</p>
+        <div class="seg">
+          <button id="mNear" class="on" onclick="setMode('near')">قريب · 40 سم</button>
+          <button id="mFar" onclick="setMode('far')">بعيد · 1 متر</button>
+        </div>
+        <button class="cta" onclick="saveCalib()">✅ بدا الاختبار</button>
       </div>
-      <div class="ebox"><div class="eletter" id="eletter">E</div></div>
-      <p class="hint">شكون اتجاه الفتحة ديال حرف E؟</p>
-      <div class="dirs">
-        <button class="dir" onclick="answer('up')" aria-label="فوق">↑</button>
-        <button class="dir" onclick="answer('right')" aria-label="يمين">→</button>
-        <button class="dir" onclick="answer('down')" aria-label="تحت">↓</button>
-        <button class="dir" onclick="answer('left')" aria-label="يسار">←</button>
+
+      <div id="testWrap" style="display:none">
+        <div class="testbar">
+          <span id="testStep">1 / 5</span>
+          <span id="testDist">حوالي 40 سم · مستوى العين</span>
+        </div>
+        <div class="ebox"><div class="eletter" id="eletter">E</div></div>
+        <p class="hint">فين كتفتح الفتحة ديال حرف E؟</p>
+        <div class="dirs">
+          <button class="dir" onclick="answer('up')" aria-label="فوق">↑</button>
+          <button class="dir" onclick="answer('right')" aria-label="يمين">→</button>
+          <button class="dir" onclick="answer('down')" aria-label="تحت">↓</button>
+          <button class="dir" onclick="answer('left')" aria-label="يسار">←</button>
+        </div>
+        <p class="note">إلا ما بانتش ليك الفتحة، جاوب بأي اتجاه وكمّل. الإضاءة بالنهار بلا شمس مباشرة هي الأحسن.</p>
       </div>
-      <p class="note">إلا ما قدرتيش تشوف الحرف، غير جاوب بأي حاجة وكمّل — كانحسبو لي شفتي.</p>
+
+      <div id="testEnd" style="display:none">
+        <div class="result" id="resBox"></div>
+        <button class="cta" onclick="startTest()">🔁 عاود الاختبار</button>
+        <button class="cta ghost2" onclick="recalib()">📏 عاود المعايرة</button>
+        <p class="note">اختبار تقريبي للتوعية. ما كيعوّضش فحص طبيب العيون؛ النتيجة كتتأثر بالضو والمسافة ونظافة الشاشة.</p>
+      </div>
     </div>
 
-    <!-- النتيجة -->
-    <div id="testEnd" style="display:none">
-      <div class="result" id="resBox"></div>
-      <button class="cta" onclick="startTest()">🔁 عاود الاختبار</button>
-      <button class="cta ghost2" onclick="recalib()">📏 عاود المعايرة</button>
-      <p class="note">هاد الاختبار تقريبي للتوعية فقط. ما كيعوّضش فحص طبيب العيون، والنتيجة كتتأثر بالضو والإضاءة والمسافة.</p>
+    <!-- اختبار عمى الألوان -->
+    <div id="colorTest" style="display:none">
+      <button class="back" onclick="backMenu()">→ رجوع</button>
+      <p class="hint">شوف اللوحة بضو مزيان، وقرا الرقم اللي كتشوف. إلا ما شفتيش رقم، كتب «0».</p>
+      <div class="plateWrap"><canvas id="plate" width="300" height="300"></canvas></div>
+      <div class="answerRow">
+        <input id="plateAns" type="number" inputmode="numeric" placeholder="الرقم؟" aria-label="الرقم الظاهر">
+        <button class="cta small" onclick="submitPlate()">التالي</button>
+      </div>
+      <div class="dots" id="plateDots" style="justify-content:center"></div>
+      <div id="colorEnd" style="display:none">
+        <div class="result" id="colorRes"></div>
+        <button class="cta" onclick="startColor()">🔁 عاود</button>
+      </div>
     </div>
   </section>
 </main>
@@ -255,7 +324,7 @@
 <nav>
   <button class="on" data-v="vHome" onclick="show('vHome')"><span class="ni">⌂</span>الرئيسية</button>
   <button data-v="vTips" onclick="show('vTips')"><span class="ni">ⓘ</span>نصائح</button>
-  <button data-v="vTest" onclick="show('vTest')"><span class="ni">👁</span>فحص النظر</button>
+  <button data-v="vTest" onclick="show('vTest')"><span class="ni">👁</span>اختبارات</button>
   <button data-v="vFaq" onclick="show('vFaq')"><span class="ni">?</span>الأسئلة</button>
 </nav>
 
@@ -327,6 +396,7 @@ function show(v){
     b.classList.toggle('on', b.getAttribute('data-v') === v);
   });
   document.querySelector('main').scrollTop = 0;
+  if (v === 'vTest') backMenu();
 }
 function goTips(){ show('vTips'); }
 
@@ -343,44 +413,67 @@ function goTips(){ show('vTips'); }
   }, {passive:true});
 })();
 
-/* === اختبار النظر (Tumbling E) === */
+/* === اختبارات: حدة الإبصار + عمى الألوان === */
 var CAL_KEY = 'oyouni_ppmm';
 var ppmm = 3.7;
 try { var _c = parseFloat(localStorage.getItem(CAL_KEY)); if (_c > 1) ppmm = _c; } catch (e) {}
 
-var TEST = { levels: [0.05, 0.08, 0.10, 0.125, 0.16], idx: 0, ok: 0, rot: 0 };
-var DIST_MM = 400; /* 40 سم */
+var MODES = {
+  near: { dist: 400,  levels: [0.05, 0.08, 0.10, 0.125, 0.16], label: 'حوالي 40 سم · مستوى العين', name: 'النظر القريب' },
+  far:  { dist: 1000, levels: [0.10, 0.166, 0.25, 0.333],      label: '1 متر · التليفون ثابت',        name: 'النظر البعيد' }
+};
+var mode = 'near';
+var TEST = { idx: 0, ok: 0, rot: 0 };
 
-(function initCal() {
-  var box = document.getElementById('cardbox');
+function openE() {
+  document.getElementById('testMenu').style.display = 'none';
+  document.getElementById('colorTest').style.display = 'none';
+  document.getElementById('eTest').style.display = 'block';
+  recalib();
+}
+function openColor() {
+  document.getElementById('testMenu').style.display = 'none';
+  document.getElementById('eTest').style.display = 'none';
+  document.getElementById('colorTest').style.display = 'block';
+  startColor();
+}
+function backMenu() {
+  document.getElementById('testMenu').style.display = 'block';
+  document.getElementById('eTest').style.display = 'none';
+  document.getElementById('colorTest').style.display = 'none';
+}
+
+function initCal() {
   var r = document.getElementById('calRange');
   r.value = Math.round(ppmm * 53.98);
   onCalib(r.value);
-  box.style.height = r.value + 'px';
-})();
-
+}
 function onCalib(v) {
   var h = parseFloat(v) || 200;
   var box = document.getElementById('cardbox');
   box.style.height = h + 'px';
   box.style.width = (h * 85.6 / 53.98) + 'px';
-  var p = h / 53.98;
-  document.getElementById('calInfo').textContent = 'المقياس: ' + p.toFixed(2) + ' بكسل لكل مم';
+  document.getElementById('calInfo').textContent = 'المقياس: ' + (h / 53.98).toFixed(2) + ' بكسل لكل مم';
 }
-
+function setMode(m) {
+  mode = m;
+  document.getElementById('mNear').classList.toggle('on', m === 'near');
+  document.getElementById('mFar').classList.toggle('on', m === 'far');
+  document.getElementById('testDist').textContent = MODES[m].label;
+}
 function saveCalib() {
   var h = parseFloat(document.getElementById('calRange').value) || 200;
   ppmm = h / 53.98;
   try { localStorage.setItem(CAL_KEY, String(ppmm)); } catch (e) {}
   startTest();
 }
-
 function recalib() {
   document.getElementById('calib').style.display = 'block';
   document.getElementById('testWrap').style.display = 'none';
   document.getElementById('testEnd').style.display = 'none';
+  initCal();
+  setMode(mode);
 }
-
 function startTest() {
   document.getElementById('calib').style.display = 'none';
   document.getElementById('testEnd').style.display = 'none';
@@ -388,11 +481,11 @@ function startTest() {
   TEST.idx = 0; TEST.ok = 0;
   nextE();
 }
-
 function nextE() {
-  if (TEST.idx >= TEST.levels.length) { finishTest(); return; }
-  var v = TEST.levels[TEST.idx];
-  var heightMm = DIST_MM * (5 / v) * (Math.PI / 10800);
+  var m = MODES[mode];
+  if (TEST.idx >= m.levels.length) { finishTest(); return; }
+  var v = m.levels[TEST.idx];
+  var heightMm = m.dist * (5 / v) * (Math.PI / 10800);
   var px = heightMm * ppmm;
   var maxPx = Math.min(window.innerWidth * 0.62, 210);
   px = Math.max(9, Math.min(px, maxPx));
@@ -400,34 +493,117 @@ function nextE() {
   e.style.fontSize = px + 'px';
   TEST.rot = Math.floor(Math.random() * 4);
   e.style.transform = 'rotate(' + (TEST.rot * 90) + 'deg)';
-  document.getElementById('testStep').textContent = (TEST.idx + 1) + ' / ' + TEST.levels.length;
+  document.getElementById('testStep').textContent = (TEST.idx + 1) + ' / ' + m.levels.length;
 }
-
 function answer(dir) {
   var map = { right: 0, down: 1, left: 2, up: 3 };
   if (map[dir] === TEST.rot) TEST.ok++;
   TEST.idx++;
   nextE();
 }
-
 function finishTest() {
+  var m = MODES[mode], total = m.levels.length, n = TEST.ok, box = document.getElementById('resBox');
   document.getElementById('testWrap').style.display = 'none';
   document.getElementById('testEnd').style.display = 'block';
-  var n = TEST.ok;
-  var box = document.getElementById('resBox');
   box.className = 'result';
-  if (n >= 4) {
+  var advice = mode === 'near'
+    ? 'جرب مرة أخرى بضو نهاري مزيان وكمّل المسافة 40 سم. إلا بقات النتيجة، دير فحص عند طبيب العيون.'
+    : 'حط التليفون على 1 متر بالضبط وثبّتو. إلا بقات الصعوبة فالقراءة من بعيد، دير فحص عند طبيب العيون.';
+  if (n === total) {
     box.classList.add('ok');
-    box.innerHTML = '<b>النتيجة: ' + n + ' / 5 ✅</b>' +
-      'بصرك كيبان مزيان فهاد الاختبار. كمّل بالنصائح ديال الراحة والفحص كل سنتين.';
-  } else if (n === 3) {
+    box.innerHTML = '<b>' + m.name + ': ' + n + ' / ' + total + ' ✅</b>الرؤية فهاد المستوى مزيانة فهاد الاختبار. كمّل بالفحص الدوري كل سنتين.';
+  } else if (n >= Math.ceil(total * 0.6)) {
     box.classList.add('warn');
-    box.innerHTML = '<b>النتيجة: ' + n + ' / 5</b>' +
-      'كاينة شي صعوبة فبعض الحروف. جرب مرة أخرى بضو مزيان ومسافة 40 سم، وإلا بقات النتيجة، دير فحص عند طبيب العيون.';
+    box.innerHTML = '<b>' + m.name + ': ' + n + ' / ' + total + '</b>كاينة شي صعوبة فبعض المستويات. ' + advice;
   } else {
     box.classList.add('warn');
-    box.innerHTML = '<b>النتيجة: ' + n + ' / 5</b>' +
-      'صعيب تشوف الحروف فهاد الاختبار. تأكد من المسافة والضو، وإلا بقا الحال، سير لطبيب العيون فالقريب.';
+    box.innerHTML = '<b>' + m.name + ': ' + n + ' / ' + total + '</b>صعيب تشوف الحروف الصغار. ' + advice;
+  }
+}
+
+/* === عمى الألوان (لوحات على طريقة إيشيهارا) === */
+var PLATES = ['12', '8', '6', '29'];
+var CP = { i: 0, ok: 0, log: [] };
+
+function startColor() {
+  CP = { i: 0, ok: 0, log: [] };
+  document.getElementById('colorEnd').style.display = 'none';
+  document.getElementById('plateAns').value = '';
+  drawDots();
+  drawPlate(0);
+}
+function drawDots() {
+  var d = document.getElementById('plateDots');
+  d.innerHTML = '';
+  PLATES.forEach(function (_, i) {
+    var s = document.createElement('i');
+    if (i === CP.i) s.className = 'on';
+    d.appendChild(s);
+  });
+}
+function drawPlate(i) {
+  var cv = document.getElementById('plate');
+  var cx = cv.getContext('2d');
+  var W = cv.width, H = cv.height, R = W / 2 - 6;
+  var cxp = W / 2, cyp = H / 2;
+
+  /* قناع الرقم */
+  var mk = document.createElement('canvas');
+  mk.width = W; mk.height = H;
+  var mc = mk.getContext('2d');
+  mc.fillStyle = '#000';
+  mc.font = 'bold ' + Math.round(H * 0.58) + 'px system-ui, sans-serif';
+  mc.textAlign = 'center';
+  mc.textBaseline = 'middle';
+  mc.fillText(PLATES[i], cxp, cyp + 4);
+  var mask = mc.getImageData(0, 0, W, H).data;
+
+  cx.clearRect(0, 0, W, H);
+  cx.fillStyle = '#F5F1E6';
+  cx.beginPath(); cx.arc(cxp, cyp, R, 0, Math.PI * 2); cx.fill();
+
+  var fig = ['#C4603F', '#B34F35', '#D07A54', '#A8452F'];
+  var bg  = ['#8FA36A', '#7E9A5C', '#A0B47C', '#6F8C4E'];
+
+  for (var k = 0; k < 1200; k++) {
+    var a = Math.random() * Math.PI * 2;
+    var r = Math.sqrt(Math.random()) * R;
+    var x = cxp + Math.cos(a) * r;
+    var y = cyp + Math.sin(a) * r;
+    var rad = 4 + Math.random() * 8;
+    var idx = ((y | 0) * W + (x | 0)) * 4 + 3;
+    var inside = mask[idx] > 128;
+    var pal = inside ? fig : bg;
+    cx.beginPath();
+    cx.arc(x, y, rad, 0, Math.PI * 2);
+    cx.fillStyle = pal[Math.floor(Math.random() * pal.length)];
+    cx.fill();
+  }
+  drawDots();
+}
+function submitPlate() {
+  var inp = document.getElementById('plateAns');
+  var v = (inp.value || '').trim();
+  if (v === '') { inp.focus(); return; }
+  var correct = v === PLATES[CP.i];
+  if (correct) CP.ok++;
+  CP.log.push(correct);
+  CP.i++;
+  inp.value = '';
+  if (CP.i >= PLATES.length) {
+    document.getElementById('colorEnd').style.display = 'block';
+    var box = document.getElementById('colorRes');
+    box.className = 'result';
+    var n = CP.ok;
+    if (n >= 3) {
+      box.classList.add('ok');
+      box.innerHTML = '<b>' + n + ' / 4 ✅</b>كتشوف الأرقام فكل اللوحات تقريبا — ما كاين ما كيشير لصعوبة فالتمييز بين الأحمر والأخضر.';
+    } else {
+      box.classList.add('warn');
+      box.innerHTML = '<b>' + n + ' / 4</b>كاينة لوحات ما بانش فيهم الرقم. هادشي كيقدر يشير لصعوبة فتمييز الألوان (عمى ألوان أحمر/أخضر) — خاصك فحص عند طبيب العيون باش يتأكد، ماشي تشخيص من التطبيق.';
+    }
+  } else {
+    drawPlate(CP.i);
   }
 }
 
