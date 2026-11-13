@@ -8,12 +8,12 @@
 <meta name="theme-color" content="#0A0A0F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="AZAMI AI">
+<meta name="apple-mobile-web-app-title" content="AZAMI">
 <link rel="manifest" href="azami-app-manifest.json">
 <link rel="apple-touch-icon" href="azami-apple-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
-<title>AZAMI AI — Moroccan Roots. Global Intelligence.</title>
-<meta name="description" content="AZAMI AI — مساعد ذكاء اصطناعي مغربي. From Morocco to the World.">
+<title>AZAMI — مساعدك المغربي</title>
+<meta name="description" content="AZAMI — مساعدك المغربي. من المغرب إلى العالم.">
 <!-- Markdown + Sanitize + Code Highlight (async = no blocking) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 <script>function onMdLoad(){if(window.marked)marked.setOptions({breaks:true,gfm:true,highlight:function(c,l){if(window.hljs){if(l&&hljs.getLanguage(l))return hljs.highlight(c,{language:l}).value;return hljs.highlightAuto(c).value}return c}})}</script>
@@ -61,7 +61,8 @@
   .conv-item:active,.conv-item.active{background:var(--card);color:var(--gold2)}
   .side-bot{padding:12px 14px;border-top:1px solid var(--line)}
   .side-bot img{width:28px;height:28px;border-radius:6px;vertical-align:middle}
-  .side-bot b{font-size:13px;color:var(--gold2);margin-right:8px}
+  .side-bot b{font-size:13px;color:var(--txt);margin-right:8px}
+  .side-bot b .hl{color:var(--gold2)}
   .side-bot small{font-size:11px;color:var(--muted);display:block}
   /* MAIN */
   .main{flex:1;display:flex;flex-direction:column;min-width:0}
@@ -72,7 +73,8 @@
   .menu-btn{background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:4px}
   .menu-btn:active{color:var(--gold)}
   .h-logo{width:32px;height:32px;border-radius:8px;flex-shrink:0}
-  .h-title{font-size:16px;font-weight:700;color:var(--gold2);letter-spacing:.3px}
+  .h-title{font-size:16px;font-weight:700;color:var(--txt);letter-spacing:.3px}
+  .h-title .hl{color:var(--gold2);font-weight:800}
   .h-sub{font-size:10px;color:var(--muted)}
   .h-right{margin-right:auto;display:flex;gap:8px}
   .h-btn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap}
@@ -247,15 +249,15 @@
 <link rel="canonical" href="https://nova-achraf.github.io/nova-site/azami-ai.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AZAMI">
-<meta property="og:title" content="AZAMI AI — Moroccan Roots. Global Intelligence.">
-<meta property="og:description" content="AZAMI AI — مساعد ذكاء اصطناعي مغربي. From Morocco to the World.">
+<meta property="og:title" content="AZAMI — مساعدك المغربي">
+<meta property="og:description" content="AZAMI — مساعدك المغربي. من المغرب إلى العالم.">
 <meta property="og:url" content="https://nova-achraf.github.io/nova-site/azami-ai.html">
 <meta property="og:image" content="https://nova-achraf.github.io/nova-site/azami-icon-512.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AZAMI AI — Moroccan Roots. Global Intelligence.">
-<meta name="twitter:description" content="AZAMI AI — مساعد ذكاء اصطناعي مغربي. From Morocco to the World.">
+<meta name="twitter:title" content="AZAMI — مساعدك المغربي">
+<meta name="twitter:description" content="AZAMI — مساعدك المغربي. من المغرب إلى العالم.">
 <meta name="twitter:image" content="https://nova-achraf.github.io/nova-site/azami-icon-512.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"AZAMI AI","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"ar","description":"\u0645\u0633\u0627\u0639\u062f \u0630\u0643\u0627\u0621 \u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0645\u063a\u0631\u0628\u064a \u064a\u062e\u062f\u0645 \u0628\u0627\u0644\u062f\u0627\u0631\u062c\u0629","url":"https://nova-achraf.github.io/nova-site/azami-ai.html","offers":{"@type":"Offer","price":"0","priceCurrency":"MAD"},"author":{"@type":"Person","name":"Achraf El hassani Azami"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"AZAMI","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"ar","description":"\u0645\u0633\u0627\u0639\u062f \u0630\u0643\u0627\u0621 \u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0645\u063a\u0631\u0628\u064a \u064a\u062e\u062f\u0645 \u0628\u0627\u0644\u062f\u0627\u0631\u062c\u0629","url":"https://nova-achraf.github.io/nova-site/azami-ai.html","offers":{"@type":"Offer","price":"0","priceCurrency":"MAD"},"author":{"@type":"Person","name":"Achraf El hassani Azami"}}</script>
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -294,15 +296,15 @@
     <button class="side-act" onclick="openAccount()"><span class="ic">👤</span><span class="lbl">حسابي</span><span class="tag" id="accTag">سجّل</span></button>
     <button class="side-act" onclick="clearConvs()"><span class="ic">🗑️</span><span class="lbl">مسح كل المحادثات</span></button>
   </div>
-  <div class="side-bot"><img src="azami-logo.webp"><b>AZAMI AI</b><small id="sideUser">ضيف جديد · ما مسجلش</small></div>
+  <div class="side-bot"><img src="azami-logo.webp"><b><span class="hl">A</span>ZAM<span class="hl">I</span></b><small id="sideUser">ضيف جديد · ما مسجلش</small></div>
 </div>
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 <!-- MAIN -->
 <div class="main">
   <header>
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-    <img src="azami-logo.webp" class="h-logo" alt="AZAMI AI">
-    <div><div class="h-title">AZAMI AI</div><div class="h-sub">Moroccan Roots · Global Intelligence</div></div>
+    <img src="azami-logo.webp" class="h-logo" alt="AZAMI">
+    <div><div class="h-title"><span class="hl">A</span>ZAM<span class="hl">I</span></div><div class="h-sub">مساعدك المغربي · من المغرب إلى العالم</div></div>
   </header>
   <div class="edit-banner" id="editBanner">✏️ تعديل رسالة — <button onclick="cancelEdit()">إلغاء</button></div>
   <main id="chat"></main>
@@ -310,7 +312,7 @@
     <div class="inp-wrap">
       <div id="imgPrev"><img id="prevThumb"><button class="clear-img" onclick="clearImg()">✕</button></div>
       <div class="inp">
-        <textarea id="in" rows="1" placeholder="كتب لـ AZAMI AI..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"></textarea>
+        <textarea id="in" rows="1" placeholder="كتب لـ AZAMI..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"></textarea>
         <input type="file" id="camInput" accept="image/*" hidden onchange="onImgPick(this)">
         <input type="file" id="galInput" accept="image/*" multiple hidden onchange="onImgPick(this)">
         <button class="inp-btn" onclick="document.getElementById('camInput').click()" title="تصوير">📷</button>
@@ -325,8 +327,8 @@
 <!-- SIGN UP GATE -->
 <div class="gate" id="gate">
   <div class="gate-box">
-    <img src="azami-logo.webp" class="gate-logo" alt="AZAMI AI">
-    <h2>مرحبا فـAZAMI AI</h2>
+    <img src="azami-logo.webp" class="gate-logo" alt="AZAMI">
+    <h2>مرحبا فـAZAMI</h2>
     <p class="gate-sub">سجّل سميتك ورقم هاتفك باش تبدأ. الحساب كيبقى فالتليفون ديالك وحدك — ما كيتصيفطش لأي سيرفر.</p>
     <label class="gate-lbl">السمية</label>
     <input id="gName" class="gate-in" placeholder="مثال: أشرف" autocomplete="name" maxlength="20">
@@ -353,7 +355,7 @@
 <!-- KEY MODAL -->
 <div class="modal" id="keyModal">
   <div class="sheet">
-    <h3>🔑 مفتاح AZAMI AI</h3>
+    <h3>🔑 مفتاح AZAMI</h3>
     <p>حط هنا المفتاح ديال Gemini (من Google AI Studio). كيبقى فالمتصفح، ما كيتسيفطش لشي حد.</p>
     <input id="keyIn" placeholder="AQ-Ab8RN6..." autocomplete="off" spellcheck="false">
     <div class="err" id="keyErr">حط المفتاح من فضلك.</div>
@@ -434,7 +436,7 @@ function openMemory(){
   try{localStorage.setItem(MEM_KEY,v.trim())}catch(e){}
   addAi(v.trim()?'✅ الذاكرة تحدثات. غادي نتذكرها فكل محادثة.':'✅ الذاكرة تمسحات.');
 }
-const SYS_BASE='You are AZAMI AI, a multilingual assistant from Morocco. Answer in the exact language and dialect the user writes in. Support all Arabic dialects (Moroccan Darija, Egyptian, Gulf, Levantine, Algerian, Tunisian, Iraqi, Sudanese, Yemeni) and all world languages. Be concise, friendly and helpful. Use Markdown formatting when appropriate: **bold**, *italic*, lists, code blocks with language tags, tables, and links. When showing code, always use fenced code blocks with language specification.';
+const SYS_BASE='You are AZAMI, a multilingual assistant from Morocco. Answer in the exact language and dialect the user writes in. Support all Arabic dialects (Moroccan Darija, Egyptian, Gulf, Levantine, Algerian, Tunisian, Iraqi, Sudanese, Yemeni) and all world languages. Be concise, friendly and helpful. Use Markdown formatting when appropriate: **bold**, *italic*, lists, code blocks with language tags, tables, and links. When showing code, always use fenced code blocks with language specification.';
 function sysPrompt(){
   var m=getMemory();
   return SYS_BASE + (m ? '\n\nWhat you know about this user (remember it, use it naturally, never repeat it back verbatim): ' + m : '');
@@ -488,7 +490,7 @@ function newChat(){var n='c'+Date.now();convs[n]={title:'محادثة جديدة
 function renderChat(){
   var c=convs[curConv];if(!c)return;chat.innerHTML='';
   if(!c.msgs.length){
-    chat.innerHTML='<div class="welcome"><img src="azami-logo.webp"><h2>أهلاً بك في AZAMI AI 🇲🇦</h2><p>مساعدك الذكي من المغرب إلى العالم 🌍<br>Markdown ✅ | إعادة 🔄 | إيقاف ⏹️ | تعديل ✏️ | تصدير ⬇️ | بحث 🔍<br>اكتب "ارسم" + وصف = تصويرة 🎨</p><div class="chips"><div class="chip" onclick="quick(\'شنو هو AZAMI AI؟\')">شنو هو AZAMI AI؟</div><div class="chip" onclick="quick(\'كتب ليا كود HTML\')">كتب ليا كود</div><div class="chip" onclick="quick(\'ارسم قط أزرق\')">🎨 ارسم تصويرة</div><div class="chip" onclick="quick(\'عطاني فكرة مشروع\')">فكرة مشروع</div></div></div>';
+    chat.innerHTML='<div class="welcome"><img src="azami-logo.webp"><h2>أهلاً بك في AZAMI 🇲🇦</h2><p>مساعدك الذكي من المغرب إلى العالم 🌍<br>Markdown ✅ | إعادة 🔄 | إيقاف ⏹️ | تعديل ✏️ | تصدير ⬇️ | بحث 🔍<br>اكتب "ارسم" + وصف = تصويرة 🎨</p><div class="chips"><div class="chip" onclick="quick(\'شنو هو AZAMI؟\')">شنو هو AZAMI؟</div><div class="chip" onclick="quick(\'كتب ليا كود HTML\')">كتب ليا كود</div><div class="chip" onclick="quick(\'ارسم قط أزرق\')">🎨 ارسم تصويرة</div><div class="chip" onclick="quick(\'عطاني فكرة مشروع\')">فكرة مشروع</div></div></div>';
     return;
   }
   c.msgs.forEach(function(m,i){renderMsg(m,i)});scrollDown();
@@ -497,7 +499,7 @@ function renderMsg(m,idx){
   var row=document.createElement('div');row.className='msg-row';
   var ico=document.createElement('div');ico.className='msg-ico '+(m.r==='ai'?'ico-ai':'ico-me');ico.textContent=m.r==='ai'?'A':'أ';
   var body=document.createElement('div');body.className='msg-body';
-  var nm=document.createElement('div');nm.className='msg-name '+(m.r==='ai'?'ai':'me');nm.textContent=m.r==='ai'?'AZAMI AI':'أنا';
+  var nm=document.createElement('div');nm.className='msg-name '+(m.r==='ai'?'ai':'me');nm.textContent=m.r==='ai'?'AZAMI':'أنا';
   body.appendChild(nm);
   if(m.img){var im=document.createElement('img');im.className='msg-img';im.src=m.img;body.appendChild(im)}
   if(m.t){var tx=document.createElement('div');tx.className='msg-text';tx.innerHTML=renderMd(m.t);body.appendChild(tx)}
@@ -526,7 +528,7 @@ function addTyping(){
   var row=document.createElement('div');row.className='msg-row';
   var ico=document.createElement('div');ico.className='msg-ico ico-ai';ico.textContent='A';
   var body=document.createElement('div');body.className='msg-body';
-  var nm=document.createElement('div');nm.className='msg-name ai';nm.textContent='AZAMI AI';
+  var nm=document.createElement('div');nm.className='msg-name ai';nm.textContent='AZAMI';
   var ty=document.createElement('div');ty.className='typing';ty.innerHTML='<i></i><i></i><i></i>';
   body.appendChild(nm);body.appendChild(ty);row.appendChild(ico);row.appendChild(body);
   chat.appendChild(row);scrollDown();return row;
@@ -885,7 +887,7 @@ function vidRecord(list,done){
   frame();
 }
 /* === IMAGE TOGGLE === */
-function toggleImg(){imgMode=!imgMode;var b=document.getElementById('imgBtn');if(imgMode){b.classList.add('active');b.textContent='🎨✓';document.getElementById('in').placeholder='اكتب وصف التصويرة...'}else{b.classList.remove('active');b.textContent='🎨';document.getElementById('in').placeholder='كتب لـ AZAMI AI...'}}
+function toggleImg(){imgMode=!imgMode;var b=document.getElementById('imgBtn');if(imgMode){b.classList.add('active');b.textContent='🎨✓';document.getElementById('in').placeholder='اكتب وصف التصويرة...'}else{b.classList.remove('active');b.textContent='🎨';document.getElementById('in').placeholder='كتب لـ AZAMI...'}}
 /* === SEND === */
 async function send(){
   var ta=document.getElementById('in');var txt=ta.value.trim();
@@ -980,7 +982,7 @@ async function genImage(prompt){
 function exportChat(){
   var c=convs[curConv];if(!c||!c.msgs.length)return;
   var txt='# '+(c.title||'محادثة')+'\n\n---\n\n';
-  c.msgs.forEach(function(m){txt+='**'+(m.r==='ai'?'AZAMI AI':'أنا')+'**\n\n';if(m.img)txt+='![صورة]('+m.img+')\n\n';if(m.t)txt+=m.t+'\n\n---\n\n'});
+  c.msgs.forEach(function(m){txt+='**'+(m.r==='ai'?'AZAMI':'أنا')+'**\n\n';if(m.img)txt+='![صورة]('+m.img+')\n\n';if(m.t)txt+=m.t+'\n\n---\n\n'});
   var blob=new Blob([txt],{type:'text/markdown;charset=utf-8'});var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;a.download=(c.title||'azami-chat')+'.md';a.click();URL.revokeObjectURL(url);
 }

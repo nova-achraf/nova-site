@@ -1,5 +1,5 @@
-/* AZAMI AI — service worker (offline shell) */
-const CACHE = 'azami-v1';
+/* AZAMI — service worker (offline shell) */
+const CACHE = 'azami-v2';
 const SHELL = [
   './azami-ai.html',
   './azami-app-manifest.json',

@@ -1,7 +1,7 @@
 {
-  "name": "AZAMI AI — Moroccan Roots. Global Intelligence.",
-  "short_name": "AZAMI AI",
-  "description": "مساعد ذكاء اصطناعي مغربي: محادثات، صور، صانع فيديو، صور إلى PDF.",
+  "name": "AZAMI — مساعدك المغربي",
+  "short_name": "AZAMI",
+  "description": "AZAMI — مساعدك المغربي: محادثات، صور، صانع فيديو، صور إلى PDF.",
   "id": "/nova-site/azami-ai.html",
   "start_url": "azami-ai.html?source=pwa",
   "scope": "./",
