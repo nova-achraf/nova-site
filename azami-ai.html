@@ -362,6 +362,31 @@
   </div>
 </div>
 
+<!-- LOCK -->
+<div class="modal" id="lockModal">
+  <div class="sheet">
+    <h3>🔒 AZAMI مقفول</h3>
+    <p>دخّل الكود ديال 4 أرقام باش تكمل.</p>
+    <input id="lockIn" type="password" inputmode="numeric" maxlength="4" placeholder="••••"
+           style="text-align:center;letter-spacing:10px;font-size:20px" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <div class="err" id="lockErr">الكود ماشي صحيح.</div>
+    <button class="go" onclick="tryUnlock()">🔓 فتح</button>
+    <button class="skip" onclick="forgotPin()">نسيت الكود؟</button>
+  </div>
+</div>
+
+<!-- ACCOUNT -->
+<div class="modal" id="accModal">
+  <div class="sheet">
+    <h3>👤 حسابي</h3>
+    <p>سميتك ورقمك كيتسجلو فالتليفون ديالك فقط — ما كيمشيوش لحتى سيرفر.</p>
+    <input id="accName" placeholder="سميتك" maxlength="24">
+    <input id="accPhone" placeholder="06XXXXXXXX" inputmode="tel" maxlength="14">
+    <button class="go" onclick="saveAccount()">حفظ ✅</button>
+    <button class="skip" onclick="closeAccount()">سد</button>
+  </div>
+</div>
+
 <!-- IMAGES -> PDF -->
 <div class="modal" id="pdfModal">
   <div class="sheet">
@@ -587,6 +612,113 @@ function clearConvs(){
   }catch(e){}
   applyTheme(t);applyFont(f);
 })();
+/* === الحساب (محلي) === */
+var ACC_KEY = 'azami_account';
+function getAccount(){ try { return JSON.parse(localStorage.getItem(ACC_KEY) || 'null'); } catch(e){ return null; } }
+function paintAccount(){
+  var a = getAccount();
+  var u = document.getElementById('sideUser'), t = document.getElementById('accTag');
+  if (a && a.name) {
+    if (u) u.textContent = a.name + (a.phone ? ' · ' + a.phone : '');
+    if (t) t.textContent = '✓';
+  } else {
+    if (u) u.textContent = 'ضيف جديد · ما مسجلش';
+    if (t) t.textContent = 'سجّل';
+  }
+}
+function openAccount(){
+  var a = getAccount() || {};
+  var n = document.getElementById('accName'), ph = document.getElementById('accPhone');
+  if (n) n.value = a.name || '';
+  if (ph) ph.value = a.phone || '';
+  document.getElementById('accModal').classList.add('show');
+}
+function closeAccount(){ document.getElementById('accModal').classList.remove('show'); }
+function saveAccount(){
+  var n = (document.getElementById('accName').value || '').trim();
+  var ph = (document.getElementById('accPhone').value || '').trim();
+  if (!n) { alert('كتب سميتك من فضلك.'); return; }
+  try { localStorage.setItem(ACC_KEY, JSON.stringify({ name: n, phone: ph })); } catch(e){}
+  paintAccount(); closeAccount();
+}
+
+/* === قفل بكود 4 أرقام === */
+var LOCK_KEY = 'azami_lock', LOCK_DAYS = 30;
+function getLock(){ try { return JSON.parse(localStorage.getItem(LOCK_KEY) || 'null'); } catch(e){ return null; } }
+function hashPin(pin){
+  if (window.crypto && crypto.subtle && window.TextEncoder) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode('azami:' + pin)).then(function(buf){
+      return Array.prototype.map.call(new Uint8Array(buf), function(b){
+        return ('0' + b.toString(16)).slice(-2);
+      }).join('');
+    });
+  }
+  var h = 5381;
+  for (var i = 0; i < pin.length; i++) h = ((h << 5) + h + pin.charCodeAt(i)) >>> 0;
+  return Promise.resolve('f' + h);
+}
+function paintLock(){
+  var t = document.getElementById('lockTag');
+  if (t) t.textContent = getLock() ? 'مفعّل' : 'مطفي';
+}
+function lockSettings(){
+  var l = getLock();
+  if (l) {
+    if (confirm('القفل مفعّل. واش بغيتي تحيدو؟')) {
+      try { localStorage.removeItem(LOCK_KEY); } catch(e){}
+      paintLock();
+    }
+    return;
+  }
+  var p = prompt('ختار كود من 4 أرقام:');
+  if (p === null) return;
+  p = (p || '').trim();
+  if (!/^\d{4}$/.test(p)) { alert('خاص الكود يكون 4 أرقام.'); return; }
+  var p2 = prompt('عاود الكود باش نتأكدو:');
+  if (p2 !== p) { alert('الكودين ماشي كيف كيف.'); return; }
+  hashPin(p).then(function(h){
+    try { localStorage.setItem(LOCK_KEY, JSON.stringify({ h: h, last: Date.now() })); } catch(e){}
+    paintLock();
+    alert('✅ القفل تفعّل. ما غاديش يتطلب الكود كل مرة — غير من بعد ' + LOCK_DAYS + ' يوم.');
+  });
+}
+function checkLock(){
+  var l = getLock();
+  if (!l || !l.h) return;
+  if (l.last && Date.now() - l.last < LOCK_DAYS * 86400000) return;
+  var m = document.getElementById('lockModal');
+  if (m) {
+    m.classList.add('show');
+    setTimeout(function(){ var i = document.getElementById('lockIn'); if (i) i.focus(); }, 250);
+  }
+}
+function tryUnlock(){
+  var inp = document.getElementById('lockIn');
+  var err = document.getElementById('lockErr');
+  var l = getLock();
+  if (!l) { document.getElementById('lockModal').classList.remove('show'); return; }
+  var v = (inp.value || '').trim();
+  err.style.display = 'none';
+  if (!/^\d{4}$/.test(v)) { err.style.display = 'block'; return; }
+  hashPin(v).then(function(h){
+    if (h === l.h) {
+      l.last = Date.now();
+      try { localStorage.setItem(LOCK_KEY, JSON.stringify(l)); } catch(e){}
+      inp.value = '';
+      document.getElementById('lockModal').classList.remove('show');
+    } else {
+      err.style.display = 'block';
+      inp.value = '';
+      inp.focus();
+    }
+  });
+}
+function forgotPin(){
+  if (!confirm('إلا حيدتي القفل، أي حد كيقدر يحل التطبيق. المحادثات ما كتتمسحش. متأكد؟')) return;
+  try { localStorage.removeItem(LOCK_KEY); } catch(e){}
+  paintLock();
+  document.getElementById('lockModal').classList.remove('show');
+}
 /* === عداد الزوار والتثبيت === */
 var STAT_NS = 'nova-achraf-azami';
 function statHit(key) {
@@ -649,6 +781,9 @@ if (isStandalone()) {
   var _it = document.getElementById('instTag');
   if (_it) _it.textContent = 'مثبّت ✓';
 }
+paintLock();
+paintAccount();
+checkLock();
 /* === VIDEO MAKER === */
 var VID={files:[],sec:3,w:720,h:1280};
 function openVideo(){document.getElementById('vidModal').classList.add('show');renderVid();}
