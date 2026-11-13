@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>المعادن — ميّز المعدن ديالك</title>
+<meta name="description" content="تطبيق مغربي كيساعدك تميّز بين المعادن: اختبار المغناطيس، اللون، الوزن، حاسبة الكثافة، ومكتبة ديال 12 معدن.">
+<meta name="theme-color" content="#FFFBF6">
+<link rel="canonical" href="https://nova-achraf.github.io/nova-site/ma3adin.html">
+<link rel="icon" href="azami-logo.webp">
+<style>
+  :root{
+    --bg:#FFFBF6; --card:#FFFFFF; --line:#EADFD2; --txt:#241F1A; --muted:#8A7A66;
+    --terra:#E2603F; --terra2:#F07A54; --gold:#D4AF37; --green:#2C6E4F; --red:#C4342B;
+    --soft:#FBF2EA;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{
+    background:var(--bg);color:var(--txt);
+    font-family:'Segoe UI',system-ui,-apple-system,'Noto Sans Arabic',sans-serif;
+    min-height:100dvh;padding-bottom:28px;
+  }
+  header{
+    padding:16px 16px 12px;display:flex;align-items:center;gap:10px;
+    border-bottom:1px solid var(--line);background:var(--bg);
+    position:sticky;top:0;z-index:20;
+  }
+  .logo{
+    width:38px;height:38px;border-radius:11px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--terra),var(--gold));
+    display:grid;place-items:center;font-size:19px;color:#fff;
+  }
+  .h-t{font-size:17px;font-weight:800;letter-spacing:.2px}
+  .h-s{font-size:11px;color:var(--muted)}
+  .tabs{display:flex;gap:6px;padding:10px 16px 0;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{
+    border:1px solid var(--line);background:var(--card);color:var(--muted);
+    padding:8px 13px;border-radius:999px;font-size:13px;font-weight:600;
+    cursor:pointer;white-space:nowrap;font-family:inherit;
+  }
+  .tab.on{background:var(--txt);color:#FFFBF6;border-color:var(--txt)}
+  main{padding:14px 16px 0}
+  .view{display:none}
+  .view.on{display:block;animation:fade .18s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+  .q{font-size:14px;font-weight:700;margin-bottom:10px}
+  .hint{font-size:12px;color:var(--muted);line-height:1.6;margin-top:8px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opt{
+    flex:1 1 30%;min-width:96px;min-height:46px;border:1px solid var(--line);
+    background:var(--soft);color:var(--txt);border-radius:12px;font-size:13px;
+    font-weight:600;cursor:pointer;font-family:inherit;padding:8px 10px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  }
+  .opt small{font-size:10px;font-weight:400;color:var(--muted)}
+  .opt.on{background:#FFF0E8;border-color:var(--terra);box-shadow:0 0 0 2px rgba(226,96,63,.12)}
+  .btn{
+    width:100%;min-height:48px;border:none;border-radius:13px;background:var(--txt);
+    color:#FFFBF6;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;
+  }
+  .btn:disabled{opacity:.5}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+  .row{display:flex;gap:8px}
+  .res-line{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px}
+  .res-name{font-size:16px;font-weight:800}
+  .res-pct{font-size:13px;font-weight:700;color:var(--terra)}
+  .bar{height:7px;border-radius:99px;background:#F1E8DD;overflow:hidden}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--terra),var(--gold))}
+  .res-item{padding:11px 0;border-bottom:1px dashed var(--line)}
+  .res-item:last-child{border-bottom:none}
+  .tag{
+    display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;
+    background:var(--soft);color:var(--muted);margin:3px 3px 0 0;
+  }
+  .tag.g{background:#E9F2ED;color:var(--green)}
+  .tag.r{background:#FBEAE8;color:var(--red)}
+  .field{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+  .field label{font-size:13px;color:var(--muted);min-width:96px}
+  input[type=number]{
+    flex:1;min-width:0;min-height:44px;border:1px solid var(--line);border-radius:11px;
+    padding:0 12px;font-size:15px;font-family:inherit;background:#FFFDFB;color:var(--txt);
+  }
+  .metal-card{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:10px;overflow:hidden}
+  .metal-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+  .swatch{width:26px;height:26px;border-radius:8px;flex-shrink:0;border:1px solid rgba(0,0,0,.08)}
+  .metal-name{font-size:15px;font-weight:800}
+  .metal-sub{font-size:11px;color:var(--muted)}
+  .chev{margin-right:auto;color:var(--muted);font-size:13px;transition:transform .18s}
+  .metal-body{display:none;padding:0 14px 13px;font-size:13px;line-height:1.75}
+  .metal-card.open .metal-body{display:block}
+  .metal-card.open .chev{transform:rotate(180deg)}
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid #F6EEE5}
+  .kv:last-child{border-bottom:none}
+  .kv b{font-weight:600;color:var(--muted);font-size:12px}
+  .note{
+    font-size:11.5px;line-height:1.7;color:var(--muted);
+    background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;
+  }
+  .err{font-size:12px;color:var(--red);margin-top:6px;display:none}
+  footer{text-align:center;font-size:11px;color:var(--muted);padding:16px 20px 0;line-height:1.7}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚙️</div>
+  <div>
+    <div class="h-t">المعادن</div>
+    <div class="h-s">ميّز المعدن ديالك بخطوات بسيطة</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab on" data-view="identify">🔍 ميّز</button>
+  <button class="tab" data-view="density">🧮 الكثافة</button>
+  <button class="tab" data-view="library">📚 المعادن</button>
+</div>
+
+<main>
+  <!-- IDENTIFY -->
+  <section class="view on" id="v-identify">
+    <div class="card">
+      <div class="q">1. واش كيتجذب للمغناطيس؟</div>
+      <div class="opts" id="q1">
+        <button class="opt" data-k="mag" data-v="strong">بقوة<small>كيتلصق</small></button>
+        <button class="opt" data-k="mag" data-v="weak">شوية<small>كيتحرك خفيف</small></button>
+        <button class="opt" data-k="mag" data-v="none">لا<small>ماكيدير والو</small></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="q">2. شنو اللون ديالو؟</div>
+      <div class="opts" id="q2">
+        <button class="opt" data-k="color" data-v="silver">فضي<small>رمادي فاتح</small></button>
+        <button class="opt" data-k="color" data-v="gold">أصفر<small>ذهبي</small></button>
+        <button class="opt" data-k="color" data-v="red">أحمر<small>برتقالي</small></button>
+        <button class="opt" data-k="color" data-v="gray">غامق<small>رمادي مسود</small></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="q">3. فاليد، ثقيل ولا خفيف؟</div>
+      <div class="opts" id="q3">
+        <button class="opt" data-k="heft" data-v="light">خفيف<small>بحال الطيارة</small></button>
+        <button class="opt" data-k="heft" data-v="mid">متوسط<small>عادي</small></button>
+        <button class="opt" data-k="heft" data-v="heavy">ثقيل<small>غرق فاليد</small></button>
+      </div>
+    </div>
+
+    <button class="btn" id="runBtn" disabled>شوف المعدن</button>
+    <div class="err" id="err1">خاصك تجاوب على 3 أسئلة.</div>
+
+    <div class="card" id="resultCard" style="display:none">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px">النتائج المحتملة</div>
+      <div id="results"></div>
+      <div class="note" id="resNote"></div>
+      <button class="btn ghost" id="resetBtn" style="margin-top:10px">بدل الأجوبة</button>
+    </div>
+
+    <div class="note">
+      هاد الاختبار كيعطي احتمال، ماشي حكم نهائي. المغناطيس كيعرف الحديد والفولاذ والنيكل، ولكن ما كيعرفش الفرق بين نحاس وبراص. زيد الكثافة باش تأكد.
+    </div>
+  </section>
+
+  <!-- DENSITY -->
+  <section class="view" id="v-density">
+    <div class="card">
+      <div class="field"><label>الوزن (غرام)</label><input type="number" id="mass" inputmode="decimal" placeholder="مثال: 45"></div>
+      <div class="field"><label>الحجم (cm³)</label><input type="number" id="vol" inputmode="decimal" placeholder="مثال: 5"></div>
+      <button class="btn" id="calcBtn">حسب الكثافة</button>
+      <div class="err" id="err2">عمر الوزن والحجم بأرقام صحيحة.</div>
+      <div class="hint">
+        ما عندكش الحجم؟ غرق القطعة فكاس ماء وعيّر المقدار اللي زاد: 1 مل = 1 cm³.
+      </div>
+    </div>
+
+    <div class="card" id="densRes" style="display:none">
+      <div class="res-line">
+        <span class="res-name" id="densVal">—</span>
+        <span class="res-pct">g/cm³</span>
+      </div>
+      <div class="hint" id="densClose"></div>
+    </div>
+
+    <div class="note">
+      الكثافة قرينة قوية: النحاس 8.96 والبراص 8.5، ولكن الذهب 19.3 — فرق كبير. القطعة المطلية كتخدع بالعين، ولكن ماشي بالكثافة.
+    </div>
+  </section>
+
+  <!-- LIBRARY -->
+  <section class="view" id="v-library">
+    <div id="lib"></div>
+    <div class="note">
+      المعلومات تقريبية للتعلم. ما تجربش على قطع ثمينة بمواد كيميائية ولا بالسخانة.
+    </div>
+  </section>
+</main>
+
+<footer>
+  ماشي تشخيص مختبري · صنع بيد أشرف 🇲🇦
+</footer>
+
+<script>
+const METALS = [
+  {n:"حديد", sub:"Iron · Fe", color:"#6E7278", mag:"strong", c:"gray", heft:"heavy", dens:7.87, hard:"متوسط", rust:"بزاف", use:"البناء، الآلات، الحدائد", how:"كيتجذب بقوة للمغناطيس، كيصدأ بسرعة، ثقيل."},
+  {n:"فولاذ", sub:"Steel · Fe+C", color:"#8A8F96", mag:"strong", c:"gray", heft:"heavy", dens:7.85, hard:"قوي", rust:"شوية", use:"السكين، البنية، الأدوات", how:"كيتجذب للمغناطيس. الفولاذ ستانلس غالباً ما كيتجذبش."},
+  {n:"نحاس", sub:"Copper · Cu", color:"#B4622F", mag:"none", c:"red", heft:"heavy", dens:8.96, hard:"طري", rust:"باتينا خضراء", use:"الأسلاك، الأنابيب، الزخرفة", how:"لون أحمر-برتقالي واضح، ما كيتجذبش، كيخلي أثر فاليد."},
+  {n:"براص", sub:"Brass · Cu+Zn", color:"#C9A227", mag:"none", c:"gold", heft:"heavy", dens:8.5, hard:"متوسط", rust:"باتينا", use:"الأقفال، الآلات الموسيقية", how:"أصفر ذهبي، ثقيل، ما كيتجذبش. قريب بزاف من النحاس."},
+  {n:"ألمنيوم", sub:"Aluminium · Al", color:"#BFC4C9", mag:"none", c:"silver", heft:"light", dens:2.7, hard:"طري", rust:"طبقة خفيفة", use:"الطيارة، الأواني، الأبواب", how:"خفيف بزاف بالنسبة لحجمو، ما كيتجذبش، ماشي لامع."},
+  {n:"ذهب", sub:"Gold · Au", color:"#D4AF37", mag:"none", c:"gold", heft:"heavy", dens:19.3, hard:"طري بزاف", rust:"ما كيصدأش", use:"الحلي، الإلكترونيك", how:"ثقيل بزاف على قد حجمو، لامع، ما كيتأكسدش."},
+  {n:"فضة", sub:"Silver · Ag", color:"#CDD3D8", mag:"none", c:"silver", heft:"heavy", dens:10.5, hard:"طري", rust:"كيسود فالهواء", use:"الحلي، الإلكترونيك", how:"أبيض لامع، كيسود مع الوقت، ثقيل."},
+  {n:"رصاص", sub:"Lead · Pb", color:"#5F6570", mag:"none", c:"gray", heft:"heavy", dens:11.3, hard:"طري بزاف", rust:"باتينا رمادية", use:"البطاريات، الحماية من الإشعاع", how:"ثقيل بزاف، كيتخدش بالضفر، كيخلي أثر رمادي فالورقة."},
+  {n:"زنك", sub:"Zinc · Zn", color:"#9AA3AB", mag:"none", c:"silver", heft:"mid", dens:7.1, hard:"متوسط", rust:"طبقة بيضاء", use:"الجلفنة، البطاريات", how:"رمادي مزرق، ماشي لامع، كيعطي طبقة بيضاء مع الرطوبة."},
+  {n:"نيكل", sub:"Nickel · Ni", color:"#A8AEB4", mag:"weak", c:"silver", heft:"heavy", dens:8.9, hard:"قوي", rust:"مقاوم", use:"الطلاء، البطاريات، العملة", how:"كيتجذب شوية، لامع، كيتستعمل فالطلاء فوق معادن أخرى."},
+  {n:"قصدير", sub:"Tin · Sn", color:"#C4C8CB", mag:"none", c:"silver", heft:"mid", dens:7.3, hard:"طري", rust:"مقاوم", use:"اللحام، الطلاء", how:"طري، كيعطي صوت «طقطقة» ملي كيتلوى، ماشي ثقيل بزاف."},
+  {n:"تيتانيوم", sub:"Titanium · Ti", color:"#7C8188", mag:"none", c:"gray", heft:"mid", dens:4.5, hard:"قوي بزاف", rust:"مقاوم", use:"الطب، الرياضة، الطيارة", how:"خفيف ولكن قوي، رمادي غامق، مقاوم للصدأ."}
+];
+
+/* ---------- IDENTIFY ---------- */
+const ans = {};
+document.querySelectorAll('.opt').forEach(function(b){
+  b.addEventListener('click', function(){
+    const k = b.dataset.k, grp = b.parentElement.id;
+    document.querySelectorAll('#' + grp + ' .opt').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    ans[k] = b.dataset.v;
+    document.getElementById('runBtn').disabled = !(ans.mag && ans.color && ans.heft);
+    document.getElementById('err1').style.display = 'none';
+  });
+});
+
+function score(m){
+  let s = 0;
+  if (ans.mag === m.mag) s += 3;
+  else if (ans.mag === 'weak' && m.mag === 'strong') s += 1.5;
+  else if (ans.mag === 'strong' && m.mag === 'weak') s += 1;
+  if (ans.color === m.c) s += 2.5;
+  if (ans.heft === m.heft) s += 2;
+  else if (ans.heft === 'mid' && m.heft === 'heavy') s += .8;
+  return s;
+}
+
+document.getElementById('runBtn').addEventListener('click', function(){
+  if (!(ans.mag && ans.color && ans.heft)) {
+    document.getElementById('err1').style.display = 'block';
+    return;
+  }
+  const ranked = METALS.map(function(m){ return {m:m, s:score(m)}; })
+    .sort(function(a,b){ return b.s - a.s; }).slice(0,3);
+  const max = ranked[0].s || 1;
+  document.getElementById('results').innerHTML = ranked.map(function(r){
+    const pct = Math.round(r.s / max * 100);
+    return '<div class="res-item">' +
+      '<div class="res-line"><span class="res-name">' + r.m.n + '</span>' +
+      '<span class="res-pct">' + pct + '%</span></div>' +
+      '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="hint">' + r.m.how + '</div></div>';
+  }).join('');
+  document.getElementById('resNote').innerHTML =
+    'كيفاش تأكد؟ عيّر الوزن والحجم وحسب الكثافة فتاب <b>الكثافة</b>، وقارن: ' +
+    ranked.map(function(r){ return r.m.n + ' ' + r.m.dens; }).join(' · ') + ' g/cm³.';
+  document.getElementById('resultCard').style.display = 'block';
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'nearest'});
+});
+
+document.getElementById('resetBtn').addEventListener('click', function(){
+  Object.keys(ans).forEach(function(k){ delete ans[k]; });
+  document.querySelectorAll('.opt').forEach(function(x){ x.classList.remove('on'); });
+  document.getElementById('resultCard').style.display = 'none';
+  document.getElementById('runBtn').disabled = true;
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
+/* ---------- DENSITY ---------- */
+document.getElementById('calcBtn').addEventListener('click', function(){
+  const mass = parseFloat(document.getElementById('mass').value);
+  const vol = parseFloat(document.getElementById('vol').value);
+  const err = document.getElementById('err2');
+  if (!(mass > 0) || !(vol > 0)) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  const d = mass / vol;
+  document.getElementById('densVal').textContent = d.toFixed(2);
+  const close = METALS.slice().sort(function(a,b){ return Math.abs(a.dens-d) - Math.abs(b.dens-d); }).slice(0,3);
+  document.getElementById('densClose').innerHTML = 'الأقرب: ' +
+    close.map(function(m){ return '<span class="tag">' + m.n + ' ' + m.dens + '</span>'; }).join(' ') +
+    '<br>كلما كان الفرق أصغر، كلما كان الاحتمال أقوى.';
+  document.getElementById('densRes').style.display = 'block';
+});
+
+/* ---------- LIBRARY ---------- */
+document.getElementById('lib').innerHTML = METALS.map(function(m, i){
+  return '<div class="metal-card" data-i="' + i + '">' +
+    '<div class="metal-head"><span class="swatch" style="background:' + m.color + '"></span>' +
+    '<div><div class="metal-name">' + m.n + '</div><div class="metal-sub">' + m.sub + '</div></div>' +
+    '<span class="chev">▾</span></div>' +
+    '<div class="metal-body">' +
+      '<div class="kv"><b>الكثافة</b><span>' + m.dens + ' g/cm³</span></div>' +
+      '<div class="kv"><b>المغناطيس</b><span>' + (m.mag === 'strong' ? 'كيتجذب بقوة' : m.mag === 'weak' ? 'كيتجذب شوية' : 'ما كيتجذبش') + '</span></div>' +
+      '<div class="kv"><b>الصلابة</b><span>' + m.hard + '</span></div>' +
+      '<div class="kv"><b>الصدأ</b><span>' + m.rust + '</span></div>' +
+      '<div class="kv"><b>الاستعمال</b><span>' + m.use + '</span></div>' +
+      '<div style="margin-top:8px;color:#5F564B">' + m.how + '</div>' +
+    '</div></div>';
+}).join('');
+
+document.querySelectorAll('.metal-head').forEach(function(h){
+  h.addEventListener('click', function(){ h.parentElement.classList.toggle('open'); });
+});
+
+/* ---------- TABS ---------- */
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('on'); });
+    t.classList.add('on');
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
+    document.getElementById('v-' + t.dataset.view).classList.add('on');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
