@@ -175,7 +175,7 @@
     <div class="err" id="err1">خاصك تجاوب على 3 أسئلة.</div>
 
     <div class="card" id="resultCard" style="display:none">
-      <div style="font-size:13px;font-weight:700;margin-bottom:8px">النتائج المحتملة</div>
+      <div id="resHead" style="margin-bottom:10px"></div>
       <div id="results"></div>
       <div class="note" id="resNote"></div>
       <button class="btn ghost" id="resetBtn" style="margin-top:10px">بدل الأجوبة</button>
@@ -276,75 +276,166 @@ const METALS = [
   {n:"تيتانيوم", sub:"Titanium · Ti", color:"#7C8188", mag:"none", c:"gray", heft:"mid", dens:4.5, hard:"قوي بزاف", rust:"مقاوم", use:"الطب، الرياضة، الطيارة", how:"خفيف ولكن قوي، رمادي غامق، مقاوم للصدأ."}
 ];
 
-/* ---------- IDENTIFY ---------- */
-const ans = {};
+/* ---------- STATE ---------- */
+var QUIZ = {};
+var CAM = null;
+var DENS = null;
+
+var CHEAP = {
+  mag:  { exact: 3.0, near: 1.1 },
+  color:{ exact: 2.5, near: 0.9 },
+  heft: { exact: 2.0, near: 0.6 },
+  cam:  { exact: 1.6, near: 0.7 },
+  dens: 3.0
+};
+var MAG_NEIGH = { strong:'weak', weak:'strong', none:null };
+var COLOR_NEIGH = { silver:['gray'], gray:['silver'], gold:['red'], red:['gold'] };
+var HEFT_NEIGH = { light:['mid'], mid:['light','heavy'], heavy:['mid'] };
+
+/* ---------- QUIZ ---------- */
 document.querySelectorAll('.opt').forEach(function(b){
   b.addEventListener('click', function(){
-    const k = b.dataset.k, grp = b.parentElement.id;
+    var k = b.dataset.k, grp = b.parentElement.id;
     document.querySelectorAll('#' + grp + ' .opt').forEach(function(x){ x.classList.remove('on'); });
     b.classList.add('on');
-    ans[k] = b.dataset.v;
-    document.getElementById('runBtn').disabled = !(ans.mag && ans.color && ans.heft);
+    QUIZ[k] = b.dataset.v;
     document.getElementById('err1').style.display = 'none';
+    syncRunBtn();
   });
 });
 
-function score(m){
-  let s = 0;
-  if (ans.mag === m.mag) s += 3;
-  else if (ans.mag === 'weak' && m.mag === 'strong') s += 1.5;
-  else if (ans.mag === 'strong' && m.mag === 'weak') s += 1;
-  if (ans.color === m.c) s += 2.5;
-  if (ans.heft === m.heft) s += 2;
-  else if (ans.heft === 'mid' && m.heft === 'heavy') s += .8;
-  return s;
+function syncRunBtn(){
+  var quizDone = QUIZ.mag && QUIZ.color && QUIZ.heft;
+  document.getElementById('runBtn').disabled = !(quizDone || DENS || CAM);
 }
 
-document.getElementById('runBtn').addEventListener('click', function(){
-  if (!(ans.mag && ans.color && ans.heft)) {
+function scoreMetal(m){
+  var s = 0, tests = 0;
+
+  if (QUIZ.mag){
+    if (QUIZ.mag === m.mag){ s += CHEAP.mag.exact; }
+    else if (MAG_NEIGH[QUIZ.mag] === m.mag){ s += CHEAP.mag.near; }
+    tests++;
+  }
+  if (QUIZ.color){
+    if (QUIZ.color === m.c) s += CHEAP.color.exact;
+    else if ((COLOR_NEIGH[QUIZ.color] || []).indexOf(m.c) >= 0) s += CHEAP.color.near;
+    tests++;
+  }
+  if (QUIZ.heft){
+    if (QUIZ.heft === m.heft) s += CHEAP.heft.exact;
+    else if ((HEFT_NEIGH[QUIZ.heft] || []).indexOf(m.heft) >= 0) s += CHEAP.heft.near;
+    tests++;
+  }
+  if (CAM){
+    if (CAM.family === m.c) s += CHEAP.cam.exact;
+    else if ((COLOR_NEIGH[CAM.family] || []).indexOf(m.c) >= 0) s += CHEAP.cam.near;
+    tests++;
+  }
+  if (DENS){
+    var rel = Math.abs(DENS - m.dens) / m.dens;
+    if (rel < 0.06) s += CHEAP.dens;
+    else if (rel < 0.15) s += CHEAP.dens * (1 - (rel - 0.06) / 0.09) * 0.9;
+    else if (rel < 0.35) s += CHEAP.dens * 0.18;
+    tests++;
+  }
+  return { m:m, s:s, tests:tests };
+}
+
+function confLabel(top, second, tests){
+  var margin = top - second;
+  if (tests >= 4 && margin >= 1.0 && top >= 7) return { t:'عالية', w:0.9, cls:'g' };
+  if (margin >= 0.6 && top >= 4.5) return { t:'متوسطة', w:0.6, cls:'' };
+  return { t:'منخفضة', w:0.3, cls:'r' };
+}
+
+function contradictions(m){
+  var out = [];
+  if (QUIZ.mag === 'none' && m.mag === 'strong') out.push('قلتي ما كيتجذبش، ولكن ' + m.n + ' كيتجذب بقوة.');
+  if (QUIZ.mag === 'strong' && m.mag === 'none') out.push('قلتي كيتجذب، ولكن ' + m.n + ' ما كيتجذبش.');
+  if (DENS && Math.abs(DENS - m.dens)/m.dens > 0.35) out.push('الكثافة اللي حسبتي (' + DENS.toFixed(2) + ') بعيدة على ' + m.n + ' (' + m.dens + ').');
+  if (QUIZ.color && (COLOR_NEIGH[QUIZ.color] || []).indexOf(m.c) < 0 && QUIZ.color !== m.c)
+    out.push('اللون اللي عطيتي ماشي ديال ' + m.n + '.');
+  return out;
+}
+
+function runIdentify(){
+  if (!(QUIZ.mag && QUIZ.color && QUIZ.heft) && !DENS && !CAM){
     document.getElementById('err1').style.display = 'block';
     return;
   }
-  const ranked = METALS.map(function(m){ return {m:m, s:score(m)}; })
-    .sort(function(a,b){ return b.s - a.s; }).slice(0,3);
-  const max = ranked[0].s || 1;
-  document.getElementById('results').innerHTML = ranked.map(function(r){
-    const pct = Math.round(r.s / max * 100);
-    return '<div class="res-item">' +
-      '<div class="res-line"><span class="res-name">' + r.m.n + '</span>' +
+  var scored = METALS.map(scoreMetal).sort(function(a,b){ return b.s - a.s; });
+  var top = scored[0], second = scored[1] ? scored[1].s : 0;
+  var conf = confLabel(top.s, second, top.tests);
+  var used = [];
+  if (QUIZ.mag || QUIZ.color || QUIZ.heft) used.push('الأجوبة');
+  if (CAM) used.push('المسح بالكاميرا');
+  if (DENS) used.push('الكثافة');
+
+  var head = '<div class="res-line" style="margin-bottom:4px">' +
+    '<span class="res-name" style="font-size:19px">' + top.m.n + '</span>' +
+    '<span class="tag ' + conf.cls + '">ثقة ' + conf.t + '</span></div>' +
+    '<div class="hint" style="margin-top:0">' + top.m.sub + ' · كثافة ' + top.m.dens + ' g/cm³ · ' +
+    (top.m.mag === 'strong' ? 'كيتجذب للمغناطيس' : top.m.mag === 'weak' ? 'كيتجذب شوية' : 'ما كيتجذبش') + '</div>' +
+    '<div class="hint" style="margin-top:6px">الاختبارات المستعملة: ' + used.join(' + ') +
+    ' (' + top.tests + ' من 5)</div>';
+
+  document.getElementById('resHead').innerHTML = head;
+
+  document.getElementById('results').innerHTML = scored.slice(0,3).map(function(r){
+    var pct = Math.round(r.s / (top.s || 1) * 100);
+    return '<div class="res-item"><div class="res-line"><span class="res-name">' + r.m.n + '</span>' +
       '<span class="res-pct">' + pct + '%</span></div>' +
       '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
       '<div class="hint">' + r.m.how + '</div></div>';
   }).join('');
-  document.getElementById('resNote').innerHTML =
-    'كيفاش تأكد؟ عيّر الوزن والحجم وحسب الكثافة فتاب <b>الكثافة</b>، وقارن: ' +
-    ranked.map(function(r){ return r.m.n + ' ' + r.m.dens; }).join(' · ') + ' g/cm³.';
+
+  var bad = contradictions(top.m);
+  var note = '';
+  if (top.tests < 3) note += '<b>ما كفاش:</b> زيد على الأقل 3 اختبارات باش تكون النتيجة موثوقة.<br>';
+  if (bad.length) note += '<b>تناقض:</b> ' + bad.join(' ') + '<br>';
+  note += bad.length || top.tests < 3
+    ? 'دير اختبار المغناطيس، ولا عيّر الكثافة، ولا عاود المسح بضو مزيان.'
+    : 'باش تكون أدق: زيد الكثافة — هي اللي كتفرّق بين نحاس وبراص وبين الذهب والطلاء.';
+
+  document.getElementById('resNote').innerHTML = note;
   document.getElementById('resultCard').style.display = 'block';
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'nearest'});
-});
+}
+
+document.getElementById('runBtn').addEventListener('click', runIdentify);
 
 document.getElementById('resetBtn').addEventListener('click', function(){
-  Object.keys(ans).forEach(function(k){ delete ans[k]; });
+  QUIZ = {}; CAM = null; DENS = null;
   document.querySelectorAll('.opt').forEach(function(x){ x.classList.remove('on'); });
   document.getElementById('resultCard').style.display = 'none';
-  document.getElementById('runBtn').disabled = true;
+  document.getElementById('densRes').style.display = 'none';
+  document.getElementById('mass').value = '';
+  document.getElementById('vol').value = '';
+  document.getElementById('camResult').style.display = 'none';
+  syncRunBtn();
   window.scrollTo({top:0, behavior:'smooth'});
 });
 
 /* ---------- DENSITY ---------- */
 document.getElementById('calcBtn').addEventListener('click', function(){
-  const mass = parseFloat(document.getElementById('mass').value);
-  const vol = parseFloat(document.getElementById('vol').value);
-  const err = document.getElementById('err2');
+  var mass = parseFloat(document.getElementById('mass').value);
+  var vol = parseFloat(document.getElementById('vol').value);
+  var err = document.getElementById('err2');
   if (!(mass > 0) || !(vol > 0)) { err.style.display = 'block'; return; }
   err.style.display = 'none';
-  const d = mass / vol;
-  document.getElementById('densVal').textContent = d.toFixed(2);
-  const close = METALS.slice().sort(function(a,b){ return Math.abs(a.dens-d) - Math.abs(b.dens-d); }).slice(0,3);
-  document.getElementById('densClose').innerHTML = 'الأقرب: ' +
-    close.map(function(m){ return '<span class="tag">' + m.n + ' ' + m.dens + '</span>'; }).join(' ') +
-    '<br>كلما كان الفرق أصغر، كلما كان الاحتمال أقوى.';
+  DENS = mass / vol;
+  document.getElementById('densVal').textContent = DENS.toFixed(2);
+
+  var close = METALS.slice().sort(function(a,b){ return Math.abs(a.dens-DENS) - Math.abs(b.dens-DENS); }).slice(0,3);
+  var exact = METALS.filter(function(m){ return Math.abs(DENS - m.dens)/m.dens < 0.06; });
+  document.getElementById('densClose').innerHTML =
+    (exact.length
+      ? 'مطابقة قوية: ' + exact.map(function(m){ return '<span class="tag g">' + m.n + '</span>'; }).join(' ')
+      : 'ما كاينش تطابق دقيق — الأقرب: ' + close.map(function(m){ return '<span class="tag">' + m.n + ' ' + m.dens + '</span>'; }).join(' ')) +
+    '<br>الخطأ فالعيّار كيبدل النتيجة: جرب مرتين وخد المتوسط.';
   document.getElementById('densRes').style.display = 'block';
+  syncRunBtn();
 });
 
 /* ---------- LIBRARY ---------- */
@@ -378,10 +469,6 @@ var camOffBtn = document.getElementById('camOff');
 var shotImg = document.getElementById('shot');
 
 function camMsg(t){ camErr.textContent = t; camErr.style.display = t ? 'block' : 'none'; }
-
-function hex2rgb(h){
-  return { r: parseInt(h.slice(1,3),16), g: parseInt(h.slice(3,5),16), b: parseInt(h.slice(5,7),16) };
-}
 
 function startCam(){
   camMsg('');
@@ -420,66 +507,122 @@ function stopCam(){
   camOnBtn.textContent = 'شغّل الكاميرا';
 }
 
-function readPixels(imgEl, isVideo){
-  var size = 240, c = document.createElement('canvas');
-  c.width = size; c.height = size;
-  var ctx = c.getContext('2d', { willReadFrequently: true });
-  var sw, sh;
-  if (isVideo){ sw = camVideo.videoWidth; sh = camVideo.videoHeight; }
-  else { sw = imgEl.naturalWidth || imgEl.width; sh = imgEl.naturalHeight || imgEl.height; }
-  if (!sw || !sh) return null;
-  var s = Math.min(sw, sh) * 0.5;
-  ctx.drawImage(imgEl, (sw-s)/2, (sh-s)/2, s, s, 0, 0, size, size);
-  var d = ctx.getImageData(0,0,size,size).data;
-  var r=0,g=0,b=0,n=0,shiny=0,sat=0,lum=0;
-  for (var i=0;i<d.length;i+=4){
-    var R=d[i],G=d[i+1],B=d[i+2];
-    var mx=Math.max(R,G,B), mn=Math.min(R,G,B);
-    var L=(0.2126*R+0.7152*G+0.0722*B)/255;
-    var S= mx===0 ? 0 : (mx-mn)/mx;
-    r+=R; g+=G; b+=B; n++;
-    sat+=S; lum+=L;
-    if (L>0.84) shiny++;
-  }
-  var img = c.toDataURL('image/jpeg', 0.8);
-  return { r:r/n, g:g/n, b:b/n, sat:sat/n, lum:lum/n, shine: shiny/n, thumb: img };
+function median(arr){
+  if (!arr.length) return 0;
+  var a = Array.prototype.slice.call(arr).sort(function(x,y){ return x - y; });
+  return a[Math.floor(a.length/2)];
 }
 
-function colorScore(px, m){
-  var t = hex2rgb(m.color);
-  var dr = px.r - t.r, dg = px.g - t.g, db = px.b - t.b;
-  var dist = Math.sqrt(dr*dr*0.9 + dg*dg*1.1 + db*db*1.2);
-  var sim = Math.max(0, 1 - dist/240);
-  if (m.c === 'gold' && px.r > px.b + 18 && px.g > px.b + 6) sim += 0.10;
-  if (m.c === 'red' && px.r > px.g + 25) sim += 0.08;
-  if (m.c === 'silver' && px.sat < 0.18) sim += 0.07;
-  if (m.c === 'gray' && px.lum < 0.42) sim += 0.05;
-  if ((m.n === 'ذهب' || m.n === 'فضة') && px.shine > 0.12) sim += 0.06;
-  return Math.min(1, sim);
+/* Reads the central area, returns median colour, spread, shine, saturation, brightness */
+function analyze(imgEl){
+  var size = 200, c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  var ctx = c.getContext('2d', { willReadFrequently: true });
+  var sw = imgEl.naturalWidth || imgEl.videoWidth || imgEl.width;
+  var sh = imgEl.naturalHeight || imgEl.videoHeight || imgEl.height;
+  if (!sw || !sh) return null;
+  var side = Math.min(sw, sh) * 0.55;
+  ctx.drawImage(imgEl, (sw - side)/2, (sh - side)/2, side, side, 0, 0, size, size);
+  var d = ctx.getImageData(0, 0, size, size).data;
+
+  var rs = [], gs = [], bs = [], shin = 0, satSum = 0, lumSum = 0, n = 0;
+  for (var i = 0; i < d.length; i += 4){
+    var R = d[i], G = d[i+1], B = d[i+2];
+    var mx = Math.max(R,G,B), mn = Math.min(R,G,B);
+    var L = (0.2126*R + 0.7152*G + 0.0722*B) / 255;
+    var S = mx === 0 ? 0 : (mx - mn) / mx;
+    rs.push(R); gs.push(G); bs.push(B);
+    satSum += S; lumSum += L; n++;
+    if (L > 0.86) shin++;
+  }
+  var r = median(rs), g = median(gs), b = median(bs);
+  var spread = (Math.abs(rs[Math.floor(n/2)] - r) + Math.abs(gs[Math.floor(n/2)] - g)) / 2;
+  // honest spread measure: mean absolute deviation
+  var mad = 0;
+  for (var k = 0; k < n; k += 7){ mad += Math.abs(rs[k]-r) + Math.abs(gs[k]-g) + Math.abs(bs[k]-b); }
+  mad = mad / Math.ceil(n/7) / 3;
+
+  return { r:r, g:g, b:b, sat:satSum/n, lum:lumSum/n, shine:shin/n, mad:mad, thumb: c.toDataURL('image/jpeg', 0.82) };
+}
+
+function rgb2hsl(r, g, b){
+  r/=255; g/=255; b/=255;
+  var mx = Math.max(r,g,b), mn = Math.min(r,g,b), h = 0, s = 0, l = (mx+mn)/2;
+  if (mx !== mn){
+    var dd = mx - mn;
+    s = l > 0.5 ? dd / (2 - mx - mn) : dd / (mx + mn);
+    if (mx === r) h = ((g - b) / dd) % 6;
+    else if (mx === g) h = (b - r) / dd + 2;
+    else h = (r - g) / dd + 4;
+    h *= 60; if (h < 0) h += 360;
+  }
+  return { h:h, s:s, l:l };
+}
+
+/* colour family from hue/sat/light — this is what a phone camera can honestly tell */
+function familyOf(px){
+  var C = rgb2hsl(px.r, px.g, px.b);
+  if (C.s < 0.15) return C.l > 0.5 ? 'silver' : 'gray';
+  if (C.h >= 18 && C.h <= 62) return 'gold';
+  if (C.h >= 62 && C.h <= 160) return 'gold';      // yellow-green metal -> brass family
+  if (C.h > 330 || C.h < 18) return 'red';
+  if (C.s < 0.28) return C.l > 0.45 ? 'silver' : 'gray';
+  return 'gray';
+}
+
+var FAMILY_NAME = { silver:'فضي', gray:'رمادي غامق', gold:'أصفر / ذهبي', red:'أحمر / نحاسي' };
+
+function camQuality(px){
+  var warns = [], q = 1;
+  if (px.lum < 0.16){ warns.push('الضو ضعيف بزاف — اللون كيبان غامق.'); q *= 0.35; }
+  else if (px.lum < 0.26){ warns.push('الضو قليل — قرّب من نافذة ولا ضو.'); q *= 0.7; }
+  if (px.lum > 0.90){ warns.push('الضو قوي بزاف ولا كاين انعكاس.'); q *= 0.6; }
+  if (px.shine > 0.35){ warns.push('لمعان قوي كيخبي اللون الحقيقي.'); q *= 0.65; }
+  if (px.sat > 0.52){ warns.push('الخلفية ولا الضو ملوّن — استعمل خلفية بيضاء.'); q *= 0.7; }
+  if (px.mad > 34){ warns.push('المعدن ماشي مركّز مزيان وسط المربع.'); q *= 0.65; }
+  return { q: Math.max(0.15, q), warns: warns };
 }
 
 function renderScan(px){
-  var ranked = METALS.map(function(m){ return { m:m, s:colorScore(px,m) }; })
-    .sort(function(a,b){ return b.s - a.s; }).slice(0,3);
-  var top = ranked[0].s || 1;
+  var fam = familyOf(px);
+  var qual = camQuality(px);
+  var inFam = METALS.filter(function(m){ return m.c === fam; });
+  var nearFam = METALS.filter(function(m){ return (COLOR_NEIGH[fam] || []).indexOf(m.c) >= 0; });
+
+  CAM = { family: fam, quality: qual.q, warns: qual.warns, rgb: { r:px.r, g:px.g, b:px.b } };
+
   document.getElementById('camSwatchRow').innerHTML =
     '<div style="display:flex;align-items:center;gap:10px">' +
     '<span class="swatch" style="width:44px;height:44px;border-radius:12px;background:rgb(' +
       Math.round(px.r) + ',' + Math.round(px.g) + ',' + Math.round(px.b) + ')"></span>' +
-    '<div class="hint" style="margin:0">اللون: rgb(' + Math.round(px.r) + ', ' + Math.round(px.g) + ', ' + Math.round(px.b) + ')<br>' +
-    'اللمعان: ' + Math.round(px.shine*100) + '% · التشبع: ' + Math.round(px.sat*100) + '%</div></div>';
+    '<div class="hint" style="margin:0">' +
+    'العائلة: <b>' + FAMILY_NAME[fam] + '</b><br>' +
+    'الإضاءة: ' + Math.round(px.lum*100) + '% · اللمعان: ' + Math.round(px.shine*100) + '% · التشتت: ' + Math.round(px.mad) + '</div></div>';
 
-  document.getElementById('camResults').innerHTML = ranked.map(function(r){
-    var pct = Math.round(r.s / top * 100);
-    return '<div class="res-item"><div class="res-line"><span class="res-name">' + r.m.n + '</span>' +
-      '<span class="res-pct">' + pct + '%</span></div>' +
-      '<div class="bar"><i style="width:' + pct + '%"></i></div></div>';
-  }).join('');
+  var body = '';
+  if (inFam.length){
+    body += '<div class="hint" style="margin:0 0 8px">المعادن اللي عندها نفس العائلة:</div>';
+    body += inFam.map(function(m){
+      return '<div class="res-item"><div class="res-line"><span class="res-name">' + m.n + '</span>' +
+        '<span class="hint" style="margin:0">' + m.dens + ' g/cm³</span></div>' +
+        '<div class="hint">' + m.how + '</div></div>';
+    }).join('');
+  }
+  if (nearFam.length){
+    body += '<div class="hint" style="margin:8px 0 4px">ممكن حتى: ' +
+      nearFam.map(function(m){ return m.n; }).join(' · ') + '</div>';
+  }
+  document.getElementById('camResults').innerHTML = body;
 
-  document.getElementById('camNote').innerHTML =
-    'هادي قرينة بصرية فقط. باش تأكد: <b>واش كيتجذب للمغناطيس؟</b> ومن بعد عيّر الوزن والحجم فتاب الكثافة.';
+  var conf = Math.round(qual.q * 42); // camera alone never claims more than ~42%
+  var note = '<b>الثقة فالكاميرا: ' + conf + '%</b> — الكاميرا كتفرّق غير بين عائلات اللون، ماشي بين معدن ومعدن.';
+  if (qual.warns.length) note += '<br><b>تحذير:</b> ' + qual.warns.join(' ');
+  note += '<br>زيد المغناطيس والكثافة باش توصل لنتيجة دقيقة (تاب «ميّز»).';
+  document.getElementById('camNote').innerHTML = note;
+
   document.getElementById('camResult').style.display = 'block';
   document.getElementById('camResult').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  syncRunBtn();
 }
 
 camOnBtn.addEventListener('click', startCam);
@@ -487,7 +630,7 @@ camOffBtn.addEventListener('click', stopCam);
 
 camShotBtn.addEventListener('click', function(){
   if (!camVideo.videoWidth){ camMsg('سنّى شوية حتى تشعل الكاميرا.'); return; }
-  var px = readPixels(camVideo, true);
+  var px = analyze(camVideo);
   if (!px){ camMsg('ما قدرتش نقرا الصورة، عاود جرّب.'); return; }
   camMsg('');
   shotImg.src = px.thumb;
@@ -506,7 +649,7 @@ document.getElementById('fileIn').addEventListener('change', function(e){
   var url = URL.createObjectURL(f);
   var im = new Image();
   im.onload = function(){
-    var px = readPixels(im, false);
+    var px = analyze(im);
     URL.revokeObjectURL(url);
     if (!px){ camMsg('ما قدرتش نقرا التصويرة.'); return; }
     camMsg('');
