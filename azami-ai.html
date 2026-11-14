@@ -736,10 +736,11 @@ function paintStat(id, d) {
   if (el && d && typeof d.value === 'number') el.textContent = d.value.toLocaleString('en');
 }
 (function loadStats() {
+  /* الزائر كيتحسب مرة وحدة فقط — أول زيارة على هاد الجهاز */
   var seen = false;
-  try { seen = sessionStorage.getItem('azami_seen') === '1'; } catch (e) {}
+  try { seen = localStorage.getItem('azami_seen_ever') === '1'; } catch (e) {}
   var visit = seen ? statGet('azami-ai') : statHit('azami-ai');
-  try { sessionStorage.setItem('azami_seen', '1'); } catch (e) {}
+  try { localStorage.setItem('azami_seen_ever', '1'); } catch (e) {}
   visit.then(function (d) { paintStat('statVisits', d) });
   statGet('azami-installs').then(function (d) { paintStat('statInstalls', d) });
 })();
