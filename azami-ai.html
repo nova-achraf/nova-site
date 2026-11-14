@@ -772,7 +772,8 @@ function installApp() {
     });
     return;
   }
-  alert('باش تثبّت AZAMI:\n\nفـChrome (أندرويد): منيو ⋮ → «تثبيت التطبيق» ولا «إضافة إلى الشاشة الرئيسية».\nفـiPhone (Safari): زر المشاركة ⤴ → «إضافة إلى الشاشة الرئيسية».');
+  /* ما كاينش برومبت جاهز: نمشيو لدليل التثبيت */
+  window.location.href = 'azami-install.html';
 }
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {

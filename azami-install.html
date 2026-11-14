@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تثبيت AZAMI — دليل التطبيق</title>
+<meta name="theme-color" content="#0A0A0F">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<style>
+  :root{
+    --bg:#0A0A0F; --card:#14141C; --line:#2A2A38; --txt:#F4F1E8;
+    --muted:#8A8A9A; --gold:#E8C66B; --green:#2C6E4F;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);line-height:1.75;
+    font-family:'Segoe UI',system-ui,-apple-system,'Noto Sans Arabic',sans-serif;
+    padding:22px 16px 40px}
+  .wrap{max-width:640px;margin:0 auto}
+  header{text-align:center;margin-bottom:22px}
+  .logo{width:64px;height:64px;border-radius:16px;margin:0 auto 12px;display:block}
+  h1{font-size:21px;font-weight:800}
+  h1 span{color:var(--gold)}
+  .sub{font-size:13px;color:var(--muted);margin-top:4px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px;margin-bottom:12px}
+  .card h2{font-size:15px;font-weight:800;margin-bottom:4px}
+  .card .lead{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+  ol{margin:0;padding-inline-start:18px}
+  li{font-size:13.5px;margin-bottom:8px}
+  li b{color:var(--gold);font-weight:700}
+  .tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;
+    background:#1B1B26;color:var(--muted);border:1px solid var(--line)}
+  .tag.ok{color:#9AD3B8;border-color:#1F4034;background:#12241D}
+  .btn{display:block;text-align:center;min-height:48px;line-height:48px;border-radius:12px;
+    background:var(--gold);color:#151207;font-weight:800;font-size:14.5px;text-decoration:none;
+    margin-top:6px}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  .warn{background:#1A1410;border-color:#4A3620}
+  .warn h2{color:#F0C085}
+  code{background:#1B1B26;border-radius:5px;padding:1px 6px;font-size:12px;
+    font-family:ui-monospace,monospace;direction:ltr;display:inline-block}
+  .check{display:flex;gap:9px;align-items:flex-start;font-size:13px;margin-bottom:9px}
+  .check i{color:var(--gold);font-style:normal;font-weight:800}
+  footer{text-align:center;font-size:11.5px;color:var(--muted);margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img class="logo" src="azami-icon-192.png" alt="أيقونة AZAMI">
+    <h1>AZAMI <span>— تثبيت التطبيق</span></h1>
+    <div class="sub">جوج طرق: تثبيت سريع من المتصفح، ولا ملف APK حقيقي</div>
+  </header>
+
+  <div class="card">
+    <div class="tagrow">
+      <span class="tag ok">✓ manifest</span>
+      <span class="tag ok">✓ service worker</span>
+      <span class="tag ok">✓ أيقونات كاملة</span>
+    </div>
+    <h2>١ · تثبيت من المتصفح (30 ثانية)</h2>
+    <p class="lead">هادي هي الـPWA — كتبان بحال تطبيق عادي، بأيقونة وشاشة كاملة.</p>
+    <ol>
+      <li>حل <b>azami-ai.html</b> فـChrome</li>
+      <li>ضغط على النقاط ثلاث فالفوق ← <b>تثبيت التطبيق</b> / Install app</li>
+      <li>إلا ما بانتش: القائمة ← <b>إضافة إلى الشاشة الرئيسية</b></li>
+    </ol>
+    <a class="btn" href="azami-ai.html">افتح AZAMI</a>
+  </div>
+
+  <div class="card">
+    <h2>٢ · ملف APK حقيقي (تطبيق مستقل)</h2>
+    <p class="lead">كيتصاوب من الموقع بلا نیاز برمجة — 5 دقائق.</p>
+    <ol>
+      <li>حل <b>pwabuilder.com</b></li>
+      <li>لصق الرابط: <code>https://nova-achraf.github.io/nova-site/azami-ai.html</code></li>
+      <li>ضغط <b>Start</b> ← اختار <b>Android</b> ← <b>Generate package</b></li>
+      <li>حمّل <b>APK</b> (وليس AAB، داكشي للمتجر)</li>
+      <li>فالتليفون: افتح الملف ← اسمح <b>«تثبيت من مصادر غير معروفة»</b> ← ثبّت</li>
+    </ol>
+  </div>
+
+  <div class="card warn">
+    <h2>إلا زر التثبيت ما خدامش — تحقق من هادو</h2>
+    <div class="check"><i>1</i><span>الرابط خاصو يكون <code>https</code> — GitHub Pages كيفيه</span></div>
+    <div class="check"><i>2</i><span>الـservice worker خاصو يتسجل: Chrome ← ⋮ ← أدوات المطور ← Application ← Service workers. إلا بانو غلطات حمر، الـSW ما تسجلش</span></div>
+    <div class="check"><i>3</i><span>إلا كنت مثبت التطبيق من قبل، زر التثبيت كيتخبى — حيّدو من الشاشة الرئيسية وأعد التثبيت</span></div>
+    <div class="check"><i>4</i><span>بعض المتصفحات (Firefox أندرويد، متصفحات داخل التطبيقات) ما كتدعمش التثبيت — استعمل Chrome</span></div>
+    <div class="check"><i>5</i><span>مسح الكاش: Chrome ← الإعدادات ← الخصوصية ← مسح بيانات التصفح</span></div>
+  </div>
+
+  <div class="card">
+    <h2>٣ · المتجر (Google Play)</h2>
+    <p class="lead">هاد الخطوة كتحتاج: حساب 25 دولار، 18+، و12 مختبر لمدة 14 يوم قبل النشر.</p>
+    <p style="font-size:13px;color:var(--muted)">لهذا الـAPK هو الحل الواقعي دابا — نفس التطبيق، بلا انتظار وبلا خلاص.</p>
+  </div>
+
+  <footer>ZELLIJ · صنع بيد أشرف 🇲🇦</footer>
+</div>
+</body>
+</html>
