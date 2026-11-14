@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zellij Studio — قوالب مناسبات مغربية</title>
+<meta name="description" content="Zellij Studio — قوالب رقمية مغربية للمناسبات: أعراس، أعياد ميلاد، رمضان. تصميم أصيل، تعديل سهل، تسليم فوري.">
+<meta name="theme-color" content="#FFFBF6">
+<link rel="canonical" href="https://nova-achraf.github.io/nova-site/zellij-studio.html">
+<style>
+  :root{
+    --bg:#FFFBF6; --card:#FFFFFF; --line:#EADFD2; --txt:#241F1A; --muted:#8A7A66;
+    --terra:#E2603F; --terra2:#F07A54; --gold:#D4AF37; --green:#2C6E4F;
+    --soft:#FBF2EA; --deep:#1C3B34;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--txt);
+    font-family:'Segoe UI',system-ui,-apple-system,'Noto Sans Arabic',sans-serif;
+    line-height:1.6;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px}
+  /* HERO */
+  .hero{
+    position:relative;overflow:hidden;padding:44px 0 38px;text-align:center;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(212,175,55,.10), transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(226,96,63,.10), transparent 48%),
+      var(--bg);
+    border-bottom:1px solid var(--line);
+  }
+  .pattern{
+    position:absolute;inset:0;opacity:.16;pointer-events:none;
+    background-image:
+      linear-gradient(45deg, transparent 46%, var(--gold) 47%, var(--gold) 49%, transparent 50%),
+      linear-gradient(-45deg, transparent 46%, var(--gold) 47%, var(--gold) 49%, transparent 50%);
+    background-size:46px 46px;
+    mask-image:radial-gradient(circle at 50% 40%, #000 20%, transparent 72%);
+    -webkit-mask-image:radial-gradient(circle at 50% 40%, #000 20%, transparent 72%);
+  }
+  .mark{width:86px;height:86px;margin:0 auto 14px;position:relative;z-index:1}
+  .brand{font-size:30px;font-weight:800;letter-spacing:1px;position:relative;z-index:1}
+  .brand span{color:var(--terra)}
+  .tagline{font-size:14.5px;color:var(--muted);margin-top:6px;position:relative;z-index:1}
+  .hero-line{
+    display:inline-block;margin-top:16px;padding:7px 15px;border-radius:999px;
+    background:var(--card);border:1px solid var(--line);font-size:12.5px;font-weight:600;
+    color:var(--deep);position:relative;z-index:1;
+  }
+  /* SECTIONS */
+  section{padding:34px 0}
+  .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:1.5px;color:var(--terra);text-transform:uppercase}
+  h2{font-size:20px;font-weight:800;margin:6px 0 4px}
+  .lede{font-size:13.5px;color:var(--muted);margin-bottom:18px}
+  /* PRODUCT CARDS */
+  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:620px){ .grid{grid-template-columns:1fr 1fr} }
+  .prod{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;
+    display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;
+  }
+  .prod.top{border-color:var(--gold);box-shadow:0 1px 0 rgba(212,175,55,.5) inset}
+  .prod .tile{
+    width:100%;height:96px;border-radius:12px;position:relative;overflow:hidden;
+    background:var(--soft);border:1px solid var(--line);
+  }
+  .prod .tile .z{
+    position:absolute;inset:0;opacity:.55;
+    background-image:
+      linear-gradient(45deg, transparent 45%, var(--terra) 46%, var(--terra) 48%, transparent 49%),
+      linear-gradient(-45deg, transparent 45%, var(--gold) 46%, var(--gold) 48%, transparent 49%);
+    background-size:22px 22px;
+  }
+  .prod h3{font-size:15px;font-weight:800}
+  .prod p{font-size:12.5px;color:var(--muted)}
+  .prod .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:4px}
+  .price{font-size:15px;font-weight:800;color:var(--deep)}
+  .chip{
+    font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:999px;
+    background:var(--soft);color:var(--muted);border:1px solid var(--line);
+  }
+  .chip.soon{background:#FFF0E8;color:var(--terra);border-color:#F6D2C5}
+  /* STEPS */
+  .steps{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:620px){ .steps{grid-template-columns:repeat(3,1fr)} }
+  .step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+  .step b{display:block;font-size:13.5px;margin-bottom:3px}
+  .step span{font-size:12px;color:var(--muted)}
+  .num{
+    width:26px;height:26px;border-radius:9px;display:grid;place-items:center;
+    background:var(--soft);color:var(--terra);font-weight:800;font-size:13px;margin-bottom:8px;
+  }
+  /* WHY */
+  .why{display:grid;grid-template-columns:1fr;gap:8px}
+  @media(min-width:620px){ .why{grid-template-columns:1fr 1fr} }
+  .why div{
+    display:flex;gap:9px;align-items:flex-start;font-size:13px;
+    background:var(--card);border:1px solid var(--line);border-radius:13px;padding:11px 13px;
+  }
+  .why i{color:var(--green);font-style:normal;font-weight:800}
+  /* FOOTER */
+  footer{
+    text-align:center;padding:26px 18px 34px;border-top:1px solid var(--line);
+    font-size:12px;color:var(--muted);
+  }
+  footer b{color:var(--txt)}
+  .note{font-size:11.5px;color:var(--muted);margin-top:14px;line-height:1.75}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="pattern"></div>
+  <div class="wrap">
+    <svg class="mark" viewBox="0 0 100 100" aria-label="لوكو Zellij Studio">
+      <g fill="none" stroke="#E2603F" stroke-width="3">
+        <path d="M50 8 L64 26 L86 26 L86 48 L74 62 L86 76 L74 92 L50 78 L26 92 L14 76 L26 62 L14 48 L14 26 L36 26 Z" fill="#FFF4EE"/>
+        <path d="M50 26 L62 38 L62 56 L50 68 L38 56 L38 38 Z" fill="#FBF2EA" stroke="#D4AF37"/>
+        <circle cx="50" cy="47" r="7" fill="#E2603F" stroke="none"/>
+      </g>
+    </svg>
+    <div class="brand">ZELLIJ <span>STUDIO</span></div>
+    <div class="tagline">قوالب مناسبات مغربية — تصميم أصيل، تعديل سهل، تسليم فوري</div>
+    <div class="hero-line">🌍 بنخدم بالعربية والفرنسية والإنجليزية</div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Products</div>
+    <h2>شنو كنبيعو</h2>
+    <p class="lede">ملفات رقمية كتفتح فـCanva، كتبدل الاسم والتاريخ والألوان، وكتطبع ولا كتصيفط أونلاين.</p>
+
+    <div class="grid">
+      <article class="prod top">
+        <div class="tile"><div class="z"></div></div>
+        <h3>Wedding Suite — طقم عرس</h3>
+        <p>دعوة + RSVP + بطاقة التفاصيل + لوحة ترحيب. طقم كامل بستيل واحد.</p>
+        <div class="row"><span class="price">18 $</span><span class="chip soon">قريباً</span></div>
+      </article>
+
+      <article class="prod">
+        <div class="tile"><div class="z"></div></div>
+        <h3>Party Set — عيد ميلاد</h3>
+        <p>دعوة + بطاقات المائدة + لعبة للتطبع + توبيرات الكيك.</p>
+        <div class="row"><span class="price">9 $</span><span class="chip soon">قريباً</span></div>
+      </article>
+
+      <article class="prod">
+        <div class="tile"><div class="z"></div></div>
+        <h3>Ramadan &amp; Eid Set</h3>
+        <p>زينة رمضان + بطاقات معايدة + gift tags. مستوحى من الزليج والتيفيناغ.</p>
+        <div class="row"><span class="price">8 $</span><span class="chip soon">قريباً</span></div>
+      </article>
+
+      <article class="prod">
+        <div class="tile"><div class="z"></div></div>
+        <h3>Everyday Planner</h3>
+        <p>مخطط أسبوعي بسيط — صفحة للطباعة، بلا تعقيد وبلا تطبيق.</p>
+        <div class="row"><span class="price">7 $</span><span class="chip soon">قريباً</span></div>
+      </article>
+    </div>
+
+    <p class="note">الأثمنة تقديرية حسب السوق، وكتثبت نهائياً ملي كيتفتح الحانوت.</p>
+  </div>
+</section>
+
+<section style="background:var(--soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2>كيفاش كيخدم</h2>
+    <p class="lede">ثلاث خطوات، بلا شيبينغ وبلا انتظار.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <b>ختار الطقم</b>
+        <span>كتشري الملف وتحمّلو فوراً من الحانوت.</span>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <b>بدّل المعلومات</b>
+        <span>كتفتح الرابط فـCanva، كتكتب السميات والتاريخ.</span>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <b>طبع ولا صيفط</b>
+        <span>PDF جاهز للطبع، ولا PNG للواتساب والإنستغرام.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Why us</div>
+    <h2>علاش الزليج</h2>
+    <p class="lede">حيت التصميم المغربي زوين، وقليل اللي كيبيعو بجودة فالسوق العالمي.</p>
+    <div class="why">
+      <div><i>✓</i><span>هوية مغربية حقيقية — ماشي قوالب مكررة</span></div>
+      <div><i>✓</i><span>ثلاث لغات: عربية، فرنسية، إنجليزية</span></div>
+      <div><i>✓</i><span>تسليم فوري بلا انتظار شيبينغ</span></div>
+      <div><i>✓</i><span>دعم عبر الرسائل بجواب فـ24 ساعة</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <b>ZELLIJ STUDIO</b> · قوالب رقمية مغربية<br>
+  صنع بيد أشرف 🇲🇦 · المغرب
+</footer>
+
+</body>
+</html>
