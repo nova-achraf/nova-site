@@ -302,6 +302,7 @@
       <button class="sw-ocean" onclick="setTheme('ocean')" title="أزرق"></button>
     </div>
     <button class="side-act" onclick="cycleFont()"><span class="ic">🔠</span><span class="lbl">حجم الخط</span><span class="tag" id="fontTag">عادي</span></button>
+    <button class="side-act" onclick="cycleLang()"><span class="ic">🌍</span><span class="lbl">لغة الردود</span><span class="tag" id="langTag">الدارجة</span></button>
     <button class="side-act" onclick="lockSettings()"><span class="ic">🔒</span><span class="lbl">قفل التطبيق</span><span class="tag" id="lockTag">مطفي</span></button>
     <button class="side-act" onclick="openAccount()"><span class="ic">👤</span><span class="lbl">حسابي</span><span class="tag" id="accTag">سجّل</span></button>
     <button class="side-act" onclick="clearConvs()"><span class="ic">🗑️</span><span class="lbl">مسح كل المحادثات</span></button>
@@ -447,9 +448,41 @@ function openMemory(){
   addAi(v.trim()?'✅ الذاكرة تحدثات. غادي نتذكرها فكل محادثة.':'✅ الذاكرة تمسحات.');
 }
 const SYS_BASE='You are AZAMI, a multilingual assistant from Morocco. Answer in the exact language and dialect the user writes in. Support all Arabic dialects (Moroccan Darija, Egyptian, Gulf, Levantine, Algerian, Tunisian, Iraqi, Sudanese, Yemeni) and all world languages. Be concise, friendly and helpful. Use Markdown formatting when appropriate: **bold**, *italic*, lists, code blocks with language tags, tables, and links. When showing code, always use fenced code blocks with language specification.';
+/* === اللغة ديال الردود === */
+var LANG_KEY='azami_lang_v1';
+var LANGS=[
+  ['darija','الدارجة','Always answer in Moroccan Darija (Arabic script), friendly and casual.'],
+  ['ar','العربية','Always answer in Modern Standard Arabic.'],
+  ['fr','Français','Always answer in French.'],
+  ['en','English','Always answer in English.'],
+  ['es','Español','Always answer in Spanish.'],
+  ['zgh','ⵜⴰⵎⴰⵣⵉⵖⵜ','Always answer in Standard Moroccan Tamazight written in Tifinagh script.']
+];
+function getLang(){
+  var c='darija';
+  try{c=localStorage.getItem(LANG_KEY)||'darija'}catch(e){}
+  for(var i=0;i<LANGS.length;i++){if(LANGS[i][0]===c)return c}
+  return 'darija';
+}
+function langRule(){
+  var c=getLang();
+  for(var i=0;i<LANGS.length;i++){if(LANGS[i][0]===c)return LANGS[i][2]}
+  return LANGS[0][2];
+}
+function applyLang(c){
+  var t=document.getElementById('langTag');
+  for(var i=0;i<LANGS.length;i++){if(LANGS[i][0]===c&&t)t.textContent=LANGS[i][1]}
+}
+function cycleLang(){
+  var cur=getLang(),idx=0;
+  for(var i=0;i<LANGS.length;i++){if(LANGS[i][0]===cur)idx=i}
+  var nxt=LANGS[(idx+1)%LANGS.length][0];
+  try{localStorage.setItem(LANG_KEY,nxt)}catch(e){}
+  applyLang(nxt);
+}
 function sysPrompt(){
   var m=getMemory();
-  return SYS_BASE + (m ? '\n\nWhat you know about this user (remember it, use it naturally, never repeat it back verbatim): ' + m : '');
+  return SYS_BASE + '\n\nLANGUAGE RULE (highest priority): ' + langRule() + (m ? '\n\nWhat you know about this user (remember it, use it naturally, never repeat it back verbatim): ' + m : '');
 }
 const SYS=sysPrompt();
 const chat=document.getElementById('chat');
@@ -623,6 +656,7 @@ function clearConvs(){
     f=localStorage.getItem(FONT_KEY)||'m';
   }catch(e){}
   applyTheme(t);applyFont(f);
+  applyLang(getLang());
 })();
 /* === الحساب (محلي) === */
 var ACC_KEY = 'azami_account';
