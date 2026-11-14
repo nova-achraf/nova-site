@@ -181,6 +181,11 @@
   .sheet input:focus{border-color:var(--gold)}
   .sheet button{width:100%;padding:12px;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer}
   .sheet .go{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;margin-bottom:8px}
+  .langgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+  .langchip{padding:12px 8px;border:1px solid var(--line);background:var(--card);color:var(--txt);
+    border-radius:12px;font-size:14px;font-family:inherit;cursor:pointer;text-align:center;line-height:1.3}
+  .langchip:hover{border-color:var(--gold)}
+  .langchip.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold2);font-weight:700}
   .sheet .skip{background:transparent;color:var(--muted);border:1px solid var(--line)}
   .sheet .szrow{display:flex;gap:8px;margin-bottom:10px}
   .sheet .szrow .sz{flex:1;width:auto;padding:10px 6px;background:var(--card);color:var(--muted);border:1.5px solid var(--line);border-radius:10px;font-size:13px;font-weight:700}
@@ -288,7 +293,7 @@
     <div class="side-cap">التطبيق</div>
     <button class="side-act" onclick="installApp()"><span class="ic">📲</span><span class="lbl">ثبّت AZAMI فالتليفون</span><span class="tag" id="instTag">تطبيق</span></button>
     <button class="side-act" onclick="shareApp()"><span class="ic">📤</span><span class="lbl">شارك AZAMI</span></button>
-    <button class="side-act" onclick="cycleLang()"><span class="ic">🌍</span><span class="lbl">اللغة</span><span class="tag lang-tag">الدارجة</span></button>
+    <button class="side-act" onclick="openLang()"><span class="ic">🌍</span><span class="lbl">اللغة</span><span class="tag lang-tag">الدارجة</span></button>
     <div class="side-stats">
       <span>👁 <b id="statVisits">—</b> زائر</span>
       <span>📲 <b id="statInstalls">—</b> تثبيت</span>
@@ -303,7 +308,7 @@
       <button class="sw-ocean" onclick="setTheme('ocean')" title="أزرق"></button>
     </div>
     <button class="side-act" onclick="cycleFont()"><span class="ic">🔠</span><span class="lbl">حجم الخط</span><span class="tag" id="fontTag">عادي</span></button>
-    <button class="side-act" onclick="cycleLang()"><span class="ic">🌍</span><span class="lbl">لغة الردود</span><span class="tag lang-tag">الدارجة</span></button>
+    <button class="side-act" onclick="openLang()"><span class="ic">🌍</span><span class="lbl">لغة الردود</span><span class="tag lang-tag">الدارجة</span></button>
     <button class="side-act" onclick="lockSettings()"><span class="ic">🔒</span><span class="lbl">قفل التطبيق</span><span class="tag" id="lockTag">مطفي</span></button>
     <button class="side-act" onclick="openAccount()"><span class="ic">👤</span><span class="lbl">حسابي</span><span class="tag" id="accTag">سجّل</span></button>
     <button class="side-act" onclick="clearConvs()"><span class="ic">🗑️</span><span class="lbl">مسح كل المحادثات</span></button>
@@ -562,6 +567,84 @@ var UI_PH = {
   'سميتك': { fr: 'Votre nom', en: 'Your name' },
   'مثال: أشرف': { fr: 'ex. Achraf', en: 'e.g. Achraf' }
 };
+/* === الإسبانية === */
+var UI_ES = {
+  '✨ محادثة جديدة': '✨ Nueva conversación',
+  'أدوات': 'Herramientas',
+  'صانع الفيديو': 'Creador de vídeo',
+  'جديد': 'Nuevo',
+  'صور → PDF': 'Imágenes → PDF',
+  'تصدير المحادثة': 'Exportar conversación',
+  'ذاكرة AZAMI': 'Memoria AZAMI',
+  'المفتاح': 'Clave API',
+  'التطبيق': 'Aplicación',
+  'ثبّت AZAMI فالتليفون': 'Instalar AZAMI',
+  'تطبيق': 'App',
+  'شارك AZAMI': 'Compartir AZAMI',
+  'اللغة': 'Idioma',
+  'زائر': 'visitantes',
+  'تثبيت': 'instalaciones',
+  'إعدادات': 'Ajustes',
+  'المظهر': 'Tema',
+  'فاتح': 'Claro',
+  'حجم الخط': 'Tamaño del texto',
+  'عادي': 'Normal',
+  'لغة الردود': 'Idioma de respuestas',
+  'قفل التطبيق': 'Bloquear la app',
+  'مطفي': 'Desactivado',
+  'حسابي': 'Mi cuenta',
+  'سجّل': 'Registrarse',
+  'مسح كل المحادثات': 'Borrar todas las conversaciones',
+  'ضيف جديد · ما مسجلش': 'Invitado · sin registro',
+  'مساعدك المغربي · من المغرب إلى العالم': 'Tu asistente marroquí · de Marruecos al mundo',
+  '✏️ تعديل رسالة —': '✏️ Editar mensaje —',
+  'إلغاء': 'Cancelar',
+  'مرحبا فـAZAMI': 'Bienvenido a AZAMI',
+  'سجّل سميتك ورقم هاتفك باش تبدأ. الحساب كيبقى فالتليفون ديالك وحدك — ما كيتصيفطش لأي سيرفر.': 'Escribe tu nombre y tu número para empezar. La cuenta se queda en tu teléfono, no se envía a ningún servidor.',
+  'السمية': 'Nombre',
+  'رقم الهاتف': 'Teléfono',
+  'كلمة السر (اختيارية)': 'Contraseña (opcional)',
+  'عمر السمية ورقم الهاتف من فضلك.': 'Completa el nombre y el número, por favor.',
+  '✅ سجّل وبدا': '✅ Registrarse y empezar',
+  'كمّل بلا تسجيل': 'Continuar sin registrarme',
+  '👤 حسابي': '👤 Mi cuenta',
+  'إغلاق': 'Cerrar',
+  '🚪 خروج / مسح الحساب من هاد التليفون': '🚪 Salir / borrar la cuenta de este teléfono',
+  '🔑 مفتاح AZAMI': '🔑 Clave AZAMI',
+  'حط هنا المفتاح ديال Gemini (من Google AI Studio). كيبقى فالمتصفح، ما كيتسيفطش لشي حد.': 'Pega aquí tu clave Gemini (de Google AI Studio). Se queda en el navegador y no se envía a nadie.',
+  'حط المفتاح من فضلك.': 'Escribe la clave, por favor.',
+  'حفظ وبدأ ✅': 'Guardar y empezar ✅',
+  'لحظة، نرجع من بعد': 'Ahora no',
+  '🔒 AZAMI مقفول': '🔒 AZAMI está bloqueado',
+  'دخّل الكود ديال 4 أرقام باش تكمل.': 'Introduce el código de 4 dígitos para continuar.',
+  'الكود ماشي صحيح.': 'Código incorrecto.',
+  '🔓 فتح': '🔓 Desbloquear',
+  'نسيت الكود؟': '¿Olvidaste el código?',
+  'سميتك ورقمك كيتسجلو فالتليفون ديالك فقط — ما كيمشيوش لحتى سيرفر.': 'Tu nombre y tu número se guardan solo en tu teléfono.',
+  'حفظ ✅': 'Guardar ✅',
+  'سد': 'Cerrar',
+  '🖼️ صور → PDF': '🖼️ Imágenes → PDF',
+  'ختار صور من المعرض، وغادي نحولهم لملف PDF واحد. كلشي كيتدار فالمتصفح ديالك — حتى صورة ما كتطلع للسيرفر.': 'Elige fotos de tu galería y obtén un solo PDF. Todo ocurre en tu navegador — ninguna foto se sube.',
+  'A4 · 21×29.7 سم': 'A4 · 21×29,7 cm',
+  'A5 · 14.8×21 سم': 'A5 · 14,8×21 cm',
+  '📂 ختار الصور': '📂 Elegir imágenes',
+  '⬇️ حمّل الـ PDF': '⬇️ Descargar PDF',
+  '👁️ حلّو / شاركو': '👁️ Abrir / compartir',
+  '🎬 صانع الفيديو': '🎬 Creador de vídeo',
+  'ختار من 2 حتى 12 صورة، AZAMI يصاوب ليك فيديو عمودي بالحركة والانتقالات. كلشي كيتدار فالمتصفح — ما كتطلع حتى صورة للسيرفر.': 'Elige de 2 a 12 fotos y AZAMI crea un vídeo vertical animado. Todo se hace en tu navegador.',
+  '📷 ختار التصاور': '📷 Elegir fotos',
+  'ما ختارتي حتى صورة.': 'No has elegido ninguna foto.',
+  '⏱ مدة كل صورة': '⏱ Duración por foto',
+  '🖼 الجودة': '🖼 Calidad',
+  '🎬 صاوب الفيديو': '🎬 Crear vídeo'
+};
+var UI_PH_ES = {
+  '🔍 بحث فالمحادثات...': '🔍 Buscar...',
+  'كتب لـ AZAMI...': 'Escribe a AZAMI...',
+  'سميتك': 'Tu nombre',
+  'مثال: أشرف': 'ej. Achraf'
+};
+
 var UI_SNAP = null;
 function uiCollect() {
   if (UI_SNAP) return;
@@ -590,7 +673,8 @@ function uiCollect() {
 }
 function uiLangFor(langKey) {
   if (langKey === 'fr') return 'fr';
-  if (langKey === 'en' || langKey === 'es') return 'en';
+  if (langKey === 'en') return 'en';
+  if (langKey === 'es') return 'es';
   return 'ar';
 }
 function uiApply(langKey) {
@@ -598,16 +682,47 @@ function uiApply(langKey) {
   var l = uiLangFor(langKey);
   for (var i = 0; i < UI_SNAP.texts.length; i++) {
     var it = UI_SNAP.texts[i];
-    var rep = (l === 'ar') ? it.ar : (UI_DICT[it.ar][l] || it.ar);
+    var rep = it.ar;
+    if (l === 'es') { rep = UI_ES[it.ar] || it.ar; }
+    else if (l !== 'ar') { rep = (UI_DICT[it.ar][l] || it.ar); }
     if (it.n.nodeValue !== ' ' + rep + ' ') it.n.nodeValue = ' ' + rep + ' ';
   }
   for (var j = 0; j < UI_SNAP.ph.length; j++) {
     var ph = UI_SNAP.ph[j];
-    ph.el.setAttribute('placeholder', (l === 'ar') ? ph.ar : (UI_PH[ph.ar][l] || ph.ar));
+    var pv = ph.ar;
+    if (l === 'es') { pv = UI_PH_ES[ph.ar] || ph.ar; }
+    else if (l !== 'ar') { pv = (UI_PH[ph.ar][l] || ph.ar); }
+    ph.el.setAttribute('placeholder', pv);
   }
   var html = document.documentElement;
   html.setAttribute('lang', l === 'ar' ? 'ar' : l);
   html.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
+}
+function openLang() {
+  var g = document.getElementById('langGrid');
+  if (!g) return;
+  var cur = getLang();
+  g.innerHTML = '';
+  for (var i = 0; i < LANGS.length; i++) {
+    var b = document.createElement('button');
+    b.className = 'langchip' + (LANGS[i][0] === cur ? ' on' : '');
+    b.textContent = LANGS[i][1];
+    b.setAttribute('data-k', LANGS[i][0]);
+    b.onclick = function () { setLang(this.getAttribute('data-k')); };
+    g.appendChild(b);
+  }
+  document.getElementById('langModal').classList.add('show');
+}
+function closeLang() {
+  document.getElementById('langModal').classList.remove('show');
+}
+function setLang(k) {
+  try { localStorage.setItem(LANG_KEY, k); } catch (e) {}
+  applyLang(k);
+  uiApply(k);
+  applyLang(k);
+  openLang();
+  setTimeout(closeLang, 450);
 }
 
 function sysPrompt(){
@@ -1336,5 +1451,15 @@ async function pdfFromImages(input){
   btn.disabled=false;
 }
 </script>
+
+<!-- LANGUAGE -->
+<div class="modal" id="langModal">
+  <div class="sheet">
+    <h3>🌍 اللغة / Langue</h3>
+    <p>ختار لغة الواجهة ولغة ردود AZAMI. الاختيار كيتحفظ.</p>
+    <div class="langgrid" id="langGrid"></div>
+    <button class="skip" onclick="closeLang()">إغلاق</button>
+  </div>
+</div>
 </body>
 </html>
