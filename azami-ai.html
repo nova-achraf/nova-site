@@ -482,7 +482,134 @@ function cycleLang(){
   var nxt=LANGS[(idx+1)%LANGS.length][0];
   try{localStorage.setItem(LANG_KEY,nxt)}catch(e){}
   applyLang(nxt);
+  uiApply(nxt);
+  applyLang(nxt);
 }
+/* === ترجمة الواجهة: عربية / فرنسية / إنجليزية === */
+var UI_DICT = {
+  '✨ محادثة جديدة': { fr: '✨ Nouvelle conversation', en: '✨ New chat' },
+  'أدوات': { fr: 'Outils', en: 'Tools' },
+  'صانع الفيديو': { fr: 'Créateur vidéo', en: 'Video maker' },
+  'جديد': { fr: 'Nouveau', en: 'New' },
+  'صور → PDF': { fr: 'Images → PDF', en: 'Images → PDF' },
+  'تصدير المحادثة': { fr: 'Exporter la conversation', en: 'Export chat' },
+  'ذاكرة AZAMI': { fr: 'Mémoire AZAMI', en: 'AZAMI memory' },
+  'المفتاح': { fr: 'Clé API', en: 'API key' },
+  'التطبيق': { fr: 'Application', en: 'App' },
+  'ثبّت AZAMI فالتليفون': { fr: 'Installer AZAMI', en: 'Install AZAMI' },
+  'تطبيق': { fr: 'App', en: 'App' },
+  'شارك AZAMI': { fr: 'Partager AZAMI', en: 'Share AZAMI' },
+  'اللغة': { fr: 'Langue', en: 'Language' },
+  'زائر': { fr: 'visiteurs', en: 'visitors' },
+  'تثبيت': { fr: 'installations', en: 'installs' },
+  'إعدادات': { fr: 'Réglages', en: 'Settings' },
+  'المظهر': { fr: 'Thème', en: 'Theme' },
+  'فاتح': { fr: 'Clair', en: 'Light' },
+  'حجم الخط': { fr: 'Taille du texte', en: 'Text size' },
+  'عادي': { fr: 'Normal', en: 'Normal' },
+  'لغة الردود': { fr: 'Langue des réponses', en: 'Reply language' },
+  'قفل التطبيق': { fr: "Verrouiller l'app", en: 'Lock app' },
+  'مطفي': { fr: 'Désactivé', en: 'Off' },
+  'حسابي': { fr: 'Mon compte', en: 'My account' },
+  'سجّل': { fr: "S'inscrire", en: 'Sign up' },
+  'مسح كل المحادثات': { fr: 'Effacer les conversations', en: 'Clear all chats' },
+  'ضيف جديد · ما مسجلش': { fr: 'Invité · non inscrit', en: 'Guest · not signed up' },
+  'مساعدك المغربي · من المغرب إلى العالم': { fr: "Votre assistant marocain · du Maroc au monde", en: 'Your Moroccan assistant · from Morocco to the world' },
+  '✏️ تعديل رسالة —': { fr: '✏️ Modifier le message —', en: '✏️ Edit message —' },
+  'إلغاء': { fr: 'Annuler', en: 'Cancel' },
+  'مرحبا فـAZAMI': { fr: 'Bienvenue sur AZAMI', en: 'Welcome to AZAMI' },
+  'سجّل سميتك ورقم هاتفك باش تبدأ. الحساب كيبقى فالتليفون ديالك وحدك — ما كيتصيفطش لأي سيرفر.': { fr: "Entrez votre nom et votre numéro pour commencer. Le compte reste sur votre téléphone, il n'est envoyé à aucun serveur.", en: 'Enter your name and phone number to start. The account stays on your phone only — never sent to any server.' },
+  'السمية': { fr: 'Nom', en: 'Name' },
+  'رقم الهاتف': { fr: 'Téléphone', en: 'Phone' },
+  'كلمة السر (اختيارية)': { fr: 'Mot de passe (optionnel)', en: 'Password (optional)' },
+  'عمر السمية ورقم الهاتف من فضلك.': { fr: 'Remplissez le nom et le numéro, svp.', en: 'Please fill in your name and phone number.' },
+  '✅ سجّل وبدا': { fr: "✅ S'inscrire et commencer", en: '✅ Sign up and start' },
+  'كمّل بلا تسجيل': { fr: 'Continuer sans inscription', en: 'Continue without signing up' },
+  '👤 حسابي': { fr: '👤 Mon compte', en: '👤 My account' },
+  'إغلاق': { fr: 'Fermer', en: 'Close' },
+  '🚪 خروج / مسح الحساب من هاد التليفون': { fr: '🚪 Se déconnecter / supprimer le compte', en: '🚪 Sign out / delete account from this phone' },
+  '🔑 مفتاح AZAMI': { fr: '🔑 Clé AZAMI', en: '🔑 AZAMI key' },
+  'حط هنا المفتاح ديال Gemini (من Google AI Studio). كيبقى فالمتصفح، ما كيتسيفطش لشي حد.': { fr: "Collez ici votre clé Gemini (Google AI Studio). Elle reste dans le navigateur et n'est envoyée à personne.", en: 'Paste your Gemini key here (Google AI Studio). It stays in your browser and is never sent to anyone.' },
+  'حط المفتاح من فضلك.': { fr: 'Entrez la clé, svp.', en: 'Please enter the key.' },
+  'حفظ وبدأ ✅': { fr: 'Enregistrer et démarrer ✅', en: 'Save and start ✅' },
+  'لحظة، نرجع من بعد': { fr: 'Plus tard', en: 'Not now' },
+  '🔒 AZAMI مقفول': { fr: '🔒 AZAMI est verrouillé', en: '🔒 AZAMI is locked' },
+  'دخّل الكود ديال 4 أرقام باش تكمل.': { fr: 'Entrez le code à 4 chiffres pour continuer.', en: 'Enter the 4-digit code to continue.' },
+  'الكود ماشي صحيح.': { fr: 'Code incorrect.', en: 'Wrong code.' },
+  '🔓 فتح': { fr: '🔓 Déverrouiller', en: '🔓 Unlock' },
+  'نسيت الكود؟': { fr: 'Code oublié ?', en: 'Forgot the code?' },
+  'سميتك ورقمك كيتسجلو فالتليفون ديالك فقط — ما كيمشيوش لحتى سيرفر.': { fr: 'Votre nom et numéro sont enregistrés sur votre téléphone uniquement.', en: 'Your name and number are saved on your phone only — never sent to a server.' },
+  'حفظ ✅': { fr: 'Enregistrer ✅', en: 'Save ✅' },
+  'سد': { fr: 'Fermer', en: 'Close' },
+  '🖼️ صور → PDF': { fr: '🖼️ Images → PDF', en: '🖼️ Images → PDF' },
+  'ختار صور من المعرض، وغادي نحولهم لملف PDF واحد. كلشي كيتدار فالمتصفح ديالك — حتى صورة ما كتطلع للسيرفر.': { fr: 'Choisissez des images de votre galerie et obtenez un seul PDF. Tout se fait dans votre navigateur — aucune photo envoyée.', en: 'Pick photos from your gallery and get one PDF. Everything happens in your browser — no photo is uploaded.' },
+  'A4 · 21×29.7 سم': { fr: 'A4 · 21×29,7 cm', en: 'A4 · 21×29.7 cm' },
+  'A5 · 14.8×21 سم': { fr: 'A5 · 14,8×21 cm', en: 'A5 · 14.8×21 cm' },
+  '📂 ختار الصور': { fr: '📂 Choisir les images', en: '📂 Choose photos' },
+  '⬇️ حمّل الـ PDF': { fr: '⬇️ Télécharger le PDF', en: '⬇️ Download PDF' },
+  '👁️ حلّو / شاركو': { fr: '👁️ Ouvrir / partager', en: '👁️ Open / share' },
+  '🎬 صانع الفيديو': { fr: '🎬 Créateur vidéo', en: '🎬 Video maker' },
+  'ختار من 2 حتى 12 صورة، AZAMI يصاوب ليك فيديو عمودي بالحركة والانتقالات. كلشي كيتدار فالمتصفح — ما كتطلع حتى صورة للسيرفر.': { fr: 'Choisissez 2 à 12 photos et AZAMI crée une vidéo verticale animée. Tout se fait dans le navigateur.', en: 'Pick 2 to 12 photos and AZAMI makes a vertical video with motion and transitions. All in your browser.' },
+  '📷 ختار التصاور': { fr: '📷 Choisir les images', en: '📷 Choose photos' },
+  'ما ختارتي حتى صورة.': { fr: "Vous n'avez choisi aucune image.", en: 'You picked no photo.' },
+  '⏱ مدة كل صورة': { fr: '⏱ Durée par image', en: '⏱ Time per photo' },
+  '🖼 الجودة': { fr: '🖼 Qualité', en: '🖼 Quality' },
+  '🎬 صاوب الفيديو': { fr: '🎬 Créer la vidéo', en: '🎬 Create video' }
+};
+var UI_PH = {
+  '🔍 بحث فالمحادثات...': { fr: '🔍 Rechercher...', en: '🔍 Search chats...' },
+  'كتب لـ AZAMI...': { fr: 'Écrivez à AZAMI...', en: 'Message AZAMI...' },
+  'سميتك': { fr: 'Votre nom', en: 'Your name' },
+  'مثال: أشرف': { fr: 'ex. Achraf', en: 'e.g. Achraf' }
+};
+var UI_SNAP = null;
+function uiCollect() {
+  if (UI_SNAP) return;
+  UI_SNAP = { texts: [], ph: [] };
+  var skip = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, CODE: 1, PRE: 1, OPTION: 1 };
+  var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+  var n;
+  while ((n = walker.nextNode())) {
+    var p = n.parentNode;
+    if (!p || skip[p.nodeName]) continue;
+    var bad = false, par = p;
+    while (par && par !== document.body) {
+      if (par.id === 'chat' || (par.classList && (par.classList.contains('msg-text') || par.classList.contains('code')))) { bad = true; break; }
+      par = par.parentNode;
+    }
+    if (bad) continue;
+    var raw = n.nodeValue || '';
+    var t = raw.trim();
+    if (UI_DICT[t]) UI_SNAP.texts.push({ n: n, ar: t });
+  }
+  var els = document.querySelectorAll('[placeholder]');
+  for (var i = 0; i < els.length; i++) {
+    var k = (els[i].getAttribute('placeholder') || '').trim();
+    if (UI_PH[k]) UI_SNAP.ph.push({ el: els[i], ar: k });
+  }
+}
+function uiLangFor(langKey) {
+  if (langKey === 'fr') return 'fr';
+  if (langKey === 'en' || langKey === 'es') return 'en';
+  return 'ar';
+}
+function uiApply(langKey) {
+  uiCollect();
+  var l = uiLangFor(langKey);
+  for (var i = 0; i < UI_SNAP.texts.length; i++) {
+    var it = UI_SNAP.texts[i];
+    var rep = (l === 'ar') ? it.ar : (UI_DICT[it.ar][l] || it.ar);
+    if (it.n.nodeValue !== ' ' + rep + ' ') it.n.nodeValue = ' ' + rep + ' ';
+  }
+  for (var j = 0; j < UI_SNAP.ph.length; j++) {
+    var ph = UI_SNAP.ph[j];
+    ph.el.setAttribute('placeholder', (l === 'ar') ? ph.ar : (UI_PH[ph.ar][l] || ph.ar));
+  }
+  var html = document.documentElement;
+  html.setAttribute('lang', l === 'ar' ? 'ar' : l);
+  html.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
+}
+
 function sysPrompt(){
   var m=getMemory();
   return SYS_BASE + '\n\nLANGUAGE RULE (highest priority): ' + langRule() + (m ? '\n\nWhat you know about this user (remember it, use it naturally, never repeat it back verbatim): ' + m : '');
@@ -659,6 +786,8 @@ function clearConvs(){
     f=localStorage.getItem(FONT_KEY)||'m';
   }catch(e){}
   applyTheme(t);applyFont(f);
+  applyLang(getLang());
+  uiApply(getLang());
   applyLang(getLang());
 })();
 /* === الحساب (محلي) === */
