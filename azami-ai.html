@@ -266,16 +266,6 @@
   @media(max-width:768px){.sidebar{position:fixed;right:0;top:0;bottom:0;box-shadow:-4px 0 20px rgba(0,0,0,.4)}}
 </style>
 <link rel="canonical" href="https://nova-achraf.github.io/nova-site/azami-ai.html">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="AZAMI">
-<meta property="og:title" content="AZAMI — مساعدك المغربي">
-<meta property="og:description" content="AZAMI — مساعدك المغربي. من المغرب إلى العالم.">
-<meta property="og:url" content="https://nova-achraf.github.io/nova-site/azami-ai.html">
-<meta property="og:image" content="https://nova-achraf.github.io/nova-site/azami-icon-512.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AZAMI — مساعدك المغربي">
-<meta name="twitter:description" content="AZAMI — مساعدك المغربي. من المغرب إلى العالم.">
-<meta name="twitter:image" content="https://nova-achraf.github.io/nova-site/azami-icon-512.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"AZAMI","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"ar","description":"\u0645\u0633\u0627\u0639\u062f \u0630\u0643\u0627\u0621 \u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0645\u063a\u0631\u0628\u064a \u064a\u062e\u062f\u0645 \u0628\u0627\u0644\u062f\u0627\u0631\u062c\u0629","url":"https://nova-achraf.github.io/nova-site/azami-ai.html","offers":{"@type":"Offer","price":"0","priceCurrency":"MAD"},"author":{"@type":"Person","name":"Achraf El hassani Azami"}}</script>
 </head>
 <body>
@@ -297,6 +287,7 @@
   <div class="side-sec">
     <div class="side-cap">التطبيق</div>
     <button class="side-act" onclick="installApp()"><span class="ic">📲</span><span class="lbl">ثبّت AZAMI فالتليفون</span><span class="tag" id="instTag">تطبيق</span></button>
+    <button class="side-act" onclick="shareApp()"><span class="ic">📤</span><span class="lbl">شارك AZAMI</span></button>
     <div class="side-stats">
       <span>👁 <b id="statVisits">—</b> زائر</span>
       <span>📲 <b id="statInstalls">—</b> تثبيت</span>
@@ -794,6 +785,16 @@ function installApp() {
   }
   /* ما كاينش برومبت جاهز: نمشيو لدليل التثبيت */
   window.location.href = 'azami-install.html';
+}
+/* === مشاركة التطبيق === */
+var APP_URL = 'https://nova-achraf.github.io/nova-site/azami-ai.html';
+var APP_TXT = 'AZAMI — مساعدك المغربي 🇲🇦 محادثات، صور، فيديو و PDF';
+function shareApp() {
+  if (navigator.share) {
+    navigator.share({ title: 'AZAMI', text: APP_TXT, url: APP_URL }).catch(function () {});
+    return;
+  }
+  window.open('https://wa.me/?text=' + encodeURIComponent(APP_TXT + '\n' + APP_URL), '_blank');
 }
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
