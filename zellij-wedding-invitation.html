@@ -5,91 +5,98 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>دعوة زفاف — Zellij Studio (قابلة للتعديل والطبع)</title>
 <meta name="theme-color" content="#FFFBF6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#FDF8F1; --ink:#2A241F; --muted:#8A7A66;
-    --terra:#C4573A; --gold:#B8912F; --soft:#F3E9DB;
+    --paper:#FDF9F2; --ink:#2A241F; --muted:#8F8069;
+    --terra:#C4573A; --gold:#B8912F; --gold-l:#D9C08A;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
-    background:#EFE6DA;color:var(--ink);
-    font-family:'Segoe UI',system-ui,-apple-system,'Noto Naskh Arabic','Amiri',serif;
-    padding:22px 14px 120px;
+    background:#EDE4D7;color:var(--ink);
+    font-family:'Amiri','Noto Naskh Arabic',serif;
+    padding:22px 14px 124px;
   }
   /* ---------- TOOLBAR ---------- */
   .bar{
     position:fixed;left:0;right:0;bottom:0;z-index:50;padding:10px 14px 14px;
-    background:rgba(255,251,246,.96);border-top:1px solid #E3D6C6;
-    display:flex;gap:8px;align-items:center;justify-content:center;
+    background:rgba(255,251,246,.97);border-top:1px solid #E3D6C6;
+    display:flex;gap:10px;align-items:center;justify-content:center;
     backdrop-filter:blur(8px);
   }
   .bar button{
-    flex:1;max-width:220px;min-height:46px;border-radius:12px;border:1px solid #E3D6C6;
-    background:#fff;color:var(--ink);font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;
+    flex:0 0 auto;min-width:150px;min-height:46px;border-radius:12px;border:1px solid #E3D6C6;
+    background:#fff;color:var(--ink);font-weight:700;font-size:14px;
+    font-family:'Segoe UI',system-ui,sans-serif;cursor:pointer;
   }
   .bar button.primary{background:#241F1A;color:#FFFBF6;border-color:#241F1A}
-  .bar .hint{font-size:11px;color:var(--muted);max-width:180px;line-height:1.5}
+  .bar .hint{font-size:11px;color:var(--muted);max-width:190px;line-height:1.5;font-family:'Segoe UI',system-ui,sans-serif}
   /* ---------- PAGE ---------- */
   .stage{display:flex;flex-direction:column;align-items:center;gap:18px}
   .page{
     width:148mm;height:210mm;background:var(--paper);position:relative;
-    box-shadow:0 10px 30px rgba(60,40,20,.16);overflow:hidden;
-    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 34px rgba(60,40,20,.18);overflow:hidden;
   }
   @media(max-width:640px){
-    .page{width:100%;max-width:380px;height:auto;aspect-ratio:148/210}
+    .page{width:100%;max-width:382px;height:auto;aspect-ratio:148/210}
   }
-  /* border frame */
-  .frame{
-    position:absolute;inset:7mm;border:1.2px solid var(--gold);
-  }
-  .frame:after{
-    content:'';position:absolute;inset:2.6mm;border:.6px solid rgba(196,87,58,.55);
-  }
-  .corner{position:absolute;width:16mm;height:16mm;opacity:.95}
-  .corner.tl{top:8.5mm;right:8.5mm;transform:rotate(0deg)}
-  .corner.tr{top:8.5mm;left:8.5mm}
-  .corner.bl{bottom:8.5mm;right:8.5mm}
-  .corner.br{bottom:8.5mm;left:8.5mm}
+  /* real zellige band (khatam 8-point stars) */
+  .band{position:absolute;left:0;right:0;height:13mm;z-index:1}
+  .band.top{top:0}
+  .band.bottom{bottom:0;transform:rotate(180deg)}
+  .band svg{width:100%;height:100%;display:block}
+  .rule{position:absolute;left:9mm;right:9mm;height:0;border-top:.5px solid var(--gold-l);z-index:2}
+  .rule.t{top:13mm}
+  .rule.b{bottom:13mm}
+  .rule2{position:absolute;left:9mm;right:9mm;height:0;border-top:.4px solid rgba(196,87,58,.35);z-index:2}
+  .rule2.t{top:13.7mm}
+  .rule2.b{bottom:13.7mm}
+  /* corner medallion */
+  .corner{position:absolute;width:14mm;height:14mm;z-index:3;opacity:.9}
+  .corner.tl{top:15.5mm;right:15.5mm}
+  .corner.tr{top:15.5mm;left:15.5mm}
+  .corner.bl{bottom:15.5mm;right:15.5mm}
+  .corner.br{bottom:15.5mm;left:15.5mm}
   /* content */
-  .inner{
-    position:relative;z-index:2;text-align:center;padding:26mm 16mm;width:100%;
-  }
+  .inner{position:relative;z-index:4;text-align:center;padding:31mm 17mm;height:100%}
   .kicker{
-    font-size:9.5pt;letter-spacing:.42em;color:var(--terra);text-transform:uppercase;
-    margin-bottom:4mm;
+    font-family:'Cormorant Garamond',serif;font-weight:300;
+    font-size:9pt;letter-spacing:.55em;color:var(--terra);text-transform:uppercase;
+    margin-bottom:5mm;direction:ltr;
   }
-  .bism{
-    font-size:8.6pt;color:var(--muted);letter-spacing:.12em;margin-bottom:7mm;
-  }
+  .bism{font-size:9pt;color:var(--muted);letter-spacing:.08em;margin-bottom:8mm}
   .names{
-    font-size:27pt;line-height:1.25;font-weight:700;letter-spacing:.03em;
-    color:var(--ink);
+    font-family:'Cormorant Garamond',serif;font-weight:300;
+    font-size:30pt;line-height:1.18;letter-spacing:.06em;color:var(--ink);
   }
+  .names .latin{direction:ltr;display:block}
   .names .amp{
-    display:block;font-size:15pt;color:var(--gold);margin:2.5mm 0;
-    font-weight:400;letter-spacing:.3em;
+    display:block;font-size:13pt;color:var(--gold);margin:3.2mm 0;
+    letter-spacing:.35em;font-style:italic;
   }
-  .divider{
-    display:flex;align-items:center;justify-content:center;gap:3mm;margin:7mm 0 6mm;
+  .divider{display:flex;align-items:center;justify-content:center;gap:3mm;margin:8mm 0 7mm}
+  .divider i{display:block;height:.5px;width:20mm;background:linear-gradient(90deg,transparent,var(--gold-l))}
+  .divider i.r{background:linear-gradient(90deg,var(--gold-l),transparent)}
+  .divider b{color:var(--terra);font-size:9pt;line-height:1}
+  .meta{font-size:10.5pt;line-height:2.05;color:#3B3227}
+  .meta .lbl{
+    font-family:'Cormorant Garamond',serif;font-size:7.5pt;letter-spacing:.34em;
+    color:var(--muted);display:block;margin-bottom:.8mm;direction:ltr;text-transform:uppercase;
   }
-  .divider i{display:block;height:1px;width:22mm;background:linear-gradient(90deg,transparent,var(--gold))}
-  .divider i.r{background:linear-gradient(90deg,var(--gold),transparent)}
-  .divider b{color:var(--terra);font-size:11pt}
-  .meta{
-    font-size:10.5pt;line-height:2.1;color:#3D3428;
-  }
-  .meta .lbl{font-size:8pt;letter-spacing:.22em;color:var(--muted);display:block;margin-bottom:.6mm}
-  .place{margin-top:6mm}
+  .place{margin-top:7mm}
   .foot{
-    position:absolute;bottom:13mm;left:0;right:0;text-align:center;
-    font-size:7.6pt;letter-spacing:.3em;color:var(--muted);
+    position:absolute;bottom:15.5mm;left:0;right:0;text-align:center;z-index:4;
+    font-family:'Cormorant Garamond',serif;font-size:7pt;letter-spacing:.42em;color:var(--muted);
+    direction:ltr;
   }
   [contenteditable="true"]{outline:none;border-radius:3px;transition:background .15s}
-  [contenteditable="true"]:focus{background:#FBEFE2;box-shadow:0 0 0 2px rgba(196,87,58,.28)}
+  [contenteditable="true"]:focus{background:#FBEFE2;box-shadow:0 0 0 2px rgba(196,87,58,.26)}
   .edit-tip{
     font-size:12px;color:#6B6053;background:#FFF7EE;border:1px solid #E7D8C6;
-    border-radius:12px;padding:10px 14px;max-width:420px;line-height:1.7;text-align:center;
+    border-radius:12px;padding:10px 14px;max-width:430px;line-height:1.7;text-align:center;
+    font-family:'Segoe UI',system-ui,sans-serif;
   }
   /* ---------- PRINT ---------- */
   @page{ size:A5 portrait; margin:0; }
@@ -97,47 +104,79 @@
     body{background:#fff;padding:0}
     .bar,.edit-tip{display:none!important}
     .stage{gap:0}
-    .page{
-      width:148mm;height:210mm;box-shadow:none;page-break-after:always;
-      -webkit-print-color-adjust:exact;print-color-adjust:exact;
-    }
+    .page{width:148mm;height:210mm;box-shadow:none;page-break-after:always;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact}
   }
 </style>
 </head>
 <body>
 
 <div class="stage">
-  <p class="edit-tip">✏️ اضغط على أي نص باش تبدلو (السميات، التاريخ، البلاصة). من بعد ضغط «طبع / حفظ PDF» وختار A5.</p>
+  <p class="edit-tip">✏️ اضغط على أي نص باش تبدلو. من بعد «طبع / حفظ PDF» → مقاس A5 + فعّل Background graphics.</p>
 
   <div class="page" id="card">
-    <div class="frame"></div>
 
-    <svg class="corner tl" viewBox="0 0 60 60" aria-hidden="true">
-      <g fill="none" stroke="#B8912F" stroke-width="1.4">
-        <path d="M2 58 V18 Q2 2 18 2 H58"/>
-        <path d="M9 58 V20 Q9 9 20 9 H58"/>
-        <path d="M30 2 L38 14 L50 22 L38 30 L30 42 L22 30 L10 22 L22 14 Z" stroke="#C4573A"/>
+    <!-- zellige bands -->
+    <div class="band top">
+      <svg viewBox="0 0 400 52" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <pattern id="khatam" width="52" height="52" patternUnits="userSpaceOnUse">
+            <g fill="none" stroke="#B8912F" stroke-width=".55">
+              <rect x="14" y="14" width="24" height="24"/>
+              <rect x="14" y="14" width="24" height="24" transform="rotate(45 26 26)"/>
+              <circle cx="26" cy="26" r="3.1" stroke="#C4573A"/>
+              <path d="M26 0 L26 7 M26 45 L26 52 M0 26 L7 26 M45 26 L52 26" stroke="#D9C08A"/>
+              <circle cx="0" cy="0" r="1.6" stroke="#C4573A"/>
+              <circle cx="52" cy="0" r="1.6" stroke="#C4573A"/>
+              <circle cx="0" cy="52" r="1.6" stroke="#C4573A"/>
+              <circle cx="52" cy="52" r="1.6" stroke="#C4573A"/>
+            </g>
+          </pattern>
+        </defs>
+        <rect width="400" height="52" fill="#FDF9F2"/>
+        <rect width="400" height="52" fill="url(#khatam)"/>
+      </svg>
+    </div>
+
+    <div class="band bottom">
+      <svg viewBox="0 0 400 52" preserveAspectRatio="none" aria-hidden="true">
+        <rect width="400" height="52" fill="#FDF9F2"/>
+        <rect width="400" height="52" fill="url(#khatam)"/>
+      </svg>
+    </div>
+
+    <div class="rule t"></div>
+    <div class="rule2 t"></div>
+    <div class="rule b"></div>
+    <div class="rule2 b"></div>
+
+    <!-- corner medallions -->
+    <svg class="corner tl" viewBox="0 0 48 48" aria-hidden="true">
+      <g fill="none" stroke="#B8912F" stroke-width=".8">
+        <path d="M24 3 L31 12 L42 15 L35 24 L42 33 L31 36 L24 45 L17 36 L6 33 L13 24 L6 15 L17 12 Z"/>
+        <path d="M24 9 L29 15 L36 17 L31 24 L36 31 L29 33 L24 39 L19 33 L12 31 L17 24 L12 17 L19 15 Z" stroke="#C4573A"/>
+        <circle cx="24" cy="24" r="2.4" stroke="#B8912F"/>
       </g>
     </svg>
-    <svg class="corner tr" viewBox="0 0 60 60" aria-hidden="true">
-      <g fill="none" stroke="#B8912F" stroke-width="1.4">
-        <path d="M2 58 V18 Q2 2 18 2 H58"/>
-        <path d="M9 58 V20 Q9 9 20 9 H58"/>
-        <path d="M30 2 L38 14 L50 22 L38 30 L30 42 L22 30 L10 22 L22 14 Z" stroke="#C4573A"/>
+    <svg class="corner tr" viewBox="0 0 48 48" aria-hidden="true">
+      <g fill="none" stroke="#B8912F" stroke-width=".8">
+        <path d="M24 3 L31 12 L42 15 L35 24 L42 33 L31 36 L24 45 L17 36 L6 33 L13 24 L6 15 L17 12 Z"/>
+        <path d="M24 9 L29 15 L36 17 L31 24 L36 31 L29 33 L24 39 L19 33 L12 31 L17 24 L12 17 L19 15 Z" stroke="#C4573A"/>
+        <circle cx="24" cy="24" r="2.4" stroke="#B8912F"/>
       </g>
     </svg>
-    <svg class="corner bl" viewBox="0 0 60 60" aria-hidden="true">
-      <g fill="none" stroke="#B8912F" stroke-width="1.4">
-        <path d="M2 58 V18 Q2 2 18 2 H58"/>
-        <path d="M9 58 V20 Q9 9 20 9 H58"/>
-        <path d="M30 2 L38 14 L50 22 L38 30 L30 42 L22 30 L10 22 L22 14 Z" stroke="#C4573A"/>
+    <svg class="corner bl" viewBox="0 0 48 48" aria-hidden="true">
+      <g fill="none" stroke="#B8912F" stroke-width=".8">
+        <path d="M24 3 L31 12 L42 15 L35 24 L42 33 L31 36 L24 45 L17 36 L6 33 L13 24 L6 15 L17 12 Z"/>
+        <path d="M24 9 L29 15 L36 17 L31 24 L36 31 L29 33 L24 39 L19 33 L12 31 L17 24 L12 17 L19 15 Z" stroke="#C4573A"/>
+        <circle cx="24" cy="24" r="2.4" stroke="#B8912F"/>
       </g>
     </svg>
-    <svg class="corner br" viewBox="0 0 60 60" aria-hidden="true">
-      <g fill="none" stroke="#B8912F" stroke-width="1.4">
-        <path d="M2 58 V18 Q2 2 18 2 H58"/>
-        <path d="M9 58 V20 Q9 9 20 9 H58"/>
-        <path d="M30 2 L38 14 L50 22 L38 30 L30 42 L22 30 L10 22 L22 14 Z" stroke="#C4573A"/>
+    <svg class="corner br" viewBox="0 0 48 48" aria-hidden="true">
+      <g fill="none" stroke="#B8912F" stroke-width=".8">
+        <path d="M24 3 L31 12 L42 15 L35 24 L42 33 L31 36 L24 45 L17 36 L6 33 L13 24 L6 15 L17 12 Z"/>
+        <path d="M24 9 L29 15 L36 17 L31 24 L36 31 L29 33 L24 39 L19 33 L12 31 L17 24 L12 17 L19 15 Z" stroke="#C4573A"/>
+        <circle cx="24" cy="24" r="2.4" stroke="#B8912F"/>
       </g>
     </svg>
 
@@ -146,21 +185,20 @@
       <div class="bism" contenteditable="true">بسم الله الرحمن الرحيم</div>
 
       <div class="names">
-        <span contenteditable="true">أشرف</span>
+        <span class="latin" contenteditable="true">Achraf</span>
         <span class="amp">&amp;</span>
-        <span contenteditable="true">سارة</span>
+        <span class="latin" contenteditable="true">Sara</span>
       </div>
 
       <div class="divider"><i></i><b>✦</b><i class="r"></i></div>
 
       <div class="meta">
-        <span contenteditable="true">السبت 20 دجنبر 2026</span><br>
-        <span class="lbl">ON SE MARIE</span>
-        <span contenteditable="true">على الساعة 19:00</span>
+        <span class="lbl">Le mariage</span>
+        <span contenteditable="true">السبت 20 دجنبر 2026 · 19:00</span>
       </div>
 
       <div class="meta place">
-        <span class="lbl">LIEU</span>
+        <span class="lbl">Lieu</span>
         <span contenteditable="true">قاعة الأندلس — الدار البيضاء</span>
       </div>
     </div>
@@ -171,7 +209,7 @@
 
 <div class="bar">
   <button class="primary" onclick="window.print()">🖨️ طبع / حفظ PDF</button>
-  <span class="hint">ختار مقاس A5 وحط «Background graphics» باش تخرج الألوان.</span>
+  <span class="hint">مقاس A5 · فعّل «Background graphics» باش تخرج الزواقة والألوان.</span>
 </div>
 
 </body>
