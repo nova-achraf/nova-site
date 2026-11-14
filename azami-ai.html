@@ -288,6 +288,7 @@
     <div class="side-cap">التطبيق</div>
     <button class="side-act" onclick="installApp()"><span class="ic">📲</span><span class="lbl">ثبّت AZAMI فالتليفون</span><span class="tag" id="instTag">تطبيق</span></button>
     <button class="side-act" onclick="shareApp()"><span class="ic">📤</span><span class="lbl">شارك AZAMI</span></button>
+    <button class="side-act" onclick="cycleLang()"><span class="ic">🌍</span><span class="lbl">اللغة</span><span class="tag lang-tag">الدارجة</span></button>
     <div class="side-stats">
       <span>👁 <b id="statVisits">—</b> زائر</span>
       <span>📲 <b id="statInstalls">—</b> تثبيت</span>
@@ -302,7 +303,7 @@
       <button class="sw-ocean" onclick="setTheme('ocean')" title="أزرق"></button>
     </div>
     <button class="side-act" onclick="cycleFont()"><span class="ic">🔠</span><span class="lbl">حجم الخط</span><span class="tag" id="fontTag">عادي</span></button>
-    <button class="side-act" onclick="cycleLang()"><span class="ic">🌍</span><span class="lbl">لغة الردود</span><span class="tag" id="langTag">الدارجة</span></button>
+    <button class="side-act" onclick="cycleLang()"><span class="ic">🌍</span><span class="lbl">لغة الردود</span><span class="tag lang-tag">الدارجة</span></button>
     <button class="side-act" onclick="lockSettings()"><span class="ic">🔒</span><span class="lbl">قفل التطبيق</span><span class="tag" id="lockTag">مطفي</span></button>
     <button class="side-act" onclick="openAccount()"><span class="ic">👤</span><span class="lbl">حسابي</span><span class="tag" id="accTag">سجّل</span></button>
     <button class="side-act" onclick="clearConvs()"><span class="ic">🗑️</span><span class="lbl">مسح كل المحادثات</span></button>
@@ -470,8 +471,10 @@ function langRule(){
   return LANGS[0][2];
 }
 function applyLang(c){
-  var t=document.getElementById('langTag');
-  for(var i=0;i<LANGS.length;i++){if(LANGS[i][0]===c&&t)t.textContent=LANGS[i][1]}
+  var els=document.querySelectorAll('.lang-tag');
+  for(var j=0;j<els.length;j++){
+    for(var i=0;i<LANGS.length;i++){if(LANGS[i][0]===c)els[j].textContent=LANGS[i][1]}
+  }
 }
 function cycleLang(){
   var cur=getLang(),idx=0;
