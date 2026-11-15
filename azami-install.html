@@ -43,10 +43,24 @@
   .check{display:flex;gap:9px;align-items:flex-start;font-size:13px;margin-bottom:9px}
   .check i{color:var(--gold);font-style:normal;font-weight:800}
   footer{text-align:center;font-size:11.5px;color:var(--muted);margin-top:18px}
+  .share{display:flex;gap:8px;margin-top:12px}
+  .share button{flex:1;min-height:46px;border-radius:12px;border:1px solid var(--line);background:transparent;
+    color:var(--txt);font-family:inherit;font-size:13.5px;cursor:pointer}
+  .share button.pri{background:var(--gold);color:#151207;border:0;font-weight:800}
+  .bar{background:#1A1410;border:1px solid #4A3620;border-radius:14px;padding:14px;margin-bottom:12px;display:none}
+  .bar.show{display:block}
+  .bar p{font-size:13px;color:#F0C085;margin-bottom:10px}
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <div class="bar" id="inappBar">
+    <p>⚠️ راك كتحل هاد الصفحة من داخل تطبيق (فيسبوك/واتساب) — التثبيت ما كيخدمش هنا. نسخ الرابط وحلو فـChrome.</p>
+    <div class="share">
+      <button class="pri" onclick="copyLink()">📋 نسخ الرابط</button>
+    </div>
+  </div>
 
   <header>
     <img class="logo" src="azami-icon-192.png" alt="أيقونة AZAMI">
@@ -97,7 +111,31 @@
     <p style="font-size:13px;color:var(--muted)">لهذا الـAPK هو الحل الواقعي دابا — نفس التطبيق، بلا انتظار وبلا خلاص.</p>
   </div>
 
+  <div class="card">
+    <h2>شارك دليل التثبيت</h2>
+    <p class="lead">صيفط هاد الصفحة لأي واحد بغيتيه يثبت AZAMI — فيها الخطوات كاملة بالتصاور.</p>
+    <div class="share">
+      <button class="pri" onclick="sharePage()">📤 شارك</button>
+      <button onclick="copyLink()">📋 نسخ الرابط</button>
+    </div>
+  </div>
+
   <footer>ZELLIJ · صنع بيد أشرف 🇲🇦</footer>
 </div>
+<script>
+var PAGE_URL = location.origin + location.pathname;
+function sharePage(){
+  if (navigator.share) { navigator.share({title:'تثبيت AZAMI', text:'دليل تثبيت تطبيق AZAMI', url:PAGE_URL}).catch(function(){}); return; }
+  window.open('https://wa.me/?text=' + encodeURIComponent('دليل تثبيت AZAMI: ' + PAGE_URL), '_blank');
+}
+function copyLink(){
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(PAGE_URL).then(function(){ alert('تنسخ ✅'); }).catch(function(){ prompt('انسخ الرابط:', PAGE_URL); });
+  } else { prompt('انسخ الرابط:', PAGE_URL); }
+}
+if (/FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Line\//i.test(navigator.userAgent)) {
+  document.getElementById('inappBar').classList.add('show');
+}
+</script>
 </body>
 </html>
