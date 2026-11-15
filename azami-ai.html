@@ -186,6 +186,13 @@
     border-radius:12px;font-size:14px;font-family:inherit;cursor:pointer;text-align:center;line-height:1.3}
   .langchip:hover{border-color:var(--gold)}
   .langchip.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold2);font-weight:700}
+  .steps{list-style:none;margin:0 0 12px;padding:0}
+  .steps li{position:relative;padding:9px 34px 9px 0;font-size:13.5px;line-height:1.6;color:var(--txt);border-bottom:1px solid var(--line)}
+  html[dir=ltr] .steps li{padding:9px 0 9px 34px}
+  .steps li:last-child{border-bottom:0}
+  .steps li b{position:absolute;right:0;top:9px;width:22px;height:22px;border-radius:50%;background:var(--gold);color:#111;
+    font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:700}
+  html[dir=ltr] .steps li b{right:auto;left:0}
   .sheet .skip{background:transparent;color:var(--muted);border:1px solid var(--line)}
   .sheet .szrow{display:flex;gap:8px;margin-bottom:10px}
   .sheet .szrow .sz{flex:1;width:auto;padding:10px 6px;background:var(--card);color:var(--muted);border:1.5px solid var(--line);border-radius:10px;font-size:13px;font-weight:700}
@@ -1064,9 +1071,32 @@ function installApp() {
     });
     return;
   }
-  /* ما كاينش برومبت جاهز: نمشيو لدليل التثبيت */
-  window.location.href = 'azami-install.html';
+  /* ما كاينش برومبت جاهز: نوريو الخطوات */
+  openInst();
 }
+function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+function openInst(){
+  var box = document.getElementById('instSteps');
+  if (box) {
+    var steps;
+    if (isIOS()) {
+      steps = ['حل الرابط فـSafari', 'ضغط على زر المشاركة ⬆️ تحت', 'ختار «إضافة إلى الشاشة الرئيسية»', 'ضغط «إضافة»'];
+    } else {
+      steps = ['حل الرابط فـChrome (ماشي فمتصفح فيسبوك/واتساب)', 'ضغط على ⋮ فوق على اليمين', 'ختار «تثبيت التطبيق» ولا «إضافة إلى الشاشة الرئيسية»', 'أكد «تثبيت»'];
+    }
+    box.innerHTML = '';
+    for (var i = 0; i < steps.length; i++) {
+      var li = document.createElement('li');
+      var b = document.createElement('b');
+      b.textContent = String(i + 1);
+      li.appendChild(b);
+      li.appendChild(document.createTextNode(steps[i]));
+      box.appendChild(li);
+    }
+  }
+  document.getElementById('instModal').classList.add('show');
+}
+function closeInst(){ document.getElementById('instModal').classList.remove('show'); }
 /* === مشاركة التطبيق === */
 var APP_URL = 'https://nova-achraf.github.io/nova-site/azami-ai.html';
 var APP_TXT = 'AZAMI — مساعدك المغربي 🇲🇦 محادثات، صور، فيديو و PDF';
@@ -1459,6 +1489,17 @@ async function pdfFromImages(input){
     <p>ختار لغة الواجهة ولغة ردود AZAMI. الاختيار كيتحفظ.</p>
     <div class="langgrid" id="langGrid"></div>
     <button class="skip" onclick="closeLang()">إغلاق</button>
+  </div>
+</div>
+
+<!-- INSTALL -->
+<div class="modal" id="instModal">
+  <div class="sheet">
+    <h3>📲 ثبّت AZAMI</h3>
+    <p>AZAMI كيتثبت بحال أي تطبيق — بلا Play Store وبلا فلوس.</p>
+    <ul class="steps" id="instSteps"></ul>
+    <button class="go" onclick="installApp()">جرب التثبيت دابا</button>
+    <button class="skip" onclick="closeInst()">إغلاق</button>
   </div>
 </div>
 </body>
