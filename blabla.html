@@ -23,6 +23,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Se
 .live{font-size:11px;font-weight:700;color:#fff;background:#f3425f;border-radius:6px;padding:3px 8px}
 .viewers{display:inline-block;font-size:12px;font-weight:700;background:rgba(255,255,255,.16);padding:4px 10px;border-radius:12px;margin-left:auto}
 .addb{background:linear-gradient(135deg,#00AEEC,#FB7299);border:none;color:#fff;width:34px;height:34px;border-radius:12px;font-size:18px;cursor:pointer;font-weight:900}
+.icb{background:#262626;border:none;color:#fff;width:34px;height:34px;border-radius:11px;font-size:15px;cursor:pointer;line-height:1;flex-shrink:0}
+.icb:active{background:#3a3a3a}
 .tabrow{display:flex;background:#0d0d0d;flex-shrink:0}
 .tabb{flex:1;padding:11px;border:none;background:none;color:#777;font-weight:800;font-size:14px;cursor:pointer;border-bottom:3px solid transparent}
 .tabb.on{color:#fff;border-bottom:3px solid #FB7299}
@@ -106,6 +108,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Se
     <span class="logoChip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>BLABLA</span>
     <span class="live">● LIVE</span>
     <span class="viewers">👁️ <span id="viewers">1,247</span></span>
+    <button class="icb" onclick="shareApp()" aria-label="شارك" title="شارك BLABLA">📤</button>
+    <button class="icb" onclick="goInstall()" aria-label="تنزيل" title="نزّل التطبيق">⬇️</button>
     <button class="addb" onclick="openCreate()">＋</button>
   </div>
   <div class="tabrow">
@@ -454,6 +458,16 @@ function renderSongs(){
 }
 function openMusic(){renderSongs();document.getElementById('musicPanel').classList.add('on');}
 function closeMusic(){document.getElementById('musicPanel').classList.remove('on');}
+// ---------- مشاركة وتنزيل 📤⬇️ ----------
+function appUrl(){ return location.origin + location.pathname.replace(/[^/]*$/, '') + 'blabla.html'; }
+function shareApp(){
+  var txt = 'تطبيق BLABLA — ريلز ولايف وموسيقى. حل هاد الرابط وثبّتو: ' + appUrl();
+  if (navigator.share) { navigator.share({ title:'BLABLA', text:txt, url:appUrl() }).catch(function(){}); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(appUrl()).then(function(){ alert('تنسخ الرابط ✅ صيفطو لصاحبك.'); }).catch(function(){ prompt('انسخ الرابط:', appUrl()); });
+  } else { window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank'); }
+}
+function goInstall(){ location.href = 'blabla-install.html'; }
 // ---------- تسجيل الفيديو 🎥 ----------
 var recStream=null,recRec=null,recChunks=[],recBlob=null,recFacing='user',recTimerI=null,recSecs=0,recClosing=false;
 function openCreate(){
