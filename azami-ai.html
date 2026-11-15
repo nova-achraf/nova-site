@@ -1091,6 +1091,15 @@ function copyAppLink(){
     navigator.clipboard.writeText(url).then(function(){ alert('تنسخ الرابط ✅ حلو فـChrome.'); }).catch(function(){ prompt('انسخ الرابط:', url); });
   } else { prompt('انسخ الرابط:', url); }
 }
+function apkUrl(){
+  return location.origin + location.pathname.replace(/[^/]*$/, '') + 'AZAMI.apk';
+}
+function shareAPK(){
+  var url = apkUrl();
+  var txt = 'تطبيق AZAMI — حمّلو من هنا وثبّتو: ' + url;
+  if (navigator.share) { navigator.share({ title: 'AZAMI', text: txt, url: url }).catch(function(){}); return; }
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+}
 function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
 function openInst(){
   var box = document.getElementById('instSteps');
@@ -1522,7 +1531,8 @@ async function pdfFromImages(input){
     <p>AZAMI كيتثبت بحال أي تطبيق — بلا Play Store وبلا فلوس.</p>
     <ul class="steps" id="instSteps"></ul>
     <button class="go" onclick="installApp()">جرب التثبيت دابا</button>
-    <button class="skip" onclick="location.href='https://github.com/nova-achraf/nova-site/releases/download/azami-v1.0/AZAMI.apk'">⬇️ حمّل ملف APK (كيتثبت ديركت)</button>
+    <button class="skip" onclick="location.href=apkUrl()">⬇️ حمّل ملف APK (كيتثبت ديركت)</button>
+    <button class="skip" onclick="shareAPK()">📤 صيفطو لصاحبك (رابط التحميل)</button>
     <button class="skip" onclick="window.location.href='azami-install.html'">الدليل الكامل</button>
     <button class="skip" onclick="closeInst()">إغلاق</button>
   </div>
