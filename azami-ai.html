@@ -193,6 +193,14 @@
   .steps li b{position:absolute;right:0;top:9px;width:22px;height:22px;border-radius:50%;background:var(--gold);color:#111;
     font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:700}
   html[dir=ltr] .steps li b{right:auto;left:0}
+  .inapp{position:fixed;left:12px;right:12px;bottom:12px;z-index:70;background:var(--card);border:1px solid var(--gold);
+    border-radius:14px;padding:12px 14px;box-shadow:0 8px 28px rgba(0,0,0,.45);display:none}
+  .inapp.show{display:block}
+  .inapp p{font-size:12.5px;line-height:1.6;color:var(--txt);margin:0 0 10px}
+  .inapp .row{display:flex;gap:8px}
+  .inapp button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--txt);
+    font-size:13px;font-family:inherit;cursor:pointer}
+  .inapp button.pri{background:linear-gradient(135deg,var(--green),var(--green2));border:0;color:#fff;font-weight:700}
   .sheet .skip{background:transparent;color:var(--muted);border:1px solid var(--line)}
   .sheet .szrow{display:flex;gap:8px;margin-bottom:10px}
   .sheet .szrow .sz{flex:1;width:auto;padding:10px 6px;background:var(--card);color:var(--muted);border:1.5px solid var(--line);border-radius:10px;font-size:13px;font-weight:700}
@@ -1074,6 +1082,15 @@ function installApp() {
   /* ما كاينش برومبت جاهز: نوريو الخطوات */
   openInst();
 }
+function isInApp(){
+  return /FBAN|FBAV|FB_IAB|Instagram|Line\/|WhatsApp|Snapchat|Twitter/i.test(navigator.userAgent);
+}
+function copyAppLink(){
+  var url = APP_URL;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function(){ alert('تنسخ الرابط ✅ حلو فـChrome.'); }).catch(function(){ prompt('انسخ الرابط:', url); });
+  } else { prompt('انسخ الرابط:', url); }
+}
 function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
 function openInst(){
   var box = document.getElementById('instSteps');
@@ -1115,6 +1132,12 @@ if ('serviceWorker' in navigator) {
 if (isStandalone()) {
   var _it = document.getElementById('instTag');
   if (_it) _it.textContent = 'مثبّت ✓';
+}
+if (isInApp() && !isStandalone()) {
+  setTimeout(function () {
+    var bar = document.getElementById('inappBar');
+    if (bar) bar.classList.add('show');
+  }, 1200);
 }
 paintLock();
 paintAccount();
@@ -1500,6 +1523,15 @@ async function pdfFromImages(input){
     <ul class="steps" id="instSteps"></ul>
     <button class="go" onclick="installApp()">جرب التثبيت دابا</button>
     <button class="skip" onclick="closeInst()">إغلاق</button>
+  </div>
+</div>
+
+<!-- IN-APP BROWSER WARNING -->
+<div class="inapp" id="inappBar">
+  <p>⚠️ راك كتحل AZAMI من داخل تطبيق (فيسبوك/واتساب). التثبيت ما كيخدمش هنا — خاصك تحلو فـChrome.</p>
+  <div class="row">
+    <button class="pri" onclick="copyAppLink()">📋 نسخ الرابط</button>
+    <button onclick="document.getElementById('inappBar').classList.remove('show')">إغلاق</button>
   </div>
 </div>
 </body>
