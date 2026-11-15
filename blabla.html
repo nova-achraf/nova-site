@@ -24,6 +24,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Se
 .viewers{display:inline-block;font-size:12px;font-weight:700;background:rgba(255,255,255,.16);padding:4px 10px;border-radius:12px;margin-left:auto}
 .addb{background:linear-gradient(135deg,#00AEEC,#FB7299);border:none;color:#fff;width:34px;height:34px;border-radius:12px;font-size:18px;cursor:pointer;font-weight:900}
 .icb{background:#262626;border:none;color:#fff;width:34px;height:34px;border-radius:11px;font-size:15px;cursor:pointer;line-height:1;flex-shrink:0}
+.mList{max-height:34vh;overflow-y:auto;margin-top:8px;display:flex;flex-direction:column}
+.mItem{font-size:13.5px;padding:7px 10px;border-radius:10px;background:#232323;margin-bottom:6px;word-break:break-word}
+.mItem b{color:#FB7299;font-size:12px}
+.mItem.me{background:#16323d}
+.msgRow{display:flex;gap:8px;margin-top:8px}
+.msgRow input{flex:1;background:#262626;border:none;border-radius:12px;padding:11px 12px;color:#fff;font-family:inherit;font-size:14px}
+.msgRow button{background:linear-gradient(135deg,#00AEEC,#FB7299);border:none;color:#fff;border-radius:12px;padding:0 16px;font-weight:900;font-family:inherit;font-size:14px}
 .icb:active{background:#3a3a3a}
 .tabrow{display:flex;background:#0d0d0d;flex-shrink:0}
 .tabb{flex:1;padding:11px;border:none;background:none;color:#777;font-weight:800;font-size:14px;cursor:pointer;border-bottom:3px solid transparent}
@@ -108,6 +115,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Se
     <span class="logoChip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>BLABLA</span>
     <span class="live">● LIVE</span>
     <span class="viewers">👁️ <span id="viewers">1,247</span></span>
+    <button class="icb" onclick="openMsg()" aria-label="الرسائل" title="الرسائل">💬</button>
     <button class="icb" onclick="shareApp()" aria-label="شارك" title="شارك BLABLA">📤</button>
     <button class="icb" onclick="goInstall()" aria-label="تنزيل" title="نزّل التطبيق">⬇️</button>
     <button class="addb" onclick="openCreate()">＋</button>
@@ -146,6 +154,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Se
       <div class="gpHead">🎵 الأغاني والمغنين<span id="npChip" style="margin-left:auto;font-size:12px;color:#FB7299;max-width:40%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span><button class="gpx" onclick="closeMusic()">✕</button></div>
       <div id="songList"></div>
       <div style="font-size:11px;color:#777;text-align:center;padding-top:2px">كل الأغاني مولّدة فالتطبيق — بلا حقوق، آمنة 100% · © NOVA</div>
+    </div>
+    <div class="musicPanel" id="msgPanel">
+      <div class="gpHead">💬 الرسائل<span id="msgWho" style="margin-left:auto;font-size:12px;color:#FB7299;max-width:45%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span><button class="gpx" onclick="closeMsg()">✕</button></div>
+      <div class="mList" id="msgList"></div>
+      <div class="msgRow">
+        <input id="msgInput" placeholder="كتب رسالة..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button onclick="sendMsg()">صيفط</button>
+      </div>
     </div>
     <div class="tagPanel" id="tagPanel">
       <div class="gpHead"><span id="tagTitle"># الهاشتاغ</span><button class="gpx" style="margin-left:auto" onclick="closeTags()">✕</button></div>
@@ -468,6 +484,52 @@ function shareApp(){
   } else { window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank'); }
 }
 function goInstall(){ location.href = 'blabla-install.html'; }
+// ---------- الرسائل بين الحسابات 💬 ----------
+var MSG_TOPIC='nova-blabla-9f3k2x7q', msgSeen={}, msgSince=Math.floor(Date.now()/1000)-600, msgTimer=null;
+function msgName(){
+  var n=myName();
+  if(!n||n==='Guest'){ n=(localStorage.getItem('novaMsgName')||'').trim(); }
+  if(!n){ n=(prompt('سميتك فالشات؟')||'').trim(); if(n) localStorage.setItem('novaMsgName',n); }
+  return n||'ضيف';
+}
+function openMsg(){
+  document.getElementById('msgPanel').classList.add('on');
+  document.getElementById('msgWho').textContent=msgName();
+  loadMsgs();
+  if(!msgTimer) msgTimer=setInterval(loadMsgs,4000);
+}
+function closeMsg(){
+  document.getElementById('msgPanel').classList.remove('on');
+  if(msgTimer){ clearInterval(msgTimer); msgTimer=null; }
+}
+function addMsgItem(n,t,id,mine){
+  if(msgSeen[id]) return; msgSeen[id]=1;
+  var L=document.getElementById('msgList'); if(!L) return;
+  var d=document.createElement('div'); d.className='mItem'+(mine?' me':'');
+  var b=document.createElement('b'); b.textContent=n||'ضيف';
+  var s=document.createElement('div'); s.textContent=t;
+  d.appendChild(b); d.appendChild(s); L.appendChild(d); L.scrollTop=L.scrollHeight;
+}
+function loadMsgs(){
+  fetch('https://ntfy.sh/'+MSG_TOPIC+'/json?poll=1&since='+msgSince,{cache:'no-store'})
+    .then(function(r){ return r.text() })
+    .then(function(txt){
+      txt.trim().split('\n').filter(Boolean).forEach(function(line){
+        var o; try{ o=JSON.parse(line) }catch(e){ return }
+        if(!o||o.event!=='message') return;
+        if(o.time&&o.time>msgSince) msgSince=o.time;
+        var p; try{ p=JSON.parse(o.message) }catch(e){ p={n:o.title||'ضيف',t:o.message} }
+        addMsgItem(p.n,p.t,o.id,p.n===msgName());
+      });
+    }).catch(function(){});
+}
+function sendMsg(){
+  var i=document.getElementById('msgInput'); if(!i) return;
+  var t=(i.value||'').trim(); if(!t) return;
+  var n=msgName(); i.value='';
+  addMsgItem(n,t,'me'+Date.now(),true);
+  fetch('https://ntfy.sh/'+MSG_TOPIC,{method:'POST',body:JSON.stringify({n:n,t:t})}).catch(function(){});
+}
 // ---------- تسجيل الفيديو 🎥 ----------
 var recStream=null,recRec=null,recChunks=[],recBlob=null,recFacing='user',recTimerI=null,recSecs=0,recClosing=false;
 function openCreate(){
