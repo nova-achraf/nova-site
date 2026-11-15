@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLABLA — تنزيل وتثبيت التطبيق</title>
+<meta name="theme-color" content="#0A0A0F">
+<link rel="icon" type="image/png" sizes="192x192" href="blabla-icon-192.png">
+<link rel="apple-touch-icon" href="blabla-apple-icon.png">
+<style>
+  :root{--bg:#0A0A0F;--card:#14141C;--line:#2A2A38;--txt:#F4F1E8;--muted:#8A8A9A;--pink:#FB7299;--blue:#00AEEC}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);line-height:1.75;
+    font-family:'Segoe UI',system-ui,-apple-system,'Noto Sans Arabic',sans-serif;padding:22px 16px 40px}
+  .wrap{max-width:640px;margin:0 auto}
+  header{text-align:center;margin-bottom:20px}
+  .logo{width:76px;height:76px;border-radius:20px;display:block;margin:0 auto 12px;box-shadow:0 10px 30px rgba(251,114,153,.25)}
+  h1{font-size:22px;font-weight:900;letter-spacing:.04em}
+  h1 span{background:linear-gradient(135deg,var(--blue),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{font-size:13px;color:var(--muted);margin-top:4px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+  .card h2{font-size:15px;font-weight:800;margin-bottom:4px}
+  .card .lead{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+  ol{margin:0;padding-inline-start:18px}
+  li{font-size:13.5px;margin-bottom:8px}
+  li b{color:var(--pink);font-weight:700}
+  .btn{display:block;text-align:center;min-height:50px;line-height:50px;border-radius:13px;
+    background:linear-gradient(135deg,var(--blue),var(--pink));color:#fff;font-weight:900;font-size:15px;
+    text-decoration:none;margin-top:8px}
+  .share{display:flex;gap:8px;margin-top:10px}
+  .share button{flex:1;min-height:48px;border-radius:13px;border:1px solid var(--line);background:transparent;
+    color:var(--txt);font-family:inherit;font-size:13.5px;cursor:pointer}
+  .share button.pri{background:transparent;border:1px solid var(--pink);color:var(--pink);font-weight:800}
+  code{background:#1B1B26;border-radius:6px;padding:2px 7px;font-size:12px;direction:ltr;display:inline-block;
+    font-family:ui-monospace,monospace;word-break:break-all}
+  .qr{display:block;width:180px;height:180px;border-radius:14px;margin:12px auto 0;background:#fff;padding:8px}
+  .qrrow{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+  .bar{background:#1A1410;border:1px solid #4A3620;border-radius:14px;padding:14px;margin-bottom:12px;display:none}
+  .bar.show{display:block}
+  .bar p{font-size:13px;color:#F0C085;margin-bottom:10px}
+  footer{text-align:center;font-size:11.5px;color:var(--muted);margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar" id="inappBar">
+    <p>⚠️ راك كتحل من داخل تطبيق (فيسبوك/واتساب) — التثبيت ما كيظهرش هنا. نسخ الرابط وحلو فـChrome.</p>
+    <div class="share"><button class="pri" onclick="copyLink()">📋 نسخ الرابط</button></div>
+  </div>
+
+  <header>
+    <img class="logo" src="blabla-icon-192.png" alt="أيقونة BLABLA">
+    <h1>BLABLA <span>— تطبيق NOVA</span></h1>
+    <div class="sub">ريلز · لايف · موسيقى — ثبّتو ديركت من المتصفح</div>
+  </header>
+
+  <div class="card">
+    <h2>١ · صيفط الرابط لصاحبك</h2>
+    <p class="lead">هاد الصفحة فيها كلشي — أي واحد كيحلها كيقدر ينزّل التطبيق عندو.</p>
+    <div class="share">
+      <button class="pri" onclick="sharePage()">📤 شارك</button>
+      <button onclick="copyLink()">📋 نسخ الرابط</button>
+    </div>
+    <img class="qr" src="blabla-qr.png" alt="QR BLABLA">
+    <div class="qrrow">ولا خلّي صاحبك يصوّر الـQR بكاميرا التليفون</div>
+  </div>
+
+  <div class="card">
+    <h2>٢ · التثبيت (30 ثانية)</h2>
+    <p class="lead">التطبيق كيتثبت بحال أي تطبيق عادي — بأيقونة وشاشة كاملة، بلا متجر وبلا خلاص.</p>
+    <ol>
+      <li>حل <b>blabla.html</b> فـChrome</li>
+      <li>ضغط على النقاط ⋮ الفوق ← <b>تثبيت التطبيق</b> / Install app</li>
+      <li>إلا ما بانتش: القائمة ← <b>إضافة إلى الشاشة الرئيسية</b></li>
+    </ol>
+    <a class="btn" href="blabla.html">▶️ حل BLABLA دابا</a>
+    <p style="font-size:12.5px;color:var(--muted);margin-top:10px">الرابط: <code>nova-achraf.github.io/nova-site/blabla.html</code></p>
+  </div>
+
+  <div class="card">
+    <h2>إلا التثبيت ما بغاش</h2>
+    <ol>
+      <li>تأكد راك فـ<b>Chrome</b> (ماشي فيسبوك ولا واتساب)</li>
+      <li>الرابط خاصو يبدا بـ<b>https</b> — GitHub Pages كيفيه</li>
+      <li>إلا كنت مثبتو من قبل، حيّدو من الشاشة الرئيسية وعاود</li>
+    </ol>
+  </div>
+
+  <footer>NOVA · صنع بيد أشرف 🇲🇦</footer>
+</div>
+<script>
+var PAGE_URL = location.origin + location.pathname.replace(/[^/]*$/, '') + 'blabla.html';
+var TXT = 'تطبيق BLABLA — ريلز ولايف وموسيقى. حل هاد الرابط وثبّتو: ' + PAGE_URL;
+function sharePage(){
+  if (navigator.share) { navigator.share({title:'BLABLA', text:TXT, url:PAGE_URL}).catch(function(){}); return; }
+  window.open('https://wa.me/?text=' + encodeURIComponent(TXT), '_blank');
+}
+function copyLink(){
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(PAGE_URL).then(function(){ alert('تنسخ ✅'); }).catch(function(){ prompt('انسخ الرابط:', PAGE_URL); });
+  } else { prompt('انسخ الرابط:', PAGE_URL); }
+}
+if (/FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Line\//i.test(navigator.userAgent)) {
+  document.getElementById('inappBar').classList.add('show');
+}
+</script>
+</body>
+</html>
