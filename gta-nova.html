@@ -319,34 +319,134 @@ function playAnim(ent, name) {
 const cars = [];
 const CAR_COLORS = [0xd94b4b, 0x2f6fd0, 0xf0c14b, 0x2fbf84, 0x8b5cf6, 0xdddddd, 0x22c1c3];
 
-function makeCar(color) {
+/* مقاسات كل نوع سيارة */
+const CAR_TYPES = {
+  sedan:  { len: 4.45, wid: 1.94, bodyH: 0.58, bodyY: 0.70, cabLen: 2.10, cabH: 0.58, cabZ: -0.12, wheelR: 0.40, taper: 0.90 },
+  sports: { len: 4.50, wid: 2.02, bodyH: 0.44, bodyY: 0.56, cabLen: 1.62, cabH: 0.44, cabZ: -0.42, wheelR: 0.38, taper: 0.86 },
+  van:    { len: 5.30, wid: 2.10, bodyH: 1.00, bodyY: 0.92, cabLen: 3.10, cabH: 0.78, cabZ: -0.25, wheelR: 0.46, taper: 0.96 },
+  taxi:   { len: 4.45, wid: 1.94, bodyH: 0.58, bodyY: 0.70, cabLen: 2.10, cabH: 0.58, cabZ: -0.12, wheelR: 0.40, taper: 0.90 }
+};
+
+/* صندوق مع تضييق الفوق (باش السيارة تبان مدوّرة شوية) */
+function taperedBox(w, h, d, taper) {
+  const geo = new THREE.BoxGeometry(w, h, d, 1, 1, 1);
+  const pos = geo.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    if (pos.getY(i) > 0) {
+      pos.setX(i, pos.getX(i) * taper);
+      pos.setZ(i, pos.getZ(i) * taper);
+    }
+  }
+  pos.needsUpdate = true;
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function makeCar(color, typeName) {
+  const T = CAR_TYPES[typeName] || CAR_TYPES.sedan;
   const g = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.72, 4.3), new THREE.MeshLambertMaterial({ color }));
-  body.position.y = 0.76; body.castShadow = true; g.add(body);
-  const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.62, 2.1), new THREE.MeshLambertMaterial({ color: 0x1c2530 }));
-  cabin.position.set(0, 1.36, -0.1); cabin.castShadow = true; g.add(cabin);
-  const wheelG = new THREE.CylinderGeometry(0.42, 0.42, 0.34, 12);
-  const wheelM = new THREE.MeshLambertMaterial({ color: 0x14181d });
-  [[-1, 1.4], [1, 1.4], [-1, -1.4], [1, -1.4]].forEach(([x, z]) => {
-    const w = new THREE.Mesh(wheelG, wheelM);
-    w.rotation.z = Math.PI / 2;
-    w.position.set(x * 1.02, 0.42, z);
-    g.add(w);
+
+  const paint = new THREE.MeshLambertMaterial({ color });
+  const glass = new THREE.MeshLambertMaterial({ color: 0x16222e, transparent: true, opacity: 0.94 });
+  const dark = new THREE.MeshLambertMaterial({ color: 0x0f1318 });
+  const chrome = new THREE.MeshLambertMaterial({ color: 0xb9c3cc });
+  const headMat = new THREE.MeshBasicMaterial({ color: 0xfff4cf });
+  const tailMat = new THREE.MeshBasicMaterial({ color: 0x8f1f22 });
+
+  /* الهيكل السفلي */
+  const body = new THREE.Mesh(taperedBox(T.wid, T.bodyH, T.len, T.taper), paint);
+  body.position.y = T.bodyY;
+  body.castShadow = true; body.receiveShadow = true;
+  g.add(body);
+
+  /* الكابينة */
+  const cab = new THREE.Mesh(taperedBox(T.wid * 0.93, T.cabH, T.cabLen, 0.80), paint);
+  cab.position.set(0, T.bodyY + T.bodyH / 2 + T.cabH / 2, T.cabZ);
+  cab.castShadow = true;
+  g.add(cab);
+
+  /* الشبابيك */
+  const sideWin = new THREE.Mesh(new THREE.BoxGeometry(T.wid * 0.95, T.cabH * 0.62, T.cabLen * 0.86), glass);
+  sideWin.position.copy(cab.position);
+  g.add(sideWin);
+
+  const windshield = new THREE.Mesh(new THREE.BoxGeometry(T.wid * 0.82, T.cabH * 0.9, 0.06), glass);
+  windshield.position.set(0, cab.position.y + 0.02, T.cabZ + T.cabLen / 2 - 0.06);
+  windshield.rotation.x = -0.34;
+  g.add(windshield);
+
+  const rearGlass = new THREE.Mesh(new THREE.BoxGeometry(T.wid * 0.78, T.cabH * 0.8, 0.06), glass);
+  rearGlass.position.set(0, cab.position.y + 0.02, T.cabZ - T.cabLen / 2 + 0.05);
+  rearGlass.rotation.x = 0.30;
+  g.add(rearGlass);
+
+  /* العجلات */
+  const wheels = [];
+  const tireGeo = new THREE.CylinderGeometry(T.wheelR, T.wheelR, 0.30, 16);
+  const rimGeo = new THREE.CylinderGeometry(T.wheelR * 0.56, T.wheelR * 0.56, 0.32, 12);
+  const axleZ = T.len / 2 - T.wheelR - 0.45;
+  [[-1, axleZ], [1, axleZ], [-1, -axleZ], [1, -axleZ]].forEach(([sx, z]) => {
+    const hub = new THREE.Group();
+    const tire = new THREE.Mesh(tireGeo, dark);
+    tire.rotation.z = Math.PI / 2;
+    tire.castShadow = true;
+    hub.add(tire);
+    const rim = new THREE.Mesh(rimGeo, chrome);
+    rim.rotation.z = Math.PI / 2;
+    hub.add(rim);
+    hub.position.set(sx * (T.wid / 2 - 0.06), T.wheelR, z);
+    g.add(hub);
+    wheels.push(hub);
   });
-  const lamp = new THREE.MeshBasicMaterial({ color: 0xfff6cc });
-  [[-0.7, 2.16], [0.7, 2.16]].forEach(([x, z]) => {
-    const l = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.08), lamp);
-    l.position.set(x, 0.85, z); g.add(l);
+
+  /* الأنوار */
+  [[-1, 1], [1, 1]].forEach(([sx]) => {
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.16, 0.07), headMat);
+    hl.position.set(sx * (T.wid * 0.32), T.bodyY + T.bodyH * 0.16, T.len / 2 + 0.01);
+    g.add(hl);
   });
-  g.userData = { color };
+  const tails = [];
+  [[-1], [1]].forEach(([sx]) => {
+    const tl = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.15, 0.07), tailMat.clone());
+    tl.position.set(sx * (T.wid * 0.32), T.bodyY + T.bodyH * 0.18, -T.len / 2 - 0.01);
+    g.add(tl);
+    tails.push(tl);
+  });
+
+  /* شبك + لوحة + مرايا */
+  const grille = new THREE.Mesh(new THREE.BoxGeometry(T.wid * 0.5, 0.16, 0.06), dark);
+  grille.position.set(0, T.bodyY - 0.06, T.len / 2 + 0.01);
+  g.add(grille);
+
+  const plate = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.16, 0.03), chrome);
+  plate.position.set(0, T.bodyY - 0.02, -T.len / 2 - 0.03);
+  g.add(plate);
+
+  [[-1], [1]].forEach(([sx]) => {
+    const mir = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.10, 0.10), paint);
+    mir.position.set(sx * (T.wid / 2 + 0.06), cab.position.y - 0.02, T.cabZ + T.cabLen / 2 - 0.25);
+    g.add(mir);
+  });
+
+  /* تفاصيل التاكسي */
+  if (typeName === 'taxi') {
+    const sign = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.16, 0.26), new THREE.MeshLambertMaterial({ color: 0x22262b }));
+    sign.position.set(0, cab.position.y + T.cabH / 2 + 0.1, T.cabZ);
+    g.add(sign);
+  }
+
+  g.userData = { color, type: typeName, wheels, tails, len: T.len, body };
   return g;
 }
 
 function spawnCars() {
+  const kinds = ['sedan', 'sports', 'van', 'taxi', 'sedan', 'sports', 'van'];
   for (let i = 0; i < 7; i++) {
-    const c = makeCar(CAR_COLORS[i % CAR_COLORS.length]);
+    const kind = kinds[i % kinds.length];
+    const color = CAR_COLORS[i % CAR_COLORS.length];
+    const c = makeCar(color, kind);
     const onX = Math.random() > 0.5;
-    const p = randRoad() + 3;
+    const p = randRoad() + (Math.random() > 0.5 ? 3.2 : -3.2);
     c.position.set(
       onX ? p : (Math.random() - 0.5) * CITY * 0.8,
       0,
@@ -354,7 +454,7 @@ function spawnCars() {
     );
     c.rotation.y = onX ? 0 : Math.PI / 2;
     scene.add(c);
-    cars.push({ obj: c, speed: 0, yaw: c.rotation.y, color: CAR_COLORS[i % CAR_COLORS.length] });
+    cars.push({ obj: c, speed: 0, yaw: c.rotation.y, color, kind });
   }
 }
 spawnCars();
@@ -366,11 +466,11 @@ if (cars[0]) {
 }
 
 /* سيارة الشرطة */
-const police = { obj: makeCar(0x101820), speed: 0, active: false };
+const police = { obj: makeCar(0x101820, 'sedan'), speed: 0, active: false };
 police.obj.visible = false;
 const sirenMat = new THREE.MeshBasicMaterial({ color: 0xff2d55 });
 const siren = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.18, 0.3), sirenMat);
-siren.position.set(0, 1.78, 0);
+siren.position.set(0, 1.70, 0);
 police.obj.add(siren);
 scene.add(police.obj);
 
@@ -539,6 +639,14 @@ function animate() {
         c.obj.position.x = nx; c.obj.position.z = nz;
       } else { c.speed *= -0.25; }
       c.obj.rotation.y = c.yaw;
+      // دوران العجلات
+      const ud = c.obj.userData;
+      if (ud && ud.wheels) ud.wheels.forEach((w) => { w.rotation.x -= c.speed * dt * 2.2; });
+      // ضو الفران
+      if (ud && ud.tails) {
+        const braking = acc < -0.1 || c.speed < -0.4;
+        ud.tails.forEach((t) => t.material.color.setHex(braking ? 0xff3b30 : 0x8f1f22));
+      }
       player.obj.position.copy(c.obj.position);
       player.obj.rotation.y = c.yaw;
       player.obj.visible = false;
