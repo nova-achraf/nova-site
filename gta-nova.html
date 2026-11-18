@@ -360,7 +360,7 @@ function spawnCars() {
 spawnCars();
 // سيارة قريبة من اللاعب (باش زر E يخدم من اللول)
 if (cars[0]) {
-  cars[0].obj.position.set(4.5, 0, 0.5);
+  cars[0].obj.position.set(3.4, 0, 1.2);
   cars[0].yaw = 0;
   cars[0].obj.rotation.y = 0;
 }
@@ -461,7 +461,7 @@ function blocked(x, z, r = 0.6) {
 
 /* ================== ركوب السيارة ================== */
 function nearestCar() {
-  let best = null, bd = 4.2;
+  let best = null, bd = 6.5;
   cars.forEach((c) => {
     const d = c.obj.position.distanceTo(player.obj.position);
     if (d < bd) { bd = d; best = c; }
