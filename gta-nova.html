@@ -358,6 +358,12 @@ function spawnCars() {
   }
 }
 spawnCars();
+// سيارة قريبة من اللاعب (باش زر E يخدم من اللول)
+if (cars[0]) {
+  cars[0].obj.position.set(4.5, 0, 0.5);
+  cars[0].yaw = 0;
+  cars[0].obj.rotation.y = 0;
+}
 
 /* سيارة الشرطة */
 const police = { obj: makeCar(0x101820), speed: 0, active: false };
