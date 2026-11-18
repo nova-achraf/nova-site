@@ -76,7 +76,8 @@ scene.fog = new THREE.Fog(0x8fb6d9, 90, 230);
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 600);
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+let PR = Math.min(devicePixelRatio || 1, 1.6);
+renderer.setPixelRatio(PR);
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -120,6 +121,39 @@ const grassMat = new THREE.MeshLambertMaterial({ color: 0x3f6b46 });
 const walkMat = new THREE.MeshLambertMaterial({ color: 0x9aa2ab });
 const blockGeo = new THREE.BoxGeometry(BLOCK - ROAD, 0.3, BLOCK - ROAD);
 
+/* واجهة بناية بـtexture (كتعوّض آلاف ديال الشبابيك) */
+let facadeBase = null;
+function getFacadeTexture() {
+  if (facadeBase) return facadeBase;
+  const c = document.createElement('canvas');
+  c.width = 64; c.height = 64;
+  const g2 = c.getContext('2d');
+  g2.fillStyle = '#7f868d'; g2.fillRect(0, 0, 64, 64);
+  for (let i = 0; i < 2; i++) {
+    for (let j = 0; j < 2; j++) {
+      g2.fillStyle = Math.random() > 0.12 ? '#9fd8ff' : '#5b6a76';
+      g2.fillRect(8 + i * 30, 8 + j * 30, 20, 20);
+    }
+  }
+  facadeBase = new THREE.CanvasTexture(c);
+  facadeBase.wrapS = facadeBase.wrapT = THREE.RepeatWrapping;
+  return facadeBase;
+}
+const facadeCache = {};
+function facadeMaterial(color, w, h) {
+  const rx = Math.max(1, Math.round(w / 4));
+  const ry = Math.max(1, Math.round(h / 4));
+  const key = rx + 'x' + ry + '_' + color.getHexString();
+  if (facadeCache[key]) return facadeCache[key];
+  const tex = getFacadeTexture().clone();
+  tex.needsUpdate = true;
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(rx, ry);
+  const m = new THREE.MeshLambertMaterial({ color: color, map: tex });
+  facadeCache[key] = m;
+  return m;
+}
+
 function buildCity() {
   const half = CITY / 2;
   // الطرقات على مضاعفات BLOCK، والبلوكات بينهم
@@ -153,7 +187,7 @@ function buildCity() {
       pad.receiveShadow = true;
       scene.add(pad);
 
-      // 4 بنايات فكل بلوك
+      // 4 بنايات فكل بلوك (بـtexture ديال الشبابيك — بلا آلاف ديال القطع)
       const spots = [
         [-10, -10], [10, -10], [-10, 10], [10, 10]
       ];
@@ -164,23 +198,12 @@ function buildCity() {
         const col = new THREE.Color().setHSL(0.58, 0.06, 0.42 + Math.random() * 0.22);
         const b = new THREE.Mesh(
           new THREE.BoxGeometry(w, h, d),
-          new THREE.MeshLambertMaterial({ color: col })
+          facadeMaterial(col, w, h)
         );
         b.position.set(cx + ox, h / 2 + 0.3, cz + oz);
-        b.castShadow = true; b.receiveShadow = true;
+        b.castShadow = false; b.receiveShadow = false;
         scene.add(b);
         obstacles.push({ x1: b.position.x - w / 2, x2: b.position.x + w / 2, z1: b.position.z - d / 2, z2: b.position.z + d / 2 });
-
-        // شبابيك
-        const winMat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff, transparent: true, opacity: 0.75 });
-        const rows = Math.max(1, Math.floor(h / 5));
-        for (let r = 0; r < rows; r++) {
-          for (let c = -1; c <= 1; c++) {
-            const win = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.9), winMat);
-            win.position.set(b.position.x + c * 2.6, 3 + r * 5, b.position.z + d / 2 + 0.02);
-            scene.add(win);
-          }
-        }
       });
     });
   });
@@ -592,6 +615,7 @@ function toggleCar() {
 
 /* ================== الجري والحركة ================== */
 const clock = new THREE.Clock();
+const camTarget = new THREE.Vector3();
 let camYaw = 0;
 
 function tryMove(obj, nx, nz, r) {
@@ -737,10 +761,34 @@ function animate() {
   const up = player.inCar ? 5.2 : 3.2;
   const camX = focus.x - Math.sin(camYaw) * back;
   const camZ = focus.z - Math.cos(camYaw) * back;
-  camera.position.lerp(new THREE.Vector3(camX, focus.y + up, camZ), Math.min(1, dt * 5));
+  camTarget.set(camX, focus.y + up, camZ);
+  camera.position.lerp(camTarget, Math.min(1, dt * 5));
   camera.lookAt(focus.x, focus.y + 1.5, focus.z);
 
   renderer.render(scene, camera);
+  adaptiveQuality();
+}
+
+/* ==== جودة تكيّفية: إلا الفريمات طاحو، كنخففو الضلال والريزولوسيون ==== */
+let qFrames = 0, qStart = performance.now(), degraded = 0;
+function adaptiveQuality() {
+  qFrames++;
+  const now = performance.now();
+  const elapsed = now - qStart;
+  if (elapsed < 2000) return;
+  const fps = (qFrames * 1000) / elapsed;
+  qFrames = 0; qStart = now;
+  if (fps < 26 && degraded < 2) {
+    degraded++;
+    if (degraded === 1) {
+      renderer.shadowMap.enabled = false;
+      scene.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+    } else {
+      PR = 1;
+      renderer.setPixelRatio(1);
+      renderer.setSize(innerWidth, innerHeight);
+    }
+  }
 }
 animate();
 
