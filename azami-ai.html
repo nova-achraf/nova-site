@@ -326,6 +326,7 @@
     <div class="side-cap">التطبيق</div>
     <button class="side-act" onclick="installApp()"><span class="ic">📲</span><span class="lbl">ثبّت AZAMI فالتليفون</span><span class="tag" id="instTag">تطبيق</span></button>
     <button class="side-act" onclick="shareApp()"><span class="ic">📤</span><span class="lbl">شارك AZAMI</span></button>
+    <button class="side-act" onclick="openUpdates()"><span class="ic">🔄</span><span class="lbl">التحديثات</span><span class="tag" id="updTag">—</span></button>
     <button class="side-act" onclick="openLang()"><span class="ic">🌍</span><span class="lbl">اللغة</span><span class="tag lang-tag">الدارجة</span></button>
     <div class="side-stats">
       <span>👁 <b id="statVisits">—</b> زائر</span>
@@ -1118,6 +1119,76 @@ function shareAPK(){
   if (navigator.share) { navigator.share({ title: 'AZAMI', text: txt, url: url }).catch(function(){}); return; }
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
+/* ================= 🔄 نظام التحديثات ================= */
+var APP_VERSION = '1.4.0';
+var VER_URL = 'azami-version.json';
+
+function verNum(v) {
+  return String(v || '0').split('.').map(function (x) { return parseInt(x, 10) || 0; });
+}
+function verNewer(a, b) {
+  var A = verNum(a), B = verNum(b);
+  for (var i = 0; i < Math.max(A.length, B.length); i++) {
+    if ((A[i] || 0) > (B[i] || 0)) return true;
+    if ((A[i] || 0) < (B[i] || 0)) return false;
+  }
+  return false;
+}
+
+function openUpdates() {
+  var m = document.getElementById('updModal');
+  if (m) m.classList.add('show');
+  checkUpdates(true);
+}
+function closeUpdates() {
+  var m = document.getElementById('updModal');
+  if (m) m.classList.remove('show');
+}
+
+var updChecked = false;
+function checkUpdates(manual) {
+  var msg = document.getElementById('updMsg');
+  var list = document.getElementById('updList');
+  var tag = document.getElementById('updTag');
+  if (msg) msg.textContent = 'كنشوف واش كاين شي جديد... 🔍';
+  if (list) list.innerHTML = '';
+
+  fetch(VER_URL + '?t=' + Date.now(), { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      updChecked = true;
+      var remote = d.version || '0';
+      var notes = (d.notes || []);
+      var next = (d.coming || []);
+      if (verNewer(remote, APP_VERSION)) {
+        if (msg) msg.innerHTML = 'كاين تحديث جديد: <b>' + remote + '</b> — عندك ' + APP_VERSION + ' ✅';
+        if (tag) { tag.textContent = 'جديد'; tag.style.background = '#E2603F'; tag.style.color = '#fff'; }
+      } else {
+        if (msg) msg.innerHTML = 'راك فآخر نسخة (<b>' + APP_VERSION + '</b>) 👌';
+        if (tag) { tag.textContent = APP_VERSION; tag.style.background = ''; tag.style.color = ''; }
+      }
+      if (list) {
+        var html = '';
+        notes.forEach(function (n) { html += '<li>✅ ' + n + '</li>'; });
+        if (next.length) {
+          html += '<li style="list-style:none;margin-top:8px;opacity:.75"><b>جاي فطريق:</b></li>';
+          next.forEach(function (n) { html += '<li>⏳ ' + n + '</li>'; });
+        }
+        list.innerHTML = html;
+      }
+    })
+    .catch(function () {
+      if (msg) msg.textContent = 'ما قدرتش نتصل. شوف الكونيكسيون وعاود.';
+    });
+}
+function hardRefresh() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (rs) {
+      rs.forEach(function (r) { r.update(); });
+    });
+  }
+  location.reload();
+}
 function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
 function openInst(){
   var box = document.getElementById('instSteps');
@@ -1530,6 +1601,9 @@ async function pdfFromImages(input){
   }
   btn.disabled=false;
 }
+
+/* فحص التحديثات بوحدو من بعد ما التطبيق يتحل */
+setTimeout(function () { try { checkUpdates(false); } catch (e) {} }, 2500);
 </script>
 
 <!-- LANGUAGE -->
@@ -1553,6 +1627,18 @@ async function pdfFromImages(input){
     <button class="skip" onclick="shareAPK()">📤 صيفطو لصاحبك (رابط التحميل)</button>
     <button class="skip" onclick="window.location.href='azami-install.html'">الدليل الكامل</button>
     <button class="skip" onclick="closeInst()">إغلاق</button>
+  </div>
+</div>
+
+<!-- UPDATES -->
+<div class="modal" id="updModal">
+  <div class="sheet">
+    <h3>🔄 تحديثات AZAMI</h3>
+    <p id="updMsg">كنشوف واش كاين شي جديد...</p>
+    <ul class="steps" id="updList"></ul>
+    <button class="go" onclick="checkUpdates(true)">عاود الفحص</button>
+    <button class="skip" onclick="hardRefresh()">حمّل آخر نسخة دابا</button>
+    <button class="skip" onclick="closeUpdates()">إغلاق</button>
   </div>
 </div>
 
