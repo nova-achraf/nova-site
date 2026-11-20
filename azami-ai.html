@@ -439,8 +439,8 @@
 <!-- KEY MODAL -->
 <div class="modal" id="keyModal">
   <div class="sheet">
-    <h3>🔑 مفتاح AZAMI</h3>
-    <p>حط هنا المفتاح ديال Gemini (من Google AI Studio). كيبقى فالمتصفح، ما كيتسيفطش لشي حد.</p>
+    <h3>🔑 مفتاح AZAMI (اختياري)</h3>
+    <p>AZAMI كيخدم بلا مفتاح. هاد المفتاح غير إلا بغيتي جودة أعلى ولا تحليل الصور — كيتصاوب من Google AI Studio وكيبقى فالمتصفح ديالك وحدك.</p>
     <input id="keyIn" placeholder="AQ-Ab8RN6..." autocomplete="off" spellcheck="false">
     <div class="err" id="keyErr">حط المفتاح من فضلك.</div>
     <button class="go" id="keyGo" onclick="saveKey()">حفظ وبدأ ✅</button>
@@ -1294,7 +1294,7 @@ function shareAPK(){
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 /* ================= 🔄 نظام التحديثات ================= */
-var APP_VERSION = '1.5.2';
+var APP_VERSION = '1.6.0';
 var VER_URL = 'azami-version.json';
 
 function verNum(v) {
@@ -1414,15 +1414,7 @@ if (isInApp() && !isStandalone()) {
 paintLock();
 paintAccount();
 checkLock();
-/* أول مرة: نعرضو بوابة التسجيل (كاين زر «كمّل بلا تسجيل») */
-setTimeout(function () {
-  try {
-    if (getAccount()) return;
-    if (localStorage.getItem('azami_gate_done')) return;
-    var g = document.getElementById('gate');
-    if (g) g.classList.add('on');
-  } catch (e) {}
-}, 900);
+/* التطبيق حر: بلا حساب وبلا مفتاح إلزامي */
 /* === VIDEO MAKER === */
 var VID={files:[],sec:3,w:720,h:1280};
 function openVideo(){document.getElementById('vidModal').classList.add('show');renderVid();}
@@ -1528,7 +1520,7 @@ function toggleImg(){imgMode=!imgMode;var b=document.getElementById('imgBtn');if
 /* === SEND === */
 async function send(){
   var ta=document.getElementById('in');var txt=ta.value.trim();
-  if(!txt&&!pickedImg)return;if(!APIKEY){openKey();return}
+  if(!txt&&!pickedImg)return;
   // EDIT MODE
   if(editIndex>=0){
     var c=convs[curConv];c.msgs=c.msgs.slice(0,editIndex);
@@ -1545,8 +1537,55 @@ async function send(){
   if(convs[curConv].hist.length>12)convs[curConv].hist=convs[curConv].hist.slice(-12);
   await streamResp();
 }
+/* === وضع حر: بلا مفتاح (Pollinations مجاني) === */
+async function freeResp(){
+  var typing=addTyping();setGenerating(true);abortCtrl=new AbortController();var full='';
+  try{
+    var msgs=[{role:'system',content:sysPrompt()}];
+    (convs[curConv].hist||[]).forEach(function(h){
+      var t=(h.parts||[]).map(function(p){return p.text||''}).join(' ').trim();
+      if(t)msgs.push({role:h.role==='model'?'assistant':'user',content:t});
+    });
+    var res=await fetch('https://text.pollinations.ai/openai',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'openai',messages:msgs}),
+      signal:abortCtrl.signal
+    });
+    if(!res.ok)throw new Error('bad');
+    var d=await res.json();
+    full=String((d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'').trim();
+    if(!full)throw new Error('empty');
+    var ty=typing.querySelector('.typing');if(ty)ty.remove();
+    var span=document.createElement('div');span.className='msg-text';
+    typing.querySelector('.msg-body').appendChild(span);
+    var i=0;
+    await new Promise(function(done){
+      function step(){
+        i=Math.min(full.length,i+6);
+        span.innerHTML=renderMd(full.slice(0,i));
+        scrollDown();
+        if(i<full.length)setTimeout(step,16);else done();
+      }
+      step();
+    });
+    span.innerHTML=renderMd(full);addCodeCopy(span);
+    convs[curConv].hist.push({role:'model',parts:[{text:full}]});
+    if(convs[curConv].hist.length>12)convs[curConv].hist=convs[curConv].hist.slice(-12);
+    convs[curConv].msgs.push({r:'ai',t:full});saveConvs();
+    var bar=document.createElement('div');bar.className='msg-bar';
+    bar.appendChild(mkBtn('🔊',function(){speak(full)}));
+    bar.appendChild(mkBtn('📋',function(){if(navigator.clipboard)navigator.clipboard.writeText(full)}));
+    bar.appendChild(mkBtn('🔄',function(){regenerate()}));
+    typing.querySelector('.msg-body').appendChild(bar);
+  }catch(e){
+    typing.remove();
+    if(e.name!=='AbortError')addAi('⚠️ ما قدرتش نتصل. تحقق من الإنترنت وعاود.');
+  }
+  setGenerating(false);scrollDown();
+}
 /* === STREAM RESPONSE === */
 async function streamResp(){
+  if(!APIKEY){await freeResp();return}
   var typing=addTyping();setGenerating(true);abortCtrl=new AbortController();var full='';
   try{
     var mdl=await getModel();
@@ -1596,6 +1635,7 @@ async function streamResp(){
 }
 /* === VISION === */
 async function visionReq(txt){
+  if(!APIKEY){addAi('⚠️ تحليل الصور كيحتاج مفتاح Gemini (اختياري). النص كيخدم بلا مفتاح 👌');clearImg();return}
   var b64=pickedImg.split(',')[1],typing=addTyping();setGenerating(true);abortCtrl=new AbortController();
   try{
     var parts=[];if(txt)parts.push({text:txt});parts.push({inlineData:{mimeType:pickedType,data:b64}});
@@ -1646,7 +1686,7 @@ function toggleMic(){
 /* === INIT === */
 renderConvList();renderChat();
 if(window.innerWidth<=768)document.getElementById('sidebar').classList.add('hide');
-if(!APIKEY)openKey();
+/* المفتاح اختياري — التطبيق كيخدم بلا مفتاح (وضع حر) */
 var ta=document.getElementById('in');ta.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'});
 
 /* ================= صور → PDF ================= */
