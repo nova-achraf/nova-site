@@ -116,6 +116,12 @@
   .h-right{margin-right:auto;display:flex;gap:8px}
   .h-btn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap}
   .h-btn:active{border-color:var(--gold);color:var(--gold2)}
+  .h-badge{
+    background:transparent;border:1px solid var(--line);color:var(--muted);
+    border-radius:999px;padding:4px 9px;font-size:11px;font-family:ui-monospace,monospace;
+    cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px;
+  }
+  .h-badge b{font-size:12px;font-weight:800}
   /* EDIT BANNER */
   .edit-banner{
     display:none;align-items:center;justify-content:center;gap:10px;
@@ -377,6 +383,9 @@
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
     <img src="azami-logo.webp" class="h-logo" alt="AZAMI">
     <div><div class="h-title"><span class="hl">A</span>ZAM<span class="hl">I</span></div><div class="h-sub">مساعدك المغربي · من المغرب إلى العالم</div></div>
+    <div class="h-right">
+      <button class="h-badge" id="hFps" onclick="openPerf()" title="لوحة الأداء ⚡">⚡<b id="hFpsVal">…</b>FPS</button>
+    </div>
   </header>
   <div class="edit-banner" id="editBanner">✏️ تعديل رسالة — <button onclick="cancelEdit()">إلغاء</button></div>
   <main id="chat"></main>
@@ -1003,6 +1012,24 @@ function measureFps(){
     }
   }
   requestAnimationFrame(tick);
+}
+/* عداد صغير فالهيدر: كيقيس السلاسة كل 4 ثواني */
+function startFpsBadge(){
+  var el=document.getElementById('hFpsVal'), badge=document.getElementById('hFps');
+  if(!el||!badge)return;
+  var n=0,t0=0;
+  function loop(ts){
+    if(!t0)t0=ts;
+    n++;
+    if(ts-t0<1000){requestAnimationFrame(loop);return}
+    var v=Math.round(n*1000/(ts-t0));
+    el.textContent=v;
+    var col=v>=50?'#A4E32B':(v>=30?'#E8C66B':'#C4342B');
+    el.style.color=col;badge.style.borderColor=col;
+    n=0;t0=0;
+    setTimeout(function(){requestAnimationFrame(loop)},4000);
+  }
+  requestAnimationFrame(loop);
 }
 (function initSettings(){
   var t='light',f='m';
@@ -1682,6 +1709,7 @@ async function pdfFromImages(input){
 
 /* فحص التحديثات بوحدو من بعد ما التطبيق يتحل */
 setTimeout(function () { try { checkUpdates(false); } catch (e) {} }, 2500);
+setTimeout(function () { try { startFpsBadge(); } catch (e) {} }, 1200);
 </script>
 
 <!-- LANGUAGE -->
