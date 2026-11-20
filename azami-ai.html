@@ -443,7 +443,8 @@
     <p>حط هنا المفتاح ديال Gemini (من Google AI Studio). كيبقى فالمتصفح، ما كيتسيفطش لشي حد.</p>
     <input id="keyIn" placeholder="AQ-Ab8RN6..." autocomplete="off" spellcheck="false">
     <div class="err" id="keyErr">حط المفتاح من فضلك.</div>
-    <button class="go" onclick="saveKey()">حفظ وبدأ ✅</button>
+    <button class="go" id="keyGo" onclick="saveKey()">حفظ وبدأ ✅</button>
+    <button class="skip" onclick="window.open('https://aistudio.google.com/apikey','_blank')">🔗 جيب مفتاح جديد (Google AI Studio)</button>
     <button class="skip" onclick="closeKey()">لحظة، نرجع من بعد</button>
   </div>
 </div>
@@ -914,7 +915,50 @@ function clearImg(){pickedImg=null;pickedType=null;document.getElementById('imgP
 /* === KEY === */
 function openKey(){document.getElementById('keyModal').classList.add('show');document.getElementById('keyIn').value=APIKEY||'';document.getElementById('keyIn').focus()}
 function closeKey(){document.getElementById('keyModal').classList.remove('show')}
-function saveKey(){var v=document.getElementById('keyIn').value.trim();if(!v){document.getElementById('keyErr').style.display='block';return}APIKEY=v;try{localStorage.setItem(KEY,v)}catch(e){}closeKey();addAi('مزيان! المفتاح تحفظ. سؤلني أي حاجة 🚀')}
+async function saveKey(){
+  var el=document.getElementById('keyIn'),err=document.getElementById('keyErr');
+  var v=(el.value||'').trim();
+  if(!v){if(err){err.textContent='حط المفتاح من فضلك.';err.style.display='block'}return}
+  if(err){err.style.display='none'}
+  var btn=document.getElementById('keyGo');if(btn){btn.textContent='كنتحقق...';btn.disabled=true}
+  var ok=await checkKeyValid(v);
+  if(btn){btn.textContent='حفظ وبدأ ✅';btn.disabled=false}
+  if(ok===false){
+    if(err){err.textContent='هاد المفتاح ماشي صحيح عند Google. عاود جيب واحد جديد من Google AI Studio.';err.style.display='block'}
+    return;
+  }
+  APIKEY=v;MODEL_CACHE=null;
+  try{localStorage.setItem(KEY,v)}catch(e){}
+  closeKey();
+  addAi('مزيان! المفتاح تحفظ وتأكد ✅ سؤلني أي حاجة 🚀');
+}
+/* كانتحققو من المفتاح قبل ما نحفظوه */
+async function checkKeyValid(k){
+  try{
+    var r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?key='+encodeURIComponent(k));
+    var d=await r.json().catch(function(){return{}});
+    if(d&&d.error)return false;
+    if(d&&d.models)return d.models;
+    return null;
+  }catch(e){return null}
+}
+/* كانختارو موديل متوفر فالحساب (ما كاينش موديل ثابت) */
+var MODEL_CACHE=null;
+async function getModel(){
+  if(MODEL_CACHE)return MODEL_CACHE;
+  var d=await checkKeyValid(APIKEY);
+  if(d===false)return null;
+  var names=[];
+  if(d&&d.length){
+    d.forEach(function(m){
+      if((m.supportedGenerationMethods||[]).indexOf('generateContent')>=0)names.push(String(m.name||'').replace('models/',''));
+    });
+  }
+  var pref=['gemini-2.0-flash','gemini-2.5-flash','gemini-1.5-flash','gemini-1.5-flash-8b','gemini-1.5-pro','gemini-pro'];
+  for(var i=0;i<pref.length;i++){if(names.indexOf(pref[i])>=0){MODEL_CACHE=pref[i];break}}
+  if(!MODEL_CACHE)MODEL_CACHE=names[0]||null;
+  return MODEL_CACHE;
+}
 function quick(t){document.getElementById('in').value=t;send()}
 /* === SIDEBAR === */
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('hide');document.getElementById('overlay').classList.toggle('show')}
@@ -1250,7 +1294,7 @@ function shareAPK(){
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 /* ================= 🔄 نظام التحديثات ================= */
-var APP_VERSION = '1.5.1';
+var APP_VERSION = '1.5.2';
 var VER_URL = 'azami-version.json';
 
 function verNum(v) {
@@ -1505,12 +1549,18 @@ async function send(){
 async function streamResp(){
   var typing=addTyping();setGenerating(true);abortCtrl=new AbortController();var full='';
   try{
-    var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:streamGenerateContent?alt=sse&key='+encodeURIComponent(APIKEY),{
+    var mdl=await getModel();
+    if(!mdl){typing.remove();setGenerating(false);addAi('⚠️ المفتاح ماشي صحيح ولا ما عندو صلاحية. بدّلو من 🔑 المفتاح.');return}
+    var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+mdl+':streamGenerateContent?alt=sse&key='+encodeURIComponent(APIKEY),{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({systemInstruction:{parts:[{text:sysPrompt()}]},contents:convs[curConv].hist,generationConfig:{maxOutputTokens:600}}),
       signal:abortCtrl.signal
     });
-    if(!res.ok){var ed=await res.json().catch(function(){return{}});typing.remove();setGenerating(false);var m='وقع مشلم.';if(ed.error&&ed.error.message)m='خطأ: '+ed.error.message;addAi('⚠️ '+m+(ed.error&&ed.error.code===400?'\n\nتحقق من المفتاح (دوس 🔑).':''));return}
+    if(!res.ok){var ed=await res.json().catch(function(){return{}});typing.remove();setGenerating(false);
+      var m='وقع مشكل.';
+      if(ed.error&&ed.error.message)m='خطأ: '+ed.error.message;
+      var hint=(ed.error&&(ed.error.code===400||ed.error.code===403))?'\n\nالمفتاح ماشي صحيح — دوس 🔑 وجيب واحد جديد.':'';
+      addAi('⚠️ '+m+hint);return}
     typing.querySelector('.typing').remove();
     var span=document.createElement('div');span.className='msg-text';typing.querySelector('.msg-body').appendChild(span);
     var reader=res.body.getReader(),dec=new TextDecoder(),buf='';
@@ -1549,7 +1599,9 @@ async function visionReq(txt){
   var b64=pickedImg.split(',')[1],typing=addTyping();setGenerating(true);abortCtrl=new AbortController();
   try{
     var parts=[];if(txt)parts.push({text:txt});parts.push({inlineData:{mimeType:pickedType,data:b64}});
-    var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key='+encodeURIComponent(APIKEY),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemInstruction:{parts:[{text:sysPrompt()}]},contents:[{role:'user',parts:parts}],generationConfig:{maxOutputTokens:800}}),signal:abortCtrl.signal});
+    var mdl2=await getModel();
+    if(!mdl2){typing.remove();setGenerating(false);addAi('⚠️ المفتاح ماشي صحيح — بدّلو من 🔑 المفتاح.');clearImg();return}
+    var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+mdl2+':generateContent?key='+encodeURIComponent(APIKEY),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemInstruction:{parts:[{text:sysPrompt()}]},contents:[{role:'user',parts:parts}],generationConfig:{maxOutputTokens:800}}),signal:abortCtrl.signal});
     var data=await res.json();typing.remove();setGenerating(false);
     if(data.candidates&&data.candidates[0]&&data.candidates[0].content){addAi(data.candidates[0].content.parts.map(function(p){return p.text}).join('\n')||'ما قدرش نولّد جواب.')}
     else{var m='وقع مشلم.';if(data.error&&data.error.message)m='خطأ: '+data.error.message;addAi('⚠️ '+m)}
