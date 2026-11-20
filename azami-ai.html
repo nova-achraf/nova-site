@@ -298,6 +298,25 @@
   }
   body.ocean .inp-btn.send,body.ocean .inp-btn.active{color:#06141D}
   body.ocean .msg-text a{color:#8CE9E2}
+  /* THEME: NVIDIA (black + neon green) */
+  body.nvidia{
+    --bg:#050505;--bg2:#0B0B0B;--card:#141414;--line:#22301A;
+    --txt:#EAF5DC;--muted:#8C9C7E;--side:#070707;
+    --gold:#76B900;--gold2:#A4E32B;--green:#76B900;--green2:#93D500;
+  }
+  body.nvidia .inp-btn.send,body.nvidia .inp-btn.active{color:#050505}
+  body.nvidia .msg-text a{color:#A4E32B}
+  body.nvidia .ico-ai{background:linear-gradient(135deg,#A4E32B,#76B900)}
+  body.nvidia .h-title .hl{color:#A4E32B;text-shadow:0 0 14px rgba(118,185,0,.7)}
+  body.nvidia .h-logo{box-shadow:0 0 12px rgba(118,185,0,.55)}
+  body.nvidia .msg-ai .ico-ai{box-shadow:0 0 10px rgba(118,185,0,.45)}
+  .side-swatches .sw-nvidia{background:linear-gradient(135deg,#050505,#76B900)}
+  /* وضع الأداء: كيحيد الأنيماسيون والظلال = أسرع فالتليفون الضعيف */
+  body.perf *{animation:none!important;transition:none!important;box-shadow:none!important;filter:none!important}
+  .perf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+  .perf-cell{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+  .perf-cell b{display:block;font-size:17px;color:var(--gold2)}
+  .perf-cell span{font-size:11px;color:var(--muted)}
   /* FONT SIZE */
   body.fs-s .msg-text{font-size:13px}
   body.fs-l .msg-text{font-size:17px}
@@ -340,7 +359,9 @@
       <button class="sw-dark" onclick="setTheme('dark')" title="داكن"></button>
       <button class="sw-light" onclick="setTheme('light')" title="فاتح"></button>
       <button class="sw-ocean" onclick="setTheme('ocean')" title="أزرق"></button>
+      <button class="sw-nvidia" onclick="setTheme('nvidia')" title="NVIDIA"></button>
     </div>
+    <button class="side-act" onclick="openPerf()"><span class="ic">⚡</span><span class="lbl">وضع الأداء</span><span class="tag" id="perfTag">عادي</span></button>
     <button class="side-act" onclick="cycleFont()"><span class="ic">🔠</span><span class="lbl">حجم الخط</span><span class="tag" id="fontTag">عادي</span></button>
     <button class="side-act" onclick="openLang()"><span class="ic">🌍</span><span class="lbl">لغة الردود</span><span class="tag lang-tag">الدارجة</span></button>
     <button class="side-act" onclick="lockSettings()"><span class="ic">🔒</span><span class="lbl">قفل التطبيق</span><span class="tag" id="lockTag">مطفي</span></button>
@@ -888,11 +909,12 @@ function toggleSidebar(){document.getElementById('sidebar').classList.toggle('hi
 /* === SETTINGS: theme + font + clear === */
 var THEME_KEY='azami_theme',FONT_KEY='azami_font';
 var FONT_STEPS=[['s','صغير'],['m','عادي'],['l','كبير']];
-var THEMES=[['dark','داكن','#0A0A0F'],['light','فاتح','#FFFBF6'],['ocean','أزرق','#06141D']];
+var THEMES=[['dark','داكن','#0A0A0F'],['light','فاتح','#FFFBF6'],['ocean','أزرق','#06141D'],['nvidia','NVIDIA','#050505']];
 function applyTheme(t){
-  if(t!=='light'&&t!=='ocean')t='dark';
+  if(t!=='light'&&t!=='ocean'&&t!=='nvidia')t='dark';
   document.body.classList.toggle('light',t==='light');
   document.body.classList.toggle('ocean',t==='ocean');
+  document.body.classList.toggle('nvidia',t==='nvidia');
   var label='داكن',color='#0A0A0F';
   for(var i=0;i<THEMES.length;i++){if(THEMES[i][0]===t){label=THEMES[i][1];color=THEMES[i][2]}}
   var tg=document.getElementById('themeTag');if(tg)tg.textContent=label;
@@ -927,6 +949,61 @@ function clearConvs(){
   saveConvs();renderConvList();renderChat();
   if(window.innerWidth<=768)toggleSidebar();
 }
+/* === ⚡ وضع الأداء === */
+var PERF_KEY='azami_perf';
+function perfOn(){try{return localStorage.getItem(PERF_KEY)==='1'}catch(e){return false}}
+function applyPerf(on){
+  document.body.classList.toggle('perf',!!on);
+  var tg=document.getElementById('perfTag');if(tg)tg.textContent=on?'مفعّل':'عادي';
+  var b=document.getElementById('perfBtn');if(b)b.textContent=on?'↩️ رجّع التأثيرات':'⚡ شغّل وضع الأداء';
+}
+function togglePerf(){
+  var n=!perfOn();
+  try{localStorage.setItem(PERF_KEY,n?'1':'0')}catch(e){}
+  applyPerf(n);
+  paintPerf();
+  if(n&&navigator.storage&&navigator.storage.persist){try{navigator.storage.persist()}catch(e){}}
+}
+function openPerf(){
+  var m=document.getElementById('perfModal');if(m)m.classList.add('show');
+  paintPerf();measureFps();
+}
+function closePerf(){var m=document.getElementById('perfModal');if(m)m.classList.remove('show')}
+function paintPerf(){
+  applyPerf(perfOn());
+  var th='داكن';try{th=localStorage.getItem(THEME_KEY)||'light'}catch(e){}
+  for(var i=0;i<THEMES.length;i++){if(THEMES[i][0]===th)th=THEMES[i][1]}
+  var v=document.getElementById('pfVer');if(v)v.textContent=APP_VERSION;
+  var t=document.getElementById('pfTheme');if(t)t.textContent=th;
+  var c=document.getElementById('pfMsgs');
+  if(c){var n=0;try{for(var k in convs){n+=(convs[k].msgs||[]).length}}catch(e){}c.textContent=n}
+  var s=document.getElementById('pfStore');
+  if(s){
+    if(navigator.storage&&navigator.storage.estimate){
+      navigator.storage.estimate().then(function(e){
+        var mb=((e.usage||0)/1048576);
+        s.textContent=(mb<0.1?mb.toFixed(2):mb.toFixed(1))+' MB';
+      }).catch(function(){s.textContent='—'});
+    }else s.textContent='—';
+  }
+}
+function measureFps(){
+  var fps=document.getElementById('pfFps');
+  if(fps)fps.textContent='…';
+  var n=0,t0=0;
+  function tick(ts){
+    if(!t0)t0=ts;
+    n++;
+    if(ts-t0<1000){requestAnimationFrame(tick)}
+    else{
+      var val=Math.round(n*1000/(ts-t0));
+      if(fps)fps.textContent=val;
+      var q=document.getElementById('pfQual');
+      if(q)q.textContent=val>=50?'سلس ✅':(val>=30?'متوسط ⚠️':'ضعيف — شغّل وضع الأداء');
+    }
+  }
+  requestAnimationFrame(tick);
+}
 (function initSettings(){
   var t='light',f='m';
   try{
@@ -935,6 +1012,7 @@ function clearConvs(){
     f=localStorage.getItem(FONT_KEY)||'m';
   }catch(e){}
   applyTheme(t);applyFont(f);
+  applyPerf(perfOn());
   applyLang(getLang());
   uiApply(getLang());
   applyLang(getLang());
@@ -1120,7 +1198,7 @@ function shareAPK(){
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 /* ================= 🔄 نظام التحديثات ================= */
-var APP_VERSION = '1.4.0';
+var APP_VERSION = '1.5.0';
 var VER_URL = 'azami-version.json';
 
 function verNum(v) {
@@ -1639,6 +1717,25 @@ setTimeout(function () { try { checkUpdates(false); } catch (e) {} }, 2500);
     <button class="go" onclick="checkUpdates(true)">عاود الفحص</button>
     <button class="skip" onclick="hardRefresh()">حمّل آخر نسخة دابا</button>
     <button class="skip" onclick="closeUpdates()">إغلاق</button>
+  </div>
+</div>
+
+<!-- ⚡ PERFORMANCE -->
+<div class="modal" id="perfModal">
+  <div class="sheet">
+    <h3>⚡ الأداء والطاقة</h3>
+    <p>هاد اللوحة كتقيس سرعة التطبيق فالتليفون ديالك وتخليك تسرّعو.</p>
+    <div class="perf-grid">
+      <div class="perf-cell"><b id="pfFps">…</b><span>إطار/ثانية</span></div>
+      <div class="perf-cell"><b id="pfStore">—</b><span>التخزين المستعمل</span></div>
+      <div class="perf-cell"><b id="pfMsgs">0</b><span>رسالة محفوظة</span></div>
+      <div class="perf-cell"><b id="pfVer">—</b><span>النسخة</span></div>
+    </div>
+    <p style="font-size:12px;color:var(--muted)">الحالة: <b id="pfQual">كنقيس...</b> · المظهر: <b id="pfTheme">—</b></p>
+    <button class="go" id="perfBtn" onclick="togglePerf()">⚡ شغّل وضع الأداء</button>
+    <button class="skip" onclick="measureFps();paintPerf()">🔄 عاود القياس</button>
+    <button class="skip" onclick="setTheme('nvidia')">🟩 شغّل مظهر NVIDIA</button>
+    <button class="skip" onclick="closePerf()">إغلاق</button>
   </div>
 </div>
 
