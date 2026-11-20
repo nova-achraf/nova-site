@@ -428,7 +428,10 @@
   <div class="sheet">
     <h3>👤 حسابي</h3>
     <p id="accInfo">—</p>
-    <button class="go" onclick="closeAccount()">إغلاق</button>
+    <input id="accName" placeholder="السمية" maxlength="20" autocomplete="name">
+    <input id="accPhone" type="tel" inputmode="tel" placeholder="رقم الهاتف (اختياري)" maxlength="16" autocomplete="tel">
+    <button class="go" onclick="saveAccount()">💾 حفظ</button>
+    <button class="skip" onclick="closeAccount()">إغلاق</button>
     <button class="skip" onclick="logoutUser()">🚪 خروج / مسح الحساب من هاد التليفون</button>
   </div>
 </div>
@@ -1063,6 +1066,8 @@ function openAccount(){
   var n = document.getElementById('accName'), ph = document.getElementById('accPhone');
   if (n) n.value = a.name || '';
   if (ph) ph.value = a.phone || '';
+  var info = document.getElementById('accInfo');
+  if (info) info.textContent = a.name ? ('مرحبا ' + a.name + ' 👋 — الحساب محفوظ غير فهاد التليفون.') : 'ما مسجلش. عمر السميتك وحفظ.';
   document.getElementById('accModal').classList.add('show');
 }
 function closeAccount(){ document.getElementById('accModal').classList.remove('show'); }
@@ -1071,6 +1076,26 @@ function saveAccount(){
   var ph = (document.getElementById('accPhone').value || '').trim();
   if (!n) { alert('كتب سميتك من فضلك.'); return; }
   try { localStorage.setItem(ACC_KEY, JSON.stringify({ name: n, phone: ph })); } catch(e){}
+  paintAccount(); closeAccount();
+}
+/* بوابة التسجيل: سجّل ولا كمّل بلا حساب */
+function saveUser(){
+  var n = (document.getElementById('gName').value || '').trim();
+  var ph = (document.getElementById('gPhone').value || '').trim();
+  var err = document.getElementById('gErr');
+  if (!n || !ph) { if (err) err.style.display = 'block'; return; }
+  if (err) err.style.display = 'none';
+  try { localStorage.setItem(ACC_KEY, JSON.stringify({ name: n, phone: ph })); localStorage.setItem('azami_gate_done','1'); } catch(e){}
+  paintAccount(); closeGate();
+}
+function skipUser(){
+  try { localStorage.setItem('azami_gate_done','1'); } catch(e){}
+  closeGate();
+}
+function closeGate(){ var g = document.getElementById('gate'); if (g) g.classList.remove('on'); }
+function logoutUser(){
+  if (!confirm('🚪 نمحي الحساب من هاد التليفون؟ المحادثات كتبقى.')) return;
+  try { localStorage.removeItem(ACC_KEY); localStorage.removeItem('azami_gate_done'); } catch(e){}
   paintAccount(); closeAccount();
 }
 
@@ -1225,7 +1250,7 @@ function shareAPK(){
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 /* ================= 🔄 نظام التحديثات ================= */
-var APP_VERSION = '1.5.0';
+var APP_VERSION = '1.5.1';
 var VER_URL = 'azami-version.json';
 
 function verNum(v) {
@@ -1345,6 +1370,15 @@ if (isInApp() && !isStandalone()) {
 paintLock();
 paintAccount();
 checkLock();
+/* أول مرة: نعرضو بوابة التسجيل (كاين زر «كمّل بلا تسجيل») */
+setTimeout(function () {
+  try {
+    if (getAccount()) return;
+    if (localStorage.getItem('azami_gate_done')) return;
+    var g = document.getElementById('gate');
+    if (g) g.classList.add('on');
+  } catch (e) {}
+}, 900);
 /* === VIDEO MAKER === */
 var VID={files:[],sec:3,w:720,h:1280};
 function openVideo(){document.getElementById('vidModal').classList.add('show');renderVid();}
