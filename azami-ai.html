@@ -959,6 +959,18 @@ async function getModel(){
   if(!MODEL_CACHE)MODEL_CACHE=names[0]||null;
   return MODEL_CACHE;
 }
+/* مفتاح غالط؟ كنحيدوه ونكملو ف«وضع حر» */
+function dropBadKey(){
+  APIKEY='';MODEL_CACHE=null;
+  try{localStorage.removeItem(KEY)}catch(e){}
+  var el=document.getElementById('keyIn');if(el)el.value='';
+  try{
+    if(!localStorage.getItem('azami_key_dropped')){
+      localStorage.setItem('azami_key_dropped','1');
+      setTimeout(function(){addAi('ℹ️ المفتاح القديم ماشي صحيح — حيّدتو ودار التطبيق «وضع حر»، وها هو خدام بلا مفتاح 👌')},400);
+    }
+  }catch(e){}
+}
 function quick(t){document.getElementById('in').value=t;send()}
 /* === SIDEBAR === */
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('hide');document.getElementById('overlay').classList.toggle('show')}
@@ -1294,7 +1306,7 @@ function shareAPK(){
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 /* ================= 🔄 نظام التحديثات ================= */
-var APP_VERSION = '1.6.0';
+var APP_VERSION = '1.6.1';
 var VER_URL = 'azami-version.json';
 
 function verNum(v) {
@@ -1589,17 +1601,18 @@ async function streamResp(){
   var typing=addTyping();setGenerating(true);abortCtrl=new AbortController();var full='';
   try{
     var mdl=await getModel();
-    if(!mdl){typing.remove();setGenerating(false);addAi('⚠️ المفتاح ماشي صحيح ولا ما عندو صلاحية. بدّلو من 🔑 المفتاح.');return}
+    if(!mdl){typing.remove();dropBadKey();await freeResp();return}
     var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+mdl+':streamGenerateContent?alt=sse&key='+encodeURIComponent(APIKEY),{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({systemInstruction:{parts:[{text:sysPrompt()}]},contents:convs[curConv].hist,generationConfig:{maxOutputTokens:600}}),
       signal:abortCtrl.signal
     });
-    if(!res.ok){var ed=await res.json().catch(function(){return{}});typing.remove();setGenerating(false);
+    if(!res.ok){var ed=await res.json().catch(function(){return{}});typing.remove();
+      if(ed.error&&(ed.error.code===400||ed.error.code===403)){dropBadKey();await freeResp();return}
+      setGenerating(false);
       var m='وقع مشكل.';
       if(ed.error&&ed.error.message)m='خطأ: '+ed.error.message;
-      var hint=(ed.error&&(ed.error.code===400||ed.error.code===403))?'\n\nالمفتاح ماشي صحيح — دوس 🔑 وجيب واحد جديد.':'';
-      addAi('⚠️ '+m+hint);return}
+      addAi('⚠️ '+m);return}
     typing.querySelector('.typing').remove();
     var span=document.createElement('div');span.className='msg-text';typing.querySelector('.msg-body').appendChild(span);
     var reader=res.body.getReader(),dec=new TextDecoder(),buf='';
@@ -1687,6 +1700,7 @@ function toggleMic(){
 renderConvList();renderChat();
 if(window.innerWidth<=768)document.getElementById('sidebar').classList.add('hide');
 /* المفتاح اختياري — التطبيق كيخدم بلا مفتاح (وضع حر) */
+if(APIKEY){setTimeout(function(){checkKeyValid(APIKEY).then(function(d){if(d===false)dropBadKey()})},1500)}
 var ta=document.getElementById('in');ta.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'});
 
 /* ================= صور → PDF ================= */
