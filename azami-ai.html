@@ -1278,7 +1278,7 @@ function shareAPK(){
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 /* ================= 🔄 نظام التحديثات ================= */
-var APP_VERSION = '1.7.3';
+var APP_VERSION = '1.7.5';
 var VER_URL = 'azami-version.json';
 
 function verNum(v) {
@@ -1537,31 +1537,29 @@ async function send(){
 function freeTimeout(p){
   return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')) }, 22000) })]);
 }
-async function askFree(msgs){
+/* الحد ديال Pollinations فالمجاني: طلب كل ~4-5 ثواني. كنحترموه باش ما يطيحش الطلب الثاني */
+var FREE_LAST=0, FREE_GAP=4500;
+function sleepMs(ms){ return new Promise(function(r){ setTimeout(r,ms) }) }
+function freeRead(t){ try{ var d=JSON.parse(t); return String((d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'').trim() }catch(e){ return '' } }
+async function askFree(msgs,onTry){
   var body=JSON.stringify({model:'openai',messages:msgs});
-  /* محاولتين POST (الثانية من بعد ما نستناو) — بعض المرات السيرفر كيرفض الطلبات المتلاحقة */
+  var url='https://text.pollinations.ai/openai?referrer=nova-achraf.github.io';
+  /* كنستناو الدور باش ما نضربوش الحد */
+  var wait=FREE_GAP-(Date.now()-FREE_LAST);
+  if(wait>0){ if(onTry)onTry('كنستنى ' + Math.ceil(wait/1000) + ' ثانية…'); await sleepMs(wait) }
   for(var att=0;att<2;att++){
     try{
-      if(att)await new Promise(function(r){setTimeout(r,2500)});
-      var r=await freeTimeout(fetch('https://text.pollinations.ai/openai',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:body,signal:abortCtrl.signal
-      }));
+      if(onTry&&att)onTry('كنعاود المحاولة…');
+      FREE_LAST=Date.now();
+      var r=await freeTimeout(fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:body,signal:abortCtrl.signal}));
       if(r.ok){
-        var d=await r.json();
-        var t=String((d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'').trim();
+        var t=freeRead(await r.text());
         if(t)return t;
       }
     }catch(e){ if(e&&e.name==='AbortError')throw e }
+    if(!att)await sleepMs(4000);
   }
-  /* آخر محاولة: رابط بسيط */
-  await new Promise(function(r){setTimeout(r,1500)});
-  var q=msgs.map(function(m){return m.content}).join('\n').slice(-1500);
-  var r2=await freeTimeout(fetch('https://text.pollinations.ai/'+encodeURIComponent(q)+'?model=openai',{signal:abortCtrl.signal}));
-  if(!r2.ok)throw new Error('bad');
-  var txt=(await r2.text()).trim();
-  if(!txt)throw new Error('empty');
-  return txt;
+  throw new Error('bad');
 }
 async function freeResp(){
   var typing=addTyping();setGenerating(true);abortCtrl=new AbortController();var full='';
@@ -1571,7 +1569,13 @@ async function freeResp(){
       var t=(h.parts||[]).map(function(p){return p.text||''}).join(' ').trim();
       if(t)msgs.push({role:h.role==='model'?'assistant':'user',content:t});
     });
-    full=await askFree(msgs);
+    var note=document.createElement('div');
+    note.style.cssText='font-size:11px;color:var(--muted);margin-top:4px';
+    typing.querySelector('.msg-body').appendChild(note);
+    full=await askFree(msgs,function(n,tot){
+      try{note.textContent=(n>1?('كنعاود المحاولة '+n+' من '+tot+'…'):'')}catch(e){}
+    });
+    try{note.remove()}catch(e){}
     if(!full)throw new Error('empty');
     var ty=typing.querySelector('.typing');if(ty)ty.remove();
     var span=document.createElement('div');span.className='msg-text';
@@ -1596,11 +1600,21 @@ async function freeResp(){
     bar.appendChild(mkBtn('🔄',function(){regenerate()}));
     typing.querySelector('.msg-body').appendChild(bar);
   }catch(e){
-    typing.remove();
-    if(e&&e.name!=='AbortError'){
-      addAi(e&&e.message==='timeout'
-        ? '⚠️ السيرفر ما جاوبش. الكونيكسيون بطيئة — عاود صيفط الرسالة من بعد شوية.'
-        : '⚠️ ما قدرتش نوصل للسيرفر (كونيكسيون ضعيفة ولا محجوبة). عاود من بعد شوية.');
+    if(e&&e.name==='AbortError'){typing.remove()}
+    else{
+      typing.remove();
+      var msg=(e&&e.message==='timeout')
+        ? '⚠️ السيرفر ما جاوبش (كونيكسيون بطيئة).'
+        : '⚠️ ما قدرتش نوصل للسيرفر (كونيكسيون ولا حد الطلبات).';
+      addAi(msg+' دوس 🔄 عاود المحاولة:');
+      var rows=chat.querySelectorAll('.msg-row'),last=rows[rows.length-1];
+      var body=last&&last.querySelector('.msg-body');
+      if(body){
+        var rb=document.createElement('div');rb.className='msg-bar';
+        var rbtn=mkBtn('🔄 عاود المحاولة',function(){freeResp()});
+        rbtn.style.fontSize='12px';
+        rb.appendChild(rbtn);body.appendChild(rb);scrollDown();
+      }
     }
   }
   setGenerating(false);scrollDown();
