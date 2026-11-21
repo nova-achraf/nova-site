@@ -1278,7 +1278,7 @@ function shareAPK(){
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 /* ================= 🔄 نظام التحديثات ================= */
-var APP_VERSION = '1.7.0';
+var APP_VERSION = '1.7.1';
 var VER_URL = 'azami-version.json';
 
 function verNum(v) {
@@ -1340,12 +1340,24 @@ function checkUpdates(manual) {
     });
 }
 function hardRefresh() {
+  var go = function () { location.replace(location.pathname + '?v=' + Date.now()); };
+  var jobs = [];
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function (rs) {
-      rs.forEach(function (r) { r.update(); });
-    });
+    jobs.push(navigator.serviceWorker.getRegistrations().then(function (rs) {
+      return Promise.all(rs.map(function (r) { return r.unregister(); }));
+    }).catch(function () {}));
   }
-  location.reload();
+  if (window.caches && caches.keys) {
+    jobs.push(caches.keys().then(function (ks) {
+      return Promise.all(ks.map(function (k) { return caches.delete(k); }));
+    }).catch(function () {}));
+  }
+  if (!jobs.length) { go(); return; }
+  /* كنستناو المسح يكمل (بحد أقصى 2.5 ثانية) ومن بعد كنعاودو نحلو */
+  var done = false;
+  var fin = function () { if (!done) { done = true; go(); } };
+  setTimeout(fin, 2500);
+  Promise.all(jobs).then(fin).catch(fin);
 }
 function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
 function openInst(){
