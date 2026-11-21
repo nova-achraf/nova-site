@@ -345,7 +345,6 @@
     <button class="side-act" onclick="openPdf()"><span class="ic">📄</span><span class="lbl">صور → PDF</span></button>
     <button class="side-act" onclick="exportChat()"><span class="ic">⬇️</span><span class="lbl">تصدير المحادثة</span></button>
     <button class="side-act" onclick="openMemory()"><span class="ic">🧠</span><span class="lbl">ذاكرة AZAMI</span></button>
-    <button class="side-act" onclick="openKey()"><span class="ic">🔑</span><span class="lbl">المفتاح</span></button>
   </div>
   <div class="side-sec">
     <div class="side-cap">التطبيق</div>
@@ -436,19 +435,6 @@
   </div>
 </div>
 
-<!-- KEY MODAL -->
-<div class="modal" id="keyModal">
-  <div class="sheet">
-    <h3>🔑 مفتاح AZAMI (اختياري)</h3>
-    <p>AZAMI كيخدم بلا مفتاح. هاد المفتاح غير إلا بغيتي جودة أعلى ولا تحليل الصور — كيتصاوب من Google AI Studio وكيبقى فالمتصفح ديالك وحدك.</p>
-    <input id="keyIn" placeholder="AQ-Ab8RN6..." autocomplete="off" spellcheck="false">
-    <div class="err" id="keyErr">حط المفتاح من فضلك.</div>
-    <button class="go" id="keyGo" onclick="saveKey()">حفظ وبدأ ✅</button>
-    <button class="skip" onclick="window.open('https://aistudio.google.com/apikey','_blank')">🔗 جيب مفتاح جديد (Google AI Studio)</button>
-    <button class="skip" onclick="closeKey()">لحظة، نرجع من بعد</button>
-  </div>
-</div>
-
 <!-- LOCK -->
 <div class="modal" id="lockModal">
   <div class="sheet">
@@ -511,7 +497,9 @@
 </div>
 <script>
 const KEY='azami_ai_gemini_key';
-let APIKEY='';try{APIKEY=localStorage.getItem(KEY)||''}catch(e){}
+/* المفتاح تحيّد نهائياً — AZAMI كيخدم ف«وضع حر» بلا مفتاح */
+let APIKEY='';
+try{localStorage.removeItem(KEY)}catch(e){}
 const MEM_KEY='azami_memory';
 function getMemory(){try{return localStorage.getItem(MEM_KEY)||''}catch(e){return ''}}
 function openMemory(){
@@ -912,26 +900,10 @@ async function regenerate(){
 /* === IMAGE PICK === */
 function onImgPick(input){var f=input.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){pickedImg=e.target.result;pickedType=f.type||'image/jpeg';document.getElementById('prevThumb').src=pickedImg;document.getElementById('imgPrev').style.display='block'};r.readAsDataURL(f);input.value=''}
 function clearImg(){pickedImg=null;pickedType=null;document.getElementById('imgPrev').style.display='none'}
-/* === KEY === */
-function openKey(){document.getElementById('keyModal').classList.add('show');document.getElementById('keyIn').value=APIKEY||'';document.getElementById('keyIn').focus()}
-function closeKey(){document.getElementById('keyModal').classList.remove('show')}
-async function saveKey(){
-  var el=document.getElementById('keyIn'),err=document.getElementById('keyErr');
-  var v=(el.value||'').trim();
-  if(!v){if(err){err.textContent='حط المفتاح من فضلك.';err.style.display='block'}return}
-  if(err){err.style.display='none'}
-  var btn=document.getElementById('keyGo');if(btn){btn.textContent='كنتحقق...';btn.disabled=true}
-  var ok=await checkKeyValid(v);
-  if(btn){btn.textContent='حفظ وبدأ ✅';btn.disabled=false}
-  if(ok===false){
-    if(err){err.textContent='هاد المفتاح ماشي صحيح عند Google. عاود جيب واحد جديد من Google AI Studio.';err.style.display='block'}
-    return;
-  }
-  APIKEY=v;MODEL_CACHE=null;
-  try{localStorage.setItem(KEY,v)}catch(e){}
-  closeKey();
-  addAi('مزيان! المفتاح تحفظ وتأكد ✅ سؤلني أي حاجة 🚀');
-}
+/* === المفتاح === */
+function openKey(){}
+function closeKey(){}
+function saveKey(){}
 /* كانتحققو من المفتاح قبل ما نحفظوه */
 async function checkKeyValid(k){
   try{
@@ -967,7 +939,7 @@ function dropBadKey(){
   try{
     if(!localStorage.getItem('azami_key_dropped')){
       localStorage.setItem('azami_key_dropped','1');
-      setTimeout(function(){addAi('ℹ️ المفتاح القديم ماشي صحيح — حيّدتو ودار التطبيق «وضع حر»، وها هو خدام بلا مفتاح 👌')},400);
+
     }
   }catch(e){}
 }
@@ -1306,7 +1278,7 @@ function shareAPK(){
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 /* ================= 🔄 نظام التحديثات ================= */
-var APP_VERSION = '1.6.1';
+var APP_VERSION = '1.7.0';
 var VER_URL = 'azami-version.json';
 
 function verNum(v) {
@@ -1648,7 +1620,7 @@ async function streamResp(){
 }
 /* === VISION === */
 async function visionReq(txt){
-  if(!APIKEY){addAi('⚠️ تحليل الصور كيحتاج مفتاح Gemini (اختياري). النص كيخدم بلا مفتاح 👌');clearImg();return}
+  addAi('⚠️ قراءة الصور ما متوفراش دابا — ولكن النص كيخدم عادي 👌');clearImg();return
   var b64=pickedImg.split(',')[1],typing=addTyping();setGenerating(true);abortCtrl=new AbortController();
   try{
     var parts=[];if(txt)parts.push({text:txt});parts.push({inlineData:{mimeType:pickedType,data:b64}});
