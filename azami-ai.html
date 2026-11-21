@@ -1278,7 +1278,7 @@ function shareAPK(){
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 /* ================= 🔄 نظام التحديثات ================= */
-var APP_VERSION = '1.7.2';
+var APP_VERSION = '1.7.3';
 var VER_URL = 'azami-version.json';
 
 function verNum(v) {
@@ -1538,20 +1538,24 @@ function freeTimeout(p){
   return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')) }, 22000) })]);
 }
 async function askFree(msgs){
-  /* 1) POST عادي */
-  try{
-    var r=await freeTimeout(fetch('https://text.pollinations.ai/openai',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'openai',messages:msgs}),
-      signal:abortCtrl.signal
-    }));
-    if(r.ok){
-      var d=await r.json();
-      var t=String((d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'').trim();
-      if(t)return t;
-    }
-  }catch(e){ if(e&&e.name==='AbortError')throw e }
-  /* 2) محاولة ثانية: رابط بسيط */
+  var body=JSON.stringify({model:'openai',messages:msgs});
+  /* محاولتين POST (الثانية من بعد ما نستناو) — بعض المرات السيرفر كيرفض الطلبات المتلاحقة */
+  for(var att=0;att<2;att++){
+    try{
+      if(att)await new Promise(function(r){setTimeout(r,2500)});
+      var r=await freeTimeout(fetch('https://text.pollinations.ai/openai',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:body,signal:abortCtrl.signal
+      }));
+      if(r.ok){
+        var d=await r.json();
+        var t=String((d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'').trim();
+        if(t)return t;
+      }
+    }catch(e){ if(e&&e.name==='AbortError')throw e }
+  }
+  /* آخر محاولة: رابط بسيط */
+  await new Promise(function(r){setTimeout(r,1500)});
   var q=msgs.map(function(m){return m.content}).join('\n').slice(-1500);
   var r2=await freeTimeout(fetch('https://text.pollinations.ai/'+encodeURIComponent(q)+'?model=openai',{signal:abortCtrl.signal}));
   if(!r2.ok)throw new Error('bad');
@@ -1595,8 +1599,8 @@ async function freeResp(){
     typing.remove();
     if(e&&e.name!=='AbortError'){
       addAi(e&&e.message==='timeout'
-        ? '⚠️ الخدمة ما جاوباتش ف 22 ثانية. الإنترنت ولا السيرفر بطيء — عاود صيفط الرسالة.'
-        : '⚠️ ما قدرتش نتصل. تحقق من الإنترنت وعاود.');
+        ? '⚠️ السيرفر ما جاوبش. الكونيكسيون بطيئة — عاود صيفط الرسالة من بعد شوية.'
+        : '⚠️ ما قدرتش نوصل للسيرفر (كونيكسيون ضعيفة ولا محجوبة). عاود من بعد شوية.');
     }
   }
   setGenerating(false);scrollDown();
