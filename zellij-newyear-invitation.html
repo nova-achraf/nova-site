@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دعوة رأس السنة — Zellij Studio (قابلة للتعديل والطبع)</title>
+<meta name="description" content="Zellij New Year invitation — A5 print-ready, editable text, two colourways (emerald gold / ivory).">
+<meta name="theme-color" content="#0E3A32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FDF9F2; --ink:#2A241F; --muted:#8F8069;
+    --terra:#C4573A; --gold:#B8912F; --gold-l:#D9C08A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:#1B1512;color:var(--ink);
+    font-family:'Amiri','Noto Naskh Arabic',serif;
+    padding:22px 14px 132px;
+  }
+  /* ---------- TOOLBAR ---------- */
+  .bar{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;padding:10px 14px 14px;
+    background:rgba(255,251,246,.97);border-top:1px solid #E3D6C6;
+    display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;
+    backdrop-filter:blur(8px);
+  }
+  .bar button{
+    flex:0 0 auto;min-width:132px;min-height:46px;border-radius:12px;border:1px solid #E3D6C6;
+    background:#fff;color:#241F1A;font-weight:700;font-size:14px;
+    font-family:'Segoe UI',system-ui,sans-serif;cursor:pointer;padding:0 12px;
+  }
+  .bar button.primary{background:#0E3A32;color:#FFF8EA;border-color:#0E3A32}
+  .bar .hint{font-size:11px;color:var(--muted);max-width:210px;line-height:1.5;font-family:'Segoe UI',system-ui,sans-serif}
+  /* ---------- PAGE ---------- */
+  .stage{display:flex;flex-direction:column;align-items:center;gap:20px}
+  .page{
+    width:148mm;height:210mm;position:relative;overflow:hidden;
+    box-shadow:0 12px 38px rgba(0,0,0,.42);
+    /* default colourway: deep emerald + gold */
+    --bg:#0E3A32; --bg2:#0B2F29; --fg:#F6ECD8; --fg-soft:#D8C9A8;
+    --acc:#C9A227; --rule:rgba(201,162,39,.55);
+    background:
+      radial-gradient(circle at 50% 12%, rgba(201,162,39,.16), transparent 58%),
+      linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+    color:var(--fg);
+    transition:background .25s ease;
+  }
+  .page.light{
+    --bg:#FDF9F2; --bg2:#F7F0E4; --fg:#2A241F; --fg-soft:#7C6C55;
+    --acc:#A8792A; --rule:rgba(168,121,42,.45);
+    background:
+      radial-gradient(circle at 50% 12%, rgba(168,121,42,.10), transparent 60%),
+      linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  }
+  @media(max-width:640px){
+    .page{width:100%;max-width:382px;height:auto;aspect-ratio:148/210}
+  }
+  /* zellige pattern */
+  .band{position:absolute;left:0;right:0;height:19mm;z-index:1;color:var(--acc);opacity:.42}
+  .band.top{top:0;
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 100%);
+    mask-image:linear-gradient(180deg,#000 0%,transparent 100%);}
+  .band.bottom{bottom:0;transform:rotate(180deg);
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 100%);
+    mask-image:linear-gradient(180deg,#000 0%,transparent 100%);}
+  .band svg{width:100%;height:100%;display:block}
+  /* frame */
+  .frame{position:absolute;inset:7mm;border:.5px solid var(--rule);z-index:2;pointer-events:none}
+  .frame::after{content:"";position:absolute;inset:1.6mm;border:.35px solid var(--rule);opacity:.65}
+  /* corner medallions */
+  .corner{position:absolute;width:11mm;height:11mm;z-index:3;color:var(--acc);opacity:.95}
+  .corner.tl{top:9.5mm;right:9.5mm}
+  .corner.tr{top:9.5mm;left:9.5mm}
+  .corner.bl{bottom:9.5mm;right:9.5mm}
+  .corner.br{bottom:9.5mm;left:9.5mm}
+  /* content */
+  .inner{position:relative;z-index:4;text-align:center;padding:34mm 19mm 26mm;height:100%;display:flex;flex-direction:column;justify-content:center}
+  .kicker{
+    font-family:'Cormorant Garamond',serif;font-weight:300;
+    font-size:8.5pt;letter-spacing:.62em;color:var(--acc);text-transform:uppercase;
+    direction:ltr;margin-bottom:4mm;
+  }
+  .headline{
+    font-family:'Cormorant Garamond',serif;font-weight:300;
+    font-size:27pt;line-height:1.16;letter-spacing:.04em;color:var(--fg);
+    direction:ltr;
+  }
+  .headline .amp{display:block;font-size:12pt;font-style:italic;letter-spacing:.3em;color:var(--acc);margin:2.5mm 0}
+  .year{
+    font-family:'Cormorant Garamond',serif;font-weight:300;font-size:11pt;letter-spacing:.5em;
+    color:var(--fg-soft);direction:ltr;margin-top:3mm;
+  }
+  .divider{display:flex;align-items:center;justify-content:center;gap:3mm;margin:7mm 0 6mm}
+  .divider i{display:block;height:.5px;width:22mm;background:linear-gradient(90deg,transparent,var(--rule))}
+  .divider i.r{background:linear-gradient(90deg,var(--rule),transparent)}
+  .divider b{color:var(--acc);font-size:8.5pt;line-height:1}
+  .meta{font-family:'Cormorant Garamond',serif;font-size:11pt;line-height:1.9;color:var(--fg);direction:ltr}
+  .meta .lbl{
+    display:block;font-size:7pt;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--fg-soft);margin-bottom:.6mm;
+  }
+  .meta + .meta{margin-top:5.5mm}
+  .rsvp{margin-top:7mm;font-family:'Cormorant Garamond',serif;font-size:8.5pt;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--fg-soft);direction:ltr}
+  .foot{
+    position:absolute;bottom:11.5mm;left:0;right:0;text-align:center;z-index:5;
+    font-family:'Cormorant Garamond',serif;font-size:6.8pt;letter-spacing:.44em;color:var(--fg-soft);
+    direction:ltr;
+  }
+  [contenteditable="true"]{outline:none;border-radius:3px;transition:background .15s}
+  [contenteditable="true"]:focus{background:rgba(201,162,39,.18);box-shadow:0 0 0 2px rgba(201,162,39,.35)}
+  .edit-tip{
+    font-size:12px;color:#6B6053;background:#FFF7EE;border:1px solid #E7D8C6;
+    border-radius:12px;padding:10px 14px;max-width:430px;line-height:1.7;text-align:center;
+    font-family:'Segoe UI',system-ui,sans-serif;color:#2A241F;
+  }
+  /* ---------- PRINT ---------- */
+  @page{ size:A5 portrait; margin:0; }
+  @media print{
+    body{background:#fff;padding:0}
+    .bar,.edit-tip{display:none!important}
+    .stage{gap:0}
+    .page{
+      width:148mm;height:210mm;box-shadow:none;page-break-after:always;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    }
+    .page.light{page-break-before:always}
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <p class="edit-tip">✏️ اضغط على أي نص باش تبدلو. من بعد «طبع / حفظ PDF» → مقاس A5 + فعّل Background graphics. زر «نسخة فاتحة» كيبدل الألوان (نسختين فملف واحد).</p>
+
+  <div class="page" id="card">
+    <div class="band top">
+      <svg viewBox="0 0 400 58" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <pattern id="khatam" width="52" height="52" patternUnits="userSpaceOnUse">
+            <g fill="none" stroke="currentColor" stroke-width=".6">
+              <rect x="14" y="14" width="24" height="24"/>
+              <rect x="14" y="14" width="24" height="24" transform="rotate(45 26 26)"/>
+              <circle cx="26" cy="26" r="3.1"/>
+              <path d="M26 0 L26 7 M26 45 L26 52 M0 26 L7 26 M45 26 L52 26"/>
+              <circle cx="0" cy="0" r="1.6"/><circle cx="52" cy="0" r="1.6"/>
+              <circle cx="0" cy="52" r="1.6"/><circle cx="52" cy="52" r="1.6"/>
+            </g>
+          </pattern>
+        </defs>
+        <rect width="400" height="58" fill="url(#khatam)"/>
+      </svg>
+    </div>
+
+    <div class="band bottom">
+      <svg viewBox="0 0 400 58" preserveAspectRatio="none" aria-hidden="true">
+        <rect width="400" height="58" fill="url(#khatam)"/>
+      </svg>
+    </div>
+
+    <div class="frame"></div>
+
+    <svg class="corner tl" viewBox="0 0 48 48" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M24 3 L31 12 L42 15 L35 24 L42 33 L31 36 L24 45 L17 36 L6 33 L13 24 L6 15 L17 12 Z"/>
+        <path d="M24 9 L29 15 L36 17 L31 24 L36 31 L29 33 L24 39 L19 33 L12 31 L17 24 L12 17 L19 15 Z"/>
+        <circle cx="24" cy="24" r="2.4"/>
+      </g>
+    </svg>
+    <svg class="corner tr" viewBox="0 0 48 48" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M24 3 L31 12 L42 15 L35 24 L42 33 L31 36 L24 45 L17 36 L6 33 L13 24 L6 15 L17 12 Z"/>
+        <path d="M24 9 L29 15 L36 17 L31 24 L36 31 L29 33 L24 39 L19 33 L12 31 L17 24 L12 17 L19 15 Z"/>
+        <circle cx="24" cy="24" r="2.4"/>
+      </g>
+    </svg>
+    <svg class="corner bl" viewBox="0 0 48 48" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M24 3 L31 12 L42 15 L35 24 L42 33 L31 36 L24 45 L17 36 L6 33 L13 24 L6 15 L17 12 Z"/>
+        <path d="M24 9 L29 15 L36 17 L31 24 L36 31 L29 33 L24 39 L19 33 L12 31 L17 24 L12 17 L19 15 Z"/>
+        <circle cx="24" cy="24" r="2.4"/>
+      </g>
+    </svg>
+    <svg class="corner br" viewBox="0 0 48 48" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M24 3 L31 12 L42 15 L35 24 L42 33 L31 36 L24 45 L17 36 L6 33 L13 24 L6 15 L17 12 Z"/>
+        <path d="M24 9 L29 15 L36 17 L31 24 L36 31 L29 33 L24 39 L19 33 L12 31 L17 24 L12 17 L19 15 Z"/>
+        <circle cx="24" cy="24" r="2.4"/>
+      </g>
+    </svg>
+
+    <div class="inner">
+      <div class="kicker">You are invited</div>
+
+      <div class="headline">
+        <span contenteditable="true">New Year&#8217;s Eve</span>
+        <span class="amp">dinner &amp; celebration</span>
+      </div>
+      <div class="year" contenteditable="true">31.12.2026 &nbsp;&#183;&nbsp; 2027</div>
+
+      <div class="divider"><i></i><b>&#10022;</b><i class="r"></i></div>
+
+      <div class="meta">
+        <span class="lbl">Date</span>
+        <span contenteditable="true">Thursday 31 December 2026 &#183; 20:00</span>
+      </div>
+
+      <div class="meta">
+        <span class="lbl">Place</span>
+        <span contenteditable="true">Riad Zellij — Casablanca</span>
+      </div>
+
+      <div class="rsvp" contenteditable="true">RSVP &#183; +212 6 00 00 00 00</div>
+    </div>
+
+    <div class="foot">ZELLIJ STUDIO</div>
+  </div>
+</div>
+
+<div class="bar">
+  <button class="primary" onclick="window.print()">🖨️ طبع / حفظ PDF</button>
+  <button onclick="document.getElementById('card').classList.toggle('light')">🎨 نسخة فاتحة</button>
+  <span class="hint">مقاس A5 · فعّل «Background graphics» باش تخرج الزواقة والألوان.</span>
+</div>
+
+</body>
+</html>
