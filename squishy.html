@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#FFF3E6">
 <title>Squishy — لعبة الوجه المطاطي</title>
-<meta name="description" content="لعبة بسيطة: اسحب الوجه المطاطي، اضغط عليه، وشوف كيفاش كيرجع لبلاصتو. تشتغل بالتاتش والفأرة.">
+<meta name="description" content="لعبة سكويش: اسحب الوجه المطاطي واضغط عليه، جمع النقط، وطلع المستويات (بداية، سكويشر، محترف...). تشتغل بالتاتش والفأرة بلا تحميل.">
 <meta name="robots" content="index,follow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,20 @@ canvas{display:block;touch-action:none}
 #brand i{width:22px;height:22px;border-radius:7px;display:inline-block;
   background:linear-gradient(145deg,#FF6B4A,#FF9F1C)}
 #score{font-size:12px;font-weight:700;background:rgba(255,255,255,.8);border:1px solid #F0E4D8;
-  border-radius:20px;padding:6px 13px;color:var(--dim);pointer-events:auto}
+  border-radius:20px;padding:6px 13px;color:var(--txt);pointer-events:auto}
+#stats{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+#best{font-size:10.5px;font-weight:700;color:var(--dim)}
+#lvl{position:fixed;inset-block-start:56px;inset-inline:16px;z-index:5;pointer-events:none}
+#lvltxt{font-size:11.5px;font-weight:700;color:var(--dim);margin:0 0 5px}
+#lvlbar{height:4px;border-radius:4px;background:#F0E4D8;overflow:hidden}
+#lvlfill{display:block;height:100%;width:0;border-radius:4px;
+  background:linear-gradient(90deg,#FF6B4A,#FF9F1C);transition:width .25s ease}
+#toast{position:fixed;inset-block-start:92px;inset-inline:0;text-align:center;font-size:14px;
+  font-weight:800;color:#fff;z-index:7;pointer-events:none;opacity:0;transform:translateY(-6px);
+  transition:opacity .25s,transform .25s}
+#toast.on{opacity:1;transform:translateY(0)}
+#toast span{display:inline-block;background:linear-gradient(145deg,#FF6B4A,#FF9F1C);
+  border-radius:999px;padding:8px 16px;box-shadow:0 8px 22px rgba(255,107,74,.35)}
 #hint{position:fixed;inset-block-end:26px;inset-inline:0;text-align:center;font-size:12.5px;
   color:var(--dim);z-index:5;transition:opacity .4s;pointer-events:none}
 #hint.gone{opacity:0}
@@ -32,13 +45,13 @@ canvas{display:block;touch-action:none}
   border:1px solid #F0C9B6;background:rgba(255,255,255,.9);color:var(--accent);cursor:pointer}
 #bar button:active{transform:scale(.96)}
 </style>
-<link rel="canonical" href="https://nova-achraf.github.io/nova/squishy.html">
+<link rel="canonical" href="https://nova-achraf.github.io/nova-site/squishy.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AZAMI">
 <meta property="og:title" content="Squishy — لعبة الوجه المطاطي">
 <meta property="og:description" content="اسحب الوجه المطاطي واضغط عليه — فيزياء ناعمة بالكانفاس، تشتغل بالتاتش.">
-<meta property="og:url" content="https://nova-achraf.github.io/nova/squishy.html">
-<meta property="og:image" content="https://nova-achraf.github.io/nova/pixshrink-icon-512.png">
+<meta property="og:url" content="https://nova-achraf.github.io/nova-site/squishy.html">
+<meta property="og:image" content="https://nova-achraf.github.io/nova-site/pixshrink-icon-512.png">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
@@ -46,8 +59,16 @@ canvas{display:block;touch-action:none}
 
 <div id="hud">
   <div id="brand"><i></i> Squishy</div>
-  <div id="score">0 ضغطة</div>
+  <div id="stats">
+    <div id="score">0 نقطة</div>
+    <div id="best">أحسن نتيجة: 0</div>
+  </div>
 </div>
+<div id="lvl">
+  <p id="lvltxt">المستوى 1 · بداية</p>
+  <div id="lvlbar" role="progressbar" aria-label="التقدم للمستوى الجاي" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="lvlfill"></i></div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
 <div id="hint">اسحب الوجه بعيد وخليه يرجع 👆</div>
 <div id="bar">
   <button id="reset">إعادة</button>
@@ -61,6 +82,66 @@ canvas{display:block;touch-action:none}
   var ctx = cv.getContext('2d');
   var scoreEl = document.getElementById('score');
   var hintEl = document.getElementById('hint');
+  var bestEl = document.getElementById('best');
+  var lvlTxt = document.getElementById('lvltxt');
+  var lvlFill = document.getElementById('lvlfill');
+  var lvlBar = document.getElementById('lvlbar');
+  var toastEl = document.getElementById('toast');
+
+  /* ---------- score + levels ---------- */
+  var LEVELS = [
+    { at: 0, name: 'بداية' },
+    { at: 80, name: 'سكويشر' },
+    { at: 200, name: 'محترف' },
+    { at: 400, name: 'وحش السكويش' },
+    { at: 700, name: 'أسطورة' },
+    { at: 1100, name: 'پروفيسور' }
+  ];
+  var points = 0, combo = 1, lastPoke = 0, level = 0, best = 0;
+  var floats = [];
+  try { best = parseInt(localStorage.getItem('squishy_best') || '0', 10) || 0; } catch (e) { best = 0; }
+
+  function levelIndex(p) {
+    var i = 0;
+    for (var k = 0; k < LEVELS.length; k++) if (p >= LEVELS[k].at) i = k;
+    return i;
+  }
+
+  function paintScore() {
+    scoreEl.textContent = points + ' نقطة';
+    var cur = LEVELS[level];
+    var next = LEVELS[level + 1];
+    lvlTxt.textContent = 'المستوى ' + (level + 1) + ' · ' + cur.name;
+    var pct = next ? Math.min(100, Math.round(((points - cur.at) / (next.at - cur.at)) * 100)) : 100;
+    lvlFill.style.width = pct + '%';
+    lvlBar.setAttribute('aria-valuenow', String(pct));
+    bestEl.textContent = 'أحسن نتيجة: ' + best;
+  }
+
+  function toast(msg) {
+    toastEl.innerHTML = '<span></span>';
+    toastEl.firstChild.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(function () { toastEl.classList.remove('on'); }, 1900);
+  }
+
+  function gain(n, x, y) {
+    points += n;
+    floats.push({ x: x, y: y, txt: '+' + n, life: 1 });
+    if (points > best) {
+      best = points;
+      try { localStorage.setItem('squishy_best', String(best)); } catch (e) {}
+    }
+    var lv = levelIndex(points);
+    if (lv > level) {
+      level = lv;
+      toast('المستوى ' + (level + 1) + ' — ' + LEVELS[level].name + ' 🎉');
+      wobble(1.6);
+      squishSound(1, 620);
+    }
+    paintScore();
+  }
 
   var W = 0, H = 0, DPR = 1;
   var N = 10, M = 10;            // mesh resolution
@@ -399,6 +480,21 @@ canvas{display:block;touch-action:none}
         ctx.fill();
       }
     }
+
+    // floating "+N" score popups
+    if (floats.length) {
+      ctx.textAlign = 'center';
+      ctx.font = '800 18px Cairo, system-ui, sans-serif';
+      for (var f = floats.length - 1; f >= 0; f--) {
+        var fl = floats[f];
+        fl.life -= 0.02;
+        if (fl.life <= 0) { floats.splice(f, 1); continue; }
+        ctx.globalAlpha = Math.max(0, fl.life);
+        ctx.fillStyle = '#FF6B4A';
+        ctx.fillText(fl.txt, fl.x, fl.y - (1 - fl.life) * 48);
+        ctx.globalAlpha = 1;
+      }
+    }
   }
 
   var pointer = { x: -999, y: -999, active: false };
@@ -465,7 +561,11 @@ canvas{display:block;touch-action:none}
       grabs.set(e.pointerId, near.p);
     }
     pokes++;
-    scoreEl.textContent = pokes + ' ضغطة';
+    var now = performance.now();
+    combo = (now - lastPoke < 1300) ? Math.min(4, combo + 1) : 1;
+    lastPoke = now;
+    // harder stretch = more points; rapid pokes build a combo up to x4
+    gain((1 + Math.round(stress * 5)) * combo, pos.x, pos.y);
     hintEl.classList.add('gone');
     wobble(0.9);
     squishSound(1, 470);
@@ -496,7 +596,11 @@ canvas{display:block;touch-action:none}
   document.getElementById('reset').onclick = function () {
     build();
     pokes = 0;
-    scoreEl.textContent = '0 ضغطة';
+    points = 0;
+    combo = 1;
+    level = 0;
+    floats = [];
+    paintScore();
     hintEl.classList.remove('gone');
     wobble(0.5);
   };
@@ -555,6 +659,7 @@ canvas{display:block;touch-action:none}
   window.addEventListener('orientationchange', function () { setTimeout(resize, 200); });
   document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
 
+  paintScore();
   resize();
   wobble(0.6);
   requestAnimationFrame(frame);
